@@ -1,0 +1,12 @@
+*~
+
+*.eep
+*.elf
+*.hex
+*.lss
+*.map
+*.o
+*.uze
+
+/default/dep/
+/default/eeprom.bin
