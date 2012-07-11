@@ -6,10 +6,9 @@
 #include <stdio.h>
 
 #include "data/tiles.inc"
-#include "data/fonts.pic.inc"
 
-#define MAXX 40
-#define MAXY 28
+#define MAXX 30
+#define MAXY 20
 #define OFFSCREEN 255
 #define MAXWORMLEN 16
 
@@ -20,6 +19,7 @@
 #define T_MSH2 2
 #define T_MSH3 3
 #define T_WORM 4
+#define T_PLYR 5
 
 typedef unsigned char Scalar;
 typedef unsigned char Boolean;
@@ -36,19 +36,22 @@ typedef struct {
   
 Worm worms[2];
 
-unsigned char level[MAXX][MAXY];
+unsigned char level[MAXX * MAXY];
+#define LEVEL(x,y) level[x + y*MAXX]
+
+Scalar player_x, player_y;
 
 void initLevel(){
   for (unsigned char x = 0; x < MAXX; x++) {
     for (unsigned char y = 0; y < MAXY; y++) {
-      level[x][y] = T_FREE;
+      LEVEL(x,y) = T_FREE;
     }
   }
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
   DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
-  level[x][y] = T_WORM;
+  LEVEL(x,y) = T_WORM;
 }
 
 void drawWormBody(Scalar x, Scalar y){
@@ -57,12 +60,21 @@ void drawWormBody(Scalar x, Scalar y){
 
 void drawEmpty(Scalar x, Scalar y){
   DrawMap(x, y, t_black);
-  level[x][y] = T_FREE;
+  LEVEL(x,y) = T_FREE;
 }
 
 void drawMushroom(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom1);
-  level[x][y] = T_MSH1;
+  LEVEL(x,y) = T_MSH1;
+}
+
+void drawPlayer(Scalar x, Scalar y){
+  DrawMap(x, y, t_player);
+  LEVEL(x,y) = T_PLYR;
+}
+
+void gameOver(){
+  SoftReset();
 }
 
 void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean direction){
@@ -77,20 +89,15 @@ void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean dir
   }
   newWorm->length = length;
   newWorm->tailidx = length-1;
-  if (direction) {
-    for (Scalar i = 0; i < length; i++) {
-      newWorm->x[i] = startx - i;
-      newWorm->y[i] = starty;
-      level[startx - i][starty] = T_WORM;
-    }
-  } else {
-    for (Scalar i = 0; i < length; i++) {
-      newWorm->x[i] = startx + i;
-      newWorm->y[i] = starty;
-      level[startx + i][starty] = T_WORM;
-    }
-  }
+  newWorm->x[0] = startx;
+  newWorm->y[0] = starty;
+
   drawWormHead(startx, starty, direction);
+
+  for (Scalar i = 1; i < length; i++) {
+    newWorm->x[i] = newWorm->y[i] = OFFSCREEN;
+  }
+
 }
 
 void moveWorm(Scalar i){
@@ -140,19 +147,49 @@ void moveWorm(Scalar i){
 	moved = 1;
       }
     }
-    if (moved && level[x][y] != T_FREE) {
-      moved = 0;
-      x = oldx;
+
+    if (moved) {
+
+      switch (LEVEL(x,y)) {
+	
+      case T_FREE:
+	// ok, go here
+	break;
+	
+      case T_PLYR:
+	// got you!
+	gameOver();
+	break;
+	
+      default:
+	// can't go there
+	moved = 0;
+	x = oldx;
+
+      }
     }
 
     if (! moved) {
 	y++;
 	theWorm->direction = 1 - theWorm->direction;
-	if (level[x][y] != T_FREE) {
+
+	switch (LEVEL(x,y)) {
+
+	case T_FREE:
+	  // ok, go here
+	  break;
+
+	case T_PLYR:
+	  // got you!
+	  gameOver();
+	  break;
+
+	default:
+	  // can't go there
 	  moved = 0;
 	}
     }
-
+    
   }
 
   // handle overflow in Y direction -> @todo WARP ANYWHERE
@@ -161,7 +198,7 @@ void moveWorm(Scalar i){
     do {
       x = rand()%MAXX;
       y = rand()%MAXY;
-    } while ( level[x][y] != T_FREE );
+    } while ( LEVEL(x,y) != T_FREE );
 
   }
 
@@ -180,27 +217,81 @@ void moveWorm(Scalar i){
 
 }
 
+void movePlayer(){
+
+  Scalar x = player_x;
+  Scalar y = player_y;
+
+  int buttons = ReadJoypad(0);
+
+  if ((buttons & BTN_LEFT)  && x > 0) {
+    x--;
+  }
+
+  if ((buttons & BTN_RIGHT) && x < MAXX-1 ) {
+    x++;
+  }
+
+  if ((buttons & BTN_UP)    && y > 0) {
+    y--;
+  }
+
+  if ((buttons & BTN_DOWN)  && y < MAXY-1 ) {
+    y++;
+  }
+
+  if (player_x != x || player_y != y) {
+
+    switch (LEVEL(x,y)) {
+
+    case T_FREE:
+      drawEmpty(player_x, player_y);
+      drawPlayer(x, y);
+      player_x = x;
+      player_y = y;
+      break;
+      
+    case T_WORM:
+      gameOver();
+      
+    default:
+      // ran into something, don't move at all
+      break;
+
+    }
+  }
+
+}
+
 int main(){
 
-  SetFontTable(fonts);
   SetTileTable(Tiles);
-  ClearVram();
+  Fill(0, 0, MAXX, MAXY, t_black);
 
+  // init worms
   initWorm(0, 17, 7, 5, 1);
   initWorm(1, 23, 4, 9, 0);
 
+  // init mushrooms
   for (Scalar i = 0; i < 20; i++) {
     drawMushroom( rand()%MAXX, rand()%MAXY );
   }
+
+  // init player
+  player_x = MAXX / 2 - 1;
+  player_y = MAXY - 1;
+  drawPlayer(player_x, player_y);
 
   while(1){
 
     WaitVsync(WAIT);
 
+    movePlayer();
     moveWorm(1);
 
     WaitVsync(WAIT);
 
+    movePlayer();
     moveWorm(0);
 
   }
