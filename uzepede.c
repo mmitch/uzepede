@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "data/tiles.inc"
 #include "data/fonts.pic.inc"
 
 #define MAXX 40
@@ -46,22 +47,21 @@ void initLevel(){
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
-  Print(x, y, direction ? PSTR("6") : PSTR("9"));
+  DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
   level[x][y] = T_WORM;
 }
 
 void drawWormBody(Scalar x, Scalar y){
-  Print(x, y, PSTR("*"));
+  DrawMap(x, y, t_wormbody);
 }
 
 void drawEmpty(Scalar x, Scalar y){
-  Print(x, y, PSTR(" "));
+  DrawMap(x, y, t_black);
   level[x][y] = T_FREE;
-  // Print(x, y, PSTR("."));
 }
 
 void drawMushroom(Scalar x, Scalar y){
-  Print(x, y, PSTR("+"));
+  DrawMap(x, y, t_mushroom1);
   level[x][y] = T_MSH1;
 }
 
@@ -183,6 +183,7 @@ void moveWorm(Scalar i){
 int main(){
 
   SetFontTable(fonts);
+  SetTileTable(Tiles);
   ClearVram();
 
   initWorm(0, 17, 7, 5, 1);
