@@ -10,7 +10,7 @@
 #define MAXX 30
 #define MAXY 20
 #define OFFSCREEN 255
-#define MAXWORMLEN 16
+#define MAXWORMLEN 12
 
 #define WAIT 1
 
@@ -20,6 +20,8 @@
 #define T_MSH3 3
 #define T_WORM 4
 #define T_PLYR 5
+#define T_BEET 6
+#define T_SPDR 7
 
 typedef unsigned char Scalar;
 typedef unsigned char Boolean;
@@ -37,9 +39,11 @@ typedef struct {
 Worm worms[2];
 
 unsigned char level[MAXX * MAXY];
-#define LEVEL(x,y) level[x + y*MAXX]
+// memory safeguard?!  something is wrong here!
+#define LEVEL(x,y) level[ (x < MAXX ? x : MAXX - 1 ) + (y < MAXY ? y : MAXY - 1) * MAXX]
+// #define LEVEL(x,y) level[x + y*MAXX]
 
-Scalar player_x, player_y;
+Scalar player_x, player_y, alive;
 
 void initLevel(){
   for (unsigned char x = 0; x < MAXX; x++) {
@@ -74,7 +78,7 @@ void drawPlayer(Scalar x, Scalar y){
 }
 
 void gameOver(){
-  SoftReset();
+  alive = 0;
 }
 
 void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean direction){
@@ -192,12 +196,12 @@ void moveWorm(Scalar i){
     
   }
 
-  // handle overflow in Y direction -> @todo WARP ANYWHERE
-  if ( y > 25 ) {
+  // handle overflow in Y direction
+  if ( y >= MAXY ) {
 
     do {
       x = rand()%MAXX;
-      y = rand()%MAXY;
+      y = rand()%3;
     } while ( LEVEL(x,y) != T_FREE );
 
   }
@@ -266,33 +270,82 @@ void movePlayer(){
 int main(){
 
   SetTileTable(Tiles);
-  Fill(0, 0, MAXX, MAXY, t_black);
 
-  // init worms
-  initWorm(0, 17, 7, 5, 1);
-  initWorm(1, 23, 4, 9, 0);
+  // TITLE SCREEN
 
-  // init mushrooms
-  for (Scalar i = 0; i < 20; i++) {
-    drawMushroom( rand()%MAXX, rand()%MAXY );
-  }
+  Fill(0, 0, MAXX, MAXY, 0);
+  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 13, t_title);
 
-  // init player
-  player_x = MAXX / 2 - 1;
-  player_y = MAXY - 1;
-  drawPlayer(player_x, player_y);
+  int button = 0;
 
-  while(1){
+  while (button == 0) {
 
-    WaitVsync(WAIT);
+    DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, t_pressstart);
 
-    movePlayer();
-    moveWorm(1);
+    for (int i = 0; button == 0 && i < 32000; i++) {
+      button = ReadJoypad(0);
+    }
 
-    WaitVsync(WAIT);
+    Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
 
-    movePlayer();
-    moveWorm(0);
+    for (int i = 0; button == 0 && i < 32000; i++) {
+      button = ReadJoypad(0);
+    }
 
   }
+
+  while (1) {
+
+    // wait for button release
+    while (ReadJoypad(0) != 0) {};
+
+    // INIT GAME
+
+    Fill(0, 0, MAXX, MAXY, 0);
+
+    // init level
+    initLevel();
+
+    // init worms
+    initWorm(0, 17, 7, 5, 1);
+    initWorm(1, 23, 4, 9, 0);
+    
+    // init mushrooms
+    for (Scalar i = 0; i < 20; i++) {
+      drawMushroom( rand()%MAXX, rand()%MAXY );
+    }
+    
+    // init player
+    player_x = MAXX / 2 - 1;
+    player_y = MAXY - 1;
+    drawPlayer(player_x, player_y);
+    alive = 1;
+
+    // GAME LOOP
+
+    while(alive){
+      
+      WaitVsync(WAIT);
+      
+      movePlayer();
+      moveWorm(1);
+      
+      WaitVsync(WAIT);
+      
+      movePlayer();
+      moveWorm(0);
+      
+    }
+
+    // GAME OVER
+
+    Fill(0, 0, MAXX, MAXY, 0);
+    DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
+
+    // tap once to continue
+    while (ReadJoypad(0) != 0) {};
+    while (ReadJoypad(0) == 0) {};
+
+  }
+
 }

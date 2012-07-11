@@ -16,6 +16,9 @@
       <map var-name="t_mushroom1"     left="2" top="1" width="1" height="1"/>
       <map var-name="t_mushroom2"     left="3" top="1" width="1" height="1"/>
       <map var-name="t_mushroom3"     left="4" top="1" width="1" height="1"/>
+      <map var-name="t_gameover"      left="0" top="3" width="10" height="1"/>
+      <map var-name="t_title"         left="0" top="4" width="8" height="1"/>
+      <map var-name="t_pressstart"    left="0" top="5" width="10" height="1"/>
     </maps>
   </output>
 </gfx-xform>
