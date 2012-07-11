@@ -280,17 +280,23 @@ int main(){
 
   while (button == 0) {
 
+    int i;
+
     DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, t_pressstart);
 
-    for (int i = 0; button == 0 && i < 32000; i++) {
+    for (i = 0; button == 0 && i < 32000; i++) {
       button = ReadJoypad(0);
     }
 
-    Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
+    if (button == 0) {
+      Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
 
-    for (int i = 0; button == 0 && i < 32000; i++) {
-      button = ReadJoypad(0);
+      for (i = 0; button == 0 && i < 32000; i++) {
+	button = ReadJoypad(0);
+      }
     }
+
+    srand(i);
 
   }
 
@@ -307,7 +313,7 @@ int main(){
     initLevel();
 
     // init worms
-    initWorm(0, 17, 7, 5, 1);
+    initWorm(0, 17, 6, 5, 1);
     initWorm(1, 23, 4, 9, 0);
     
     // init mushrooms
