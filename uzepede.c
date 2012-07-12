@@ -20,8 +20,7 @@
 #define T_MSH3 3
 #define T_WORM 4
 #define T_PLYR 5
-#define T_BEET 6
-#define T_SPDR 7
+#define T_SHOT 6
 
 typedef unsigned char Scalar;
 typedef unsigned char Boolean;
@@ -44,6 +43,7 @@ unsigned char level[MAXX * MAXY];
 // #define LEVEL(x,y) level[x + y*MAXX]
 
 Scalar player_x, player_y, alive;
+Scalar shot_x, shot_y, shooting;
 
 void initLevel(){
   for (unsigned char x = 0; x < MAXX; x++) {
@@ -67,9 +67,24 @@ void drawEmpty(Scalar x, Scalar y){
   LEVEL(x,y) = T_FREE;
 }
 
-void drawMushroom(Scalar x, Scalar y){
+void drawMushroom1(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom1);
   LEVEL(x,y) = T_MSH1;
+}
+
+void drawMushroom2(Scalar x, Scalar y){
+  DrawMap(x, y, t_mushroom2);
+  LEVEL(x,y) = T_MSH2;
+}
+
+void drawMushroom3(Scalar x, Scalar y){
+  DrawMap(x, y, t_mushroom3);
+  LEVEL(x,y) = T_MSH3;
+}
+
+void drawShot(Scalar x, Scalar y){
+  DrawMap(x, y, t_shot);
+  LEVEL(x,y) = T_SHOT;
 }
 
 void drawPlayer(Scalar x, Scalar y){
@@ -244,6 +259,11 @@ void movePlayer(){
     y++;
   }
 
+  if ((buttons & BTN_A)     && ! shooting) {
+    shooting = 1;
+    shot_x = shot_y = OFFSCREEN;
+  }
+
   if (player_x != x || player_y != y) {
 
     switch (LEVEL(x,y)) {
@@ -263,6 +283,61 @@ void movePlayer(){
       break;
 
     }
+  }
+
+}
+
+void moveShot(){
+  
+  if (! shooting) {
+    return;
+  }
+
+  // remove old bullet / initialize
+  if (shot_x == OFFSCREEN) {
+    shot_x = player_x;
+    shot_y = player_y;
+  } else {
+    drawEmpty( shot_x, shot_y );
+  }
+
+  // off screen?
+  if (shot_y == 0) {
+    shooting = 0;
+  }
+
+  // move shot
+  shot_y--;
+  
+  // test for hit
+  switch ( LEVEL(shot_x, shot_y) ) {
+
+    // draw bullet
+  case T_FREE:
+    drawShot( shot_x, shot_y );
+    break;
+
+    // damage mushrooms, remove bullet
+  case T_MSH1:
+    drawMushroom2( shot_x, shot_y );
+    shooting = 0;
+    break;
+
+  case T_MSH2:
+    drawMushroom3( shot_x, shot_y );
+    shooting = 0;
+    break;
+
+  case T_MSH3:
+    drawEmpty( shot_x, shot_y );
+    shooting = 0;
+    break;
+
+    // invincible, remove bullet
+  case T_PLYR:
+  case T_WORM:
+    shooting = 0;
+    break;
   }
 
 }
@@ -318,7 +393,7 @@ int main(){
     
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
-      drawMushroom( rand()%MAXX, rand()%MAXY );
+      drawMushroom1( rand()%MAXX, rand()%MAXY );
     }
     
     // init player
@@ -326,6 +401,10 @@ int main(){
     player_y = MAXY - 1;
     drawPlayer(player_x, player_y);
     alive = 1;
+
+    // init shot
+    shooting = 0;
+    shot_x = shot_y = OFFSCREEN;
 
     // GAME LOOP
 
@@ -335,11 +414,13 @@ int main(){
       
       movePlayer();
       moveWorm(1);
+      moveShot();
       
       WaitVsync(WAIT);
       
       movePlayer();
       moveWorm(0);
+      moveShot();
       
     }
 
