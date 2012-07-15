@@ -10,7 +10,7 @@
 #define MAXX 30
 #define MAXY 20
 #define OFFSCREEN 255
-#define MAXWORMLEN 12
+#define MAXWORMLEN 32
 
 #define WAIT 1
 
@@ -30,12 +30,14 @@ typedef struct {
   // worm has a ringbuffer of body elements
   // buffer "head" is the tail element
   Scalar tailidx;
+  Scalar startidx;
   Scalar length;
-  Scalar x[MAXWORMLEN];
-  Scalar y[MAXWORMLEN];
 } Worm;
   
 Worm worms[2];
+Scalar wormx[MAXWORMLEN];
+Scalar wormy[MAXWORMLEN];
+Scalar wormmax;
 
 unsigned char level[MAXX * MAXY];
 // memory safeguard?!  something is wrong here!
@@ -108,15 +110,16 @@ void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean dir
   }
   newWorm->length = length;
   newWorm->tailidx = length-1;
-  newWorm->x[0] = startx;
-  newWorm->y[0] = starty;
-
+  newWorm->startidx = wormmax;
   drawWormHead(startx, starty, direction);
 
-  for (Scalar i = 1; i < length; i++) {
-    newWorm->x[i] = newWorm->y[i] = OFFSCREEN;
+  for (Scalar i = wormmax; i < wormmax + length; i++) {
+    wormx[i] = wormy[i] = OFFSCREEN;
   }
+  wormx[wormmax] = startx;
+  wormy[wormmax] = starty;
 
+  wormmax += length;
 }
 
 void moveWorm(Scalar i){
@@ -128,8 +131,8 @@ void moveWorm(Scalar i){
   theWorm = worms + i;
 
   // select old tail
-  x = theWorm->x[theWorm->tailidx];
-  y = theWorm->y[theWorm->tailidx];
+  x = wormx[theWorm->tailidx];
+  y = wormy[theWorm->tailidx];
 
   // delete old tail if onscreen
   if (x != OFFSCREEN) {
@@ -137,12 +140,12 @@ void moveWorm(Scalar i){
   }
 
   // select old head
-  if (theWorm->tailidx < theWorm->length - 1){
-    x = theWorm->x[theWorm->tailidx+1];
-    y = theWorm->y[theWorm->tailidx+1];
+  if (theWorm->tailidx < theWorm->startidx + theWorm->length - 1){
+    x = wormx[theWorm->tailidx+1];
+    y = wormy[theWorm->tailidx+1];
   } else {
-    x = theWorm->x[0];
-    y = theWorm->y[0];
+    x = wormx[theWorm->startidx];
+    y = wormy[theWorm->startidx];
   }
 
   // draw body where the old head was
@@ -221,18 +224,17 @@ void moveWorm(Scalar i){
 
   }
 
-  theWorm->x[theWorm->tailidx] = x;
-  theWorm->y[theWorm->tailidx] = y;
+  wormx[theWorm->tailidx] = x;
+  wormy[theWorm->tailidx] = y;
 
   // draw new head on current position
   drawWormHead(x, y, theWorm->direction);
 
   // advance tail through buffer
-  if (theWorm->tailidx > 0) {
-    theWorm->tailidx--;
-  } else {
-    theWorm->tailidx = theWorm->length - 1;
+  if (theWorm->tailidx == theWorm->startidx) {
+    theWorm->tailidx += theWorm->length;
   }
+  theWorm->tailidx--;
 
 }
 
@@ -388,6 +390,7 @@ int main(){
     initLevel();
 
     // init worms
+    wormmax = 0;
     initWorm(0, 17, 6, 5, 1);
     initWorm(1, 23, 4, 9, 0);
     
