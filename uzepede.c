@@ -7,20 +7,27 @@
 
 #include "data/tiles.inc"
 
-#define MAXX 30
-#define MAXY 20
+#define MAXX 40
+#define MAXY 28
 #define OFFSCREEN 255
 #define MAXWORMLEN 32
 
 #define WAIT 1
 
-#define T_FREE 0
-#define T_MSH1 1
-#define T_MSH2 2
-#define T_MSH3 3
-#define T_WORM 4
-#define T_PLYR 5
-#define T_SHOT 6
+// read tile from VRAM
+#define LEVEL(x,y) *((int*)(vram + (2*(x)) + (80*(y) ) ))
+
+// comparison tile pointers for VRAM
+#define T_FREE (Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH1 (Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH2 (Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH3 (Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WORM (Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHL (Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHR (Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
+#define T_PLYR (Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SHOT (Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
+
 
 typedef unsigned char Scalar;
 typedef unsigned char Boolean;
@@ -39,25 +46,15 @@ Scalar wormx[MAXWORMLEN];
 Scalar wormy[MAXWORMLEN];
 Scalar wormmax;
 
-unsigned char level[MAXX * MAXY];
-// memory safeguard?!  something is wrong here!
-#define LEVEL(x,y) level[ (x < MAXX ? x : MAXX - 1 ) + (y < MAXY ? y : MAXY - 1) * MAXX]
-// #define LEVEL(x,y) level[x + y*MAXX]
-
 Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
 
 void initLevel(){
-  for (unsigned char x = 0; x < MAXX; x++) {
-    for (unsigned char y = 0; y < MAXY; y++) {
-      LEVEL(x,y) = T_FREE;
-    }
-  }
+  Fill(0, 0, MAXX, MAXY, 0);
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
   DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
-  LEVEL(x,y) = T_WORM;
 }
 
 void drawWormBody(Scalar x, Scalar y){
@@ -66,32 +63,26 @@ void drawWormBody(Scalar x, Scalar y){
 
 void drawEmpty(Scalar x, Scalar y){
   DrawMap(x, y, t_black);
-  LEVEL(x,y) = T_FREE;
 }
 
 void drawMushroom1(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom1);
-  LEVEL(x,y) = T_MSH1;
 }
 
 void drawMushroom2(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom2);
-  LEVEL(x,y) = T_MSH2;
 }
 
 void drawMushroom3(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom3);
-  LEVEL(x,y) = T_MSH3;
 }
 
 void drawShot(Scalar x, Scalar y){
   DrawMap(x, y, t_shot);
-  LEVEL(x,y) = T_SHOT;
 }
 
 void drawPlayer(Scalar x, Scalar y){
   DrawMap(x, y, t_player);
-  LEVEL(x,y) = T_PLYR;
 }
 
 void gameOver(){
@@ -172,44 +163,37 @@ void moveWorm(Scalar i){
 
     if (moved) {
 
-      switch (LEVEL(x,y)) {
-	
-      case T_FREE:
-	// ok, go here
-	break;
-	
-      case T_PLYR:
+      if ((LEVEL(x,y) == T_PLYR)) {
 	// got you!
 	gameOver();
-	break;
 	
-      default:
+      } else if((LEVEL(x,y)) != T_FREE) {
 	// can't go there
 	moved = 0;
 	x = oldx;
 
+      } else {
+	// ok, go here
       }
+
     }
 
     if (! moved) {
 	y++;
 	theWorm->direction = 1 - theWorm->direction;
 
-	switch (LEVEL(x,y)) {
+      if ((LEVEL(x,y) == T_PLYR)) {
+	// got you!
+	gameOver();
+	
+      } else if((LEVEL(x,y)) != T_FREE) {
+	// can't go there
+	moved = 0;
 
-	case T_FREE:
-	  // ok, go here
-	  break;
+      } else {
+	// ok, go here
+      }
 
-	case T_PLYR:
-	  // got you!
-	  gameOver();
-	  break;
-
-	default:
-	  // can't go there
-	  moved = 0;
-	}
     }
     
   }
@@ -268,21 +252,20 @@ void movePlayer(){
 
   if (player_x != x || player_y != y) {
 
-    switch (LEVEL(x,y)) {
+    if ((LEVEL(x,y)) == T_FREE) {
 
-    case T_FREE:
       drawEmpty(player_x, player_y);
       drawPlayer(x, y);
       player_x = x;
       player_y = y;
-      break;
-      
-    case T_WORM:
+
+    } else if ((LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL)) {
+
       gameOver();
+
+    } else {
       
-    default:
       // ran into something, don't move at all
-      break;
 
     }
   }
@@ -312,34 +295,34 @@ void moveShot(){
   shot_y--;
   
   // test for hit
-  switch ( LEVEL(shot_x, shot_y) ) {
+  if ( LEVEL(shot_x, shot_y) == T_FREE ) {
 
     // draw bullet
-  case T_FREE:
     drawShot( shot_x, shot_y );
-    break;
 
-    // damage mushrooms, remove bullet
-  case T_MSH1:
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
+
+    // damage mushroom, remove bullet
     drawMushroom2( shot_x, shot_y );
     shooting = 0;
-    break;
 
-  case T_MSH2:
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
+
+    // damage mushroom, remove bullet
     drawMushroom3( shot_x, shot_y );
     shooting = 0;
-    break;
 
-  case T_MSH3:
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
+
+    // damage mushroom, remove bullet
     drawEmpty( shot_x, shot_y );
     shooting = 0;
-    break;
+
+  } else if ( LEVEL(shot_x, shot_y) == T_PLYR || LEVEL(shot_x, shot_y) == T_WORM ||
+	      LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
 
     // invincible, remove bullet
-  case T_PLYR:
-  case T_WORM:
     shooting = 0;
-    break;
   }
 
 }
@@ -383,8 +366,6 @@ int main(){
     while (ReadJoypad(0) != 0) {};
 
     // INIT GAME
-
-    Fill(0, 0, MAXX, MAXY, 0);
 
     // init level
     initLevel();
