@@ -18,15 +18,15 @@
 #define LEVEL(x,y) *((int*)(vram + (2*(x)) + (80*(y) ) ))
 
 // comparison tile pointers for VRAM
-#define T_FREE (Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH1 (Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH2 (Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH3 (Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WORM (Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHL (Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHR (Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
-#define T_PLYR (Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SHOT (Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
+#define T_FREE (int)(Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH1 (int)(Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH2 (int)(Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH3 (int)(Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WORM (int)(Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHL (int)(Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHR (int)(Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
+#define T_PLYR (int)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SHOT (int)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
 
 
 typedef unsigned char Scalar;
