@@ -13,7 +13,7 @@
 #define MAXY_SCREEN 28
 #define OFFSCREEN 255
 #define MAXWORMLEN 32
-#define MAXWORMCOUNT 2
+#define MAXWORMCOUNT 16
 
 #define WAIT 1
 
@@ -179,18 +179,20 @@ void addScore(Scalar add){
   printScore();
 }
 
-void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean direction){
+void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
 
-  Worm *newWorm;
+  Worm *newWorm = worms;
 
-  newWorm = worms + i;
+  while (newWorm->length > 0) {
+    newWorm++;
+  }
 
   newWorm->direction = direction;
-  if (length > MAXWORMLEN) {
-    length = MAXWORMLEN;
+  if (wormmax + length > MAXWORMLEN) {
+    length = MAXWORMLEN - wormmax;
   }
   newWorm->length = length;
-  newWorm->tailidx = length-1;
+  newWorm->tailidx = wormmax + length - 1;
   newWorm->startidx = wormmax;
   drawWormHead(startx, starty, direction);
 
@@ -508,8 +510,11 @@ int main(){
 
     // init worms
     wormmax = 0;
-    initWorm(0, 17, 6, 5, 1);
-    initWorm(1, 23, 4, 9, 0);
+    for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
+      worms[i].length = 0;
+    }
+    initWorm(17, 6, 5, 1);
+    initWorm(23, 4, 9, 0);
     
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
@@ -531,18 +536,22 @@ int main(){
     // GAME LOOP
 
     while(alive){
+
+      WaitVsync(WAIT);
+      movePlayer();
+      moveShot();
+
+      for (Scalar i = 0; i < MAXWORMCOUNT; i += 2) {
+	moveWorm(i);
+      }
       
       WaitVsync(WAIT);
-      
       movePlayer();
-      moveWorm(1);
       moveShot();
-      
-      WaitVsync(WAIT);
-      
-      movePlayer();
-      moveWorm(0);
-      moveShot();
+
+      for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
+	moveWorm(i);
+      }
       
     }
 
