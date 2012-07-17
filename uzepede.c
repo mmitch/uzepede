@@ -13,7 +13,7 @@
 #define MAXY_SCREEN 28
 #define OFFSCREEN 255
 #define MAXWORMLEN 32
-#define MAXWORMCOUNT 16
+#define MAXWORMCOUNT 32
 
 #define WAIT 1
 
@@ -42,6 +42,7 @@ typedef struct {
   Scalar tailidx;
   Scalar startidx;
   Scalar length;  // length == 0 -> worm is dead
+  // @TODO: optimize: add endidx to cache (startidx + length - 1) ?
 } Worm;
   
 Worm worms[MAXWORMCOUNT];
@@ -53,10 +54,10 @@ Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
 
 unsigned int score;
-/* scoring:
- *  mushroom    =    1 
- *  worm head   =  100 + 10 per body part
- */
+#define SCORE_MUSHROOM 1
+#define SCORE_WORMBODY 5
+#define SCORE_WORMHEAD 100
+#define SCORE_WORMHEAD_PERBODY 10
 
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
@@ -98,80 +99,85 @@ void gameOver(){
   alive = 0;
 }
 
-void printScore(){
-  Scalar displayScore = score;
+void print(Scalar x, Scalar y, unsigned int value){
+  // @FIXME prints one position too the right
+
   for (Scalar nibble = 4; nibble > 0; nibble--) {
-    Scalar displayNibble = displayScore & 0x0F;
-    displayScore >>= 4;
+    Scalar displayNibble = value & 0x0F;
+    value >>= 4;
 
     switch (displayNibble) {
 
     case 0:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_0);
+      DrawMap(x + nibble, y, score_0);
       break;
 
     case 1:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_1);
+      DrawMap(x + nibble, y, score_1);
       break;
 
     case 2:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_2);
+      DrawMap(x + nibble, y, score_2);
       break;
 
     case 3:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_3);
+      DrawMap(x + nibble, y, score_3);
       break;
 
     case 4:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_4);
+      DrawMap(x + nibble, y, score_4);
       break;
 
     case 5:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_5);
+      DrawMap(x + nibble, y, score_5);
       break;
 
     case 6:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_6);
+      DrawMap(x + nibble, y, score_6);
       break;
 
     case 7:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_7);
+      DrawMap(x + nibble, y, score_7);
       break;
 
     case 8:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_8);
+      DrawMap(x + nibble, y, score_8);
       break;
 
     case 9:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_9);
+      DrawMap(x + nibble, y, score_9);
       break;
 
     case 10:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_A);
+      DrawMap(x + nibble, y, score_A);
       break;
 
     case 11:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_B);
+      DrawMap(x + nibble, y, score_B);
       break;
 
     case 12:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_C);
+      DrawMap(x + nibble, y, score_C);
       break;
 
     case 13:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_D);
+      DrawMap(x + nibble, y, score_D);
       break;
 
     case 14:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_E);
+      DrawMap(x + nibble, y, score_E);
       break;
 
     case 15:
-      DrawMap(nibble, MAXY_SCREEN - 1, score_F);
+      DrawMap(x + nibble, y, score_F);
       break;
 
     }
   }
+}
+
+void printScore(){
+  print( 0, MAXY, score );
 }
 
 void addScore(Scalar add){
@@ -224,11 +230,11 @@ void shootWormHead(){
 	// change worm to mushrooms
 	for(i=0, idx=worm->startidx; i < worm->length; i++, idx++){
 	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
-	  score += 10;
+	  score += SCORE_WORMHEAD_PERBODY;
 	}
 	
 	worm->length = 0; // kill worm
-	addScore(100);
+	addScore(SCORE_WORMHEAD);
 
 	break;
       }
@@ -236,6 +242,71 @@ void shootWormHead(){
   }
     
 
+}
+
+void shootWormBody(){
+
+  // find worm index that got hit
+  Scalar idx;
+  for (idx = 0; ! (wormx[idx] == shot_x && wormy[idx] == shot_y); idx++);
+
+  // find worm that belongs to index
+  Worm *worm;
+  Scalar i;
+  for (i = 0, worm = worms;
+       ! (idx >= worm->startidx && idx < worm->startidx + worm->length) && (i < MAXWORMCOUNT);
+       worm++, i++);
+
+  if (i == MAXWORMCOUNT) {
+    return;
+  }
+
+  // calculate body part "number" that got shot (relative index to head)
+  Scalar split = idx;
+  if (split <= worm->tailidx) {
+    split += worm->length;
+  }
+  split = split - worm->tailidx - 1;
+
+  // rotate worm ringbuffer so head is at startidx
+  while (worm->tailidx != worm->startidx + worm->length - 1) {
+    Scalar tmpx, tmpy;
+    Scalar i = worm->startidx + worm->length - 1;
+    tmpx = wormx[i];
+    tmpy = wormy[i];
+    while (i > worm->startidx) {
+      i--;
+      wormx[i+1] = wormx[i];
+      wormy[i+1] = wormy[i];
+    }
+    wormx[i] = tmpx;
+    wormy[i] = tmpy;
+
+    worm->tailidx++;
+  }
+
+  // create new worm of last part of there is something left
+  if (split < worm->length - 1) {
+
+    Worm *newWorm = worms;
+    while (newWorm->length > 0) {
+      newWorm++;
+    }
+    newWorm->startidx = worm->startidx + split + 1;
+    newWorm->length = worm->length - split - 1;
+    newWorm->direction = 1 - worm->direction;
+    newWorm->tailidx = newWorm->startidx; // @TODO fixme
+
+  }
+    
+  // shorten first part of worm
+  worm->length = split;
+  worm->tailidx = worm->startidx + worm->length - 1;
+  
+  // set mushroom on collision point, add score
+  // shot body part is lost forever --> needs memory defragmentation :)
+  drawMushroom1(shot_x, shot_y);
+  addScore(SCORE_WORMBODY);
 }
 
 void moveWorm(Scalar i){
@@ -270,7 +341,7 @@ void moveWorm(Scalar i){
   }
 
   // draw body where the old head was
-  if (x != OFFSCREEN) { // @TODO test should be superfluous!
+  if (theWorm->length > 1) {
     drawWormBody(x, y);
   }
 
@@ -334,7 +405,7 @@ void moveWorm(Scalar i){
     do {
       x = rand()%MAXX;
       y = rand()%3;
-    } while ( LEVEL(x,y) != T_FREE );
+    } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
   }
 
@@ -435,21 +506,21 @@ void moveShot(){
     // damage mushroom, remove bullet
     drawMushroom2( shot_x, shot_y );
     shooting = 0;
-    addScore(1);
+    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
     // damage mushroom, remove bullet
     drawMushroom3( shot_x, shot_y );
     shooting = 0;
-    addScore(1);
+    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
     // damage mushroom, remove bullet
     drawEmpty( shot_x, shot_y );
     shooting = 0;
-    addScore(1);
+    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
 
@@ -457,7 +528,13 @@ void moveShot(){
     shootWormHead();
     shooting = 0;
 
-  } else if ( LEVEL(shot_x, shot_y) == T_PLYR || LEVEL(shot_x, shot_y) == T_WORM ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_WORM ) {
+
+    // body shot, split worm, remove bullet
+    shootWormBody();
+    shooting = 0;
+
+  } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
     shooting = 0;
@@ -557,7 +634,7 @@ int main(){
 
     // GAME OVER
 
-    clearScreen();
+    //    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
     printScore();
 
