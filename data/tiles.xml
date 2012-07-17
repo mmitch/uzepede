@@ -16,9 +16,28 @@
       <map var-name="t_mushroom1"     left="2" top="1" width="1" height="1"/>
       <map var-name="t_mushroom2"     left="3" top="1" width="1" height="1"/>
       <map var-name="t_mushroom3"     left="4" top="1" width="1" height="1"/>
+      
+      <map var-name="score_0"         left="0" top="2" width="1" height="1"/>
+      <map var-name="score_1"         left="1" top="2" width="1" height="1"/>
+      <map var-name="score_2"         left="2" top="2" width="1" height="1"/>
+      <map var-name="score_3"         left="3" top="2" width="1" height="1"/>
+      <map var-name="score_4"         left="4" top="2" width="1" height="1"/>
+      <map var-name="score_5"         left="5" top="2" width="1" height="1"/>
+      <map var-name="score_6"         left="6" top="2" width="1" height="1"/>
+      <map var-name="score_7"         left="7" top="2" width="1" height="1"/>
+      <map var-name="score_8"         left="8" top="2" width="1" height="1"/>
+      <map var-name="score_9"         left="9" top="2" width="1" height="1"/>
+      <map var-name="score_A"         left="5" top="1" width="1" height="1"/>
+      <map var-name="score_B"         left="6" top="1" width="1" height="1"/>
+      <map var-name="score_C"         left="7" top="1" width="1" height="1"/>
+      <map var-name="score_D"         left="8" top="1" width="1" height="1"/>
+      <map var-name="score_E"         left="9" top="1" width="1" height="1"/>
+      <map var-name="score_F"         left="9" top="0" width="1" height="1"/>
+      
       <map var-name="t_gameover"      left="0" top="3" width="10" height="1"/>
-      <map var-name="t_title"         left="0" top="4" width="8" height="1"/>
+      <map var-name="t_title"         left="0" top="4" width="8"  height="1"/>
       <map var-name="t_pressstart"    left="0" top="5" width="10" height="1"/>
+      
     </maps>
   </output>
 </gfx-xform>

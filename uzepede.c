@@ -8,7 +8,9 @@
 #include "data/tiles.inc"
 
 #define MAXX 40
-#define MAXY 28
+#define MAXY 27
+#define MAXX_SCREEN 40
+#define MAXY_SCREEN 28
 #define OFFSCREEN 255
 #define MAXWORMLEN 32
 
@@ -49,8 +51,10 @@ Scalar wormmax;
 Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
 
-void initLevel(){
-  Fill(0, 0, MAXX, MAXY, 0);
+unsigned int score;
+
+void clearScreen(){
+  Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
@@ -87,6 +91,87 @@ void drawPlayer(Scalar x, Scalar y){
 
 void gameOver(){
   alive = 0;
+}
+
+void printScore(){
+  Scalar displayScore = score;
+  for (Scalar nibble = 4; nibble > 0; nibble--) {
+    Scalar displayNibble = displayScore & 0x0F;
+    displayScore >>= 4;
+
+    switch (displayNibble) {
+
+    case 0:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_0);
+      break;
+
+    case 1:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_1);
+      break;
+
+    case 2:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_2);
+      break;
+
+    case 3:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_3);
+      break;
+
+    case 4:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_4);
+      break;
+
+    case 5:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_5);
+      break;
+
+    case 6:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_6);
+      break;
+
+    case 7:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_7);
+      break;
+
+    case 8:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_8);
+      break;
+
+    case 9:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_9);
+      break;
+
+    case 10:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_A);
+      break;
+
+    case 11:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_B);
+      break;
+
+    case 12:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_C);
+      break;
+
+    case 13:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_D);
+      break;
+
+    case 14:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_E);
+      break;
+
+    case 15:
+      DrawMap(nibble, MAXY_SCREEN - 1, score_F);
+      break;
+
+    }
+  }
+}
+
+void addScore(Scalar add){
+  score += add;
+  printScore();
 }
 
 void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean direction){
@@ -305,18 +390,21 @@ void moveShot(){
     // damage mushroom, remove bullet
     drawMushroom2( shot_x, shot_y );
     shooting = 0;
+    addScore(1);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
     // damage mushroom, remove bullet
     drawMushroom3( shot_x, shot_y );
     shooting = 0;
+    addScore(1);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
     // damage mushroom, remove bullet
     drawEmpty( shot_x, shot_y );
     shooting = 0;
+    addScore(1);
 
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR || LEVEL(shot_x, shot_y) == T_WORM ||
 	      LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
@@ -333,7 +421,7 @@ int main(){
 
   // TITLE SCREEN
 
-  Fill(0, 0, MAXX, MAXY, 0);
+  clearScreen();
   DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 13, t_title);
 
   int button = 0;
@@ -368,7 +456,7 @@ int main(){
     // INIT GAME
 
     // init level
-    initLevel();
+    clearScreen();
 
     // init worms
     wormmax = 0;
@@ -385,6 +473,8 @@ int main(){
     player_y = MAXY - 1;
     drawPlayer(player_x, player_y);
     alive = 1;
+    score = 0;
+    printScore();
 
     // init shot
     shooting = 0;
@@ -410,8 +500,9 @@ int main(){
 
     // GAME OVER
 
-    Fill(0, 0, MAXX, MAXY, 0);
+    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
+    printScore();
 
     // tap once to continue
     while (ReadJoypad(0) != 0) {};
