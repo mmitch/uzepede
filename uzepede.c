@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "data/tiles.inc"
+#include "data/patches.inc"
 
 #define MAXX 40
 #define MAXY 27
@@ -234,6 +235,8 @@ void shootWormHead(){
 
       if (shot_x == wormx[idx] && shot_y == wormy[idx]){
 
+	TriggerFx(FX_WORMHEAD, 0xef, true);
+
 	// change worm to mushrooms
 	for(i=0, idx=worm->startidx; i < worm->length; i++, idx++){
 	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
@@ -270,6 +273,8 @@ void shootWormBody(){
   if (i == MAXWORMCOUNT) {
     return;
   }
+
+  TriggerFx(FX_WORMBODY, 0xdf, true);
 
   // calculate body part "number" that got shot (relative index to head)
   Scalar split = idx;
@@ -459,6 +464,7 @@ void movePlayer(){
   if ((buttons & BTN_A)     && ! shooting) {
     shooting = 1;
     shot_x = shot_y = OFFSCREEN;
+    TriggerFx(FX_SHOT, 0xd0, true);
   }
 
   if (player_x != x || player_y != y) {
@@ -515,6 +521,7 @@ void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
 
     // damage mushroom, remove bullet
+    TriggerFx(FX_MUSHROOM, 0xc0, true);
     drawMushroom2( shot_x, shot_y );
     shooting = 0;
     addScore(SCORE_MUSHROOM);
@@ -522,6 +529,7 @@ void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
     // damage mushroom, remove bullet
+    TriggerFx(FX_MUSHROOM, 0xb0, true);
     drawMushroom3( shot_x, shot_y );
     shooting = 0;
     addScore(SCORE_MUSHROOM);
@@ -529,6 +537,7 @@ void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
     // damage mushroom, remove bullet
+    TriggerFx(FX_MUSHROOM, 0xa0, true);
     drawEmpty( shot_x, shot_y );
     shooting = 0;
     addScore(SCORE_MUSHROOM);
@@ -556,11 +565,13 @@ void moveShot(){
 int main(){
 
   SetTileTable(Tiles);
+  InitMusicPlayer(patches);
 
   // TITLE SCREEN
 
   clearScreen();
   DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 13, t_title);
+  TriggerFx(FX_TITLESCREEN, 0xff, false);
 
   int button = 0;
 
@@ -587,6 +598,9 @@ int main(){
   }
 
   while (1) {
+
+    InitMusicPlayer(patches); // silence everything
+    TriggerFx(FX_START, 0xff, false);
 
     // wait for button release
     while (ReadJoypad(0) != 0) {};
@@ -649,6 +663,10 @@ int main(){
     }
 
     // GAME OVER
+
+    InitMusicPlayer(patches); // silence everything
+    TriggerFx(FX_GAMEOVER1, 0xff, false);
+    TriggerFx(FX_GAMEOVER2, 0xbf, false);
 
     //    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
