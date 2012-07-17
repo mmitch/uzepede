@@ -22,7 +22,7 @@ const char fx_shot[] PROGMEM ={
 const char fx_mushroom[] PROGMEM ={ 
 0,PC_WAVE,4,
 0,PC_NOTE_DOWN,36,
-2,PC_NOTE_CUT,
+2,PC_NOTE_CUT,0,
 0,PATCH_END
 };
 
@@ -52,14 +52,14 @@ const char fx_gameover1[] PROGMEM ={
 0,PC_SLIDE_SPEED,64,
 0,PC_SLIDE,-4,
 0,PC_ENV_SPEED,-1,
-64,PC_NOTE_CUT,
+64,PC_NOTE_CUT,0,
 0,PATCH_END
 };
 
 const char fx_gameover2[] PROGMEM ={ 
 0,PC_NOISE_PARAMS,1,
 0,PC_ENV_SPEED,-4,
-64,PC_NOTE_CUT,
+64,PC_NOTE_CUT,0,
 0,PATCH_END
 };
 
@@ -67,7 +67,7 @@ const char fx_wormhead[] PROGMEM ={
 0,PC_NOISE_PARAMS,1,
 0,PC_ENV_VOL,0,
 0,PC_ENV_SPEED,8,
-32,PC_NOTE_CUT,
+32,PC_NOTE_CUT,0,
 0,PATCH_END
 };
 
