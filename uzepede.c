@@ -395,9 +395,9 @@ void moveWorm(Scalar i){
     }
 
     if (! moved) {
-	y++;
-	theWorm->direction = 1 - theWorm->direction;
-
+      y++;
+      theWorm->direction = 1 - theWorm->direction;
+      
       if ((LEVEL(x,y) == T_PLYR)) {
 	// got you!
 	gameOver();
