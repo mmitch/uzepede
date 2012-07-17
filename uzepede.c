@@ -13,6 +13,7 @@
 #define MAXY_SCREEN 28
 #define OFFSCREEN 255
 #define MAXWORMLEN 32
+#define MAXWORMCOUNT 2
 
 #define WAIT 1
 
@@ -40,10 +41,10 @@ typedef struct {
   // buffer "head" is the tail element
   Scalar tailidx;
   Scalar startidx;
-  Scalar length;
+  Scalar length;  // length == 0 -> worm is dead
 } Worm;
   
-Worm worms[2];
+Worm worms[MAXWORMCOUNT];
 Scalar wormx[MAXWORMLEN];
 Scalar wormy[MAXWORMLEN];
 Scalar wormmax;
@@ -52,6 +53,10 @@ Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
 
 unsigned int score;
+/* scoring:
+ *  mushroom    =    1 
+ *  worm head   =  100 + 10 per body part
+ */
 
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
@@ -198,6 +203,39 @@ void initWorm(Scalar i, Scalar startx, Scalar starty, Scalar length, Boolean dir
   wormmax += length;
 }
 
+void shootWormHead(){
+  Worm *worm;
+  Scalar i;
+
+  // find worm that got shot
+  for(worm = worms, i=0; i < MAXWORMCOUNT; worm++, i++) {
+    if (worm->length) {
+
+      // get head position
+      Scalar idx = worm->tailidx + 1;
+      if (idx == worm->startidx + worm->length) {
+	idx = worm->startidx;
+      }
+
+      if (shot_x == wormx[idx] && shot_y == wormy[idx]){
+
+	// change worm to mushrooms
+	for(i=0, idx=worm->startidx; i < worm->length; i++, idx++){
+	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
+	  score += 10;
+	}
+	
+	worm->length = 0; // kill worm
+	addScore(100);
+
+	break;
+      }
+    }
+  }
+    
+
+}
+
 void moveWorm(Scalar i){
   // move head, turn around if needed
 
@@ -205,6 +243,11 @@ void moveWorm(Scalar i){
   Worm *theWorm;
 
   theWorm = worms + i;
+
+  // don't move dead worms
+  if (theWorm->length == 0) {
+    return;
+  }
 
   // select old tail
   x = wormx[theWorm->tailidx];
@@ -406,8 +449,13 @@ void moveShot(){
     shooting = 0;
     addScore(1);
 
-  } else if ( LEVEL(shot_x, shot_y) == T_PLYR || LEVEL(shot_x, shot_y) == T_WORM ||
-	      LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
+
+    // head shot, kill whole worm, remove bullet
+    shootWormHead();
+    shooting = 0;
+
+  } else if ( LEVEL(shot_x, shot_y) == T_PLYR || LEVEL(shot_x, shot_y) == T_WORM ) {
 
     // invincible, remove bullet
     shooting = 0;
@@ -465,7 +513,7 @@ int main(){
     
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
-      drawMushroom1( rand()%MAXX, rand()%MAXY );
+      drawMushroom1( rand()%MAXX, rand()%(MAXY-1) );
     }
     
     // init player
