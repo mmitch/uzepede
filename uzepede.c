@@ -49,6 +49,7 @@ Worm worms[MAXWORMCOUNT];
 Scalar wormx[MAXWORMLEN];
 Scalar wormy[MAXWORMLEN];
 Scalar wormmax;
+Scalar wormcount;
 
 Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
@@ -189,6 +190,10 @@ void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
 
   Worm *newWorm = worms;
 
+  if (wormcount >= MAXWORMCOUNT) {
+    return;
+  }
+
   while (newWorm->length > 0) {
     newWorm++;
   }
@@ -209,6 +214,8 @@ void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
   wormy[wormmax] = starty;
 
   wormmax += length;
+
+  wormcount++;
 }
 
 void shootWormHead(){
@@ -233,7 +240,10 @@ void shootWormHead(){
 	  score += SCORE_WORMHEAD_PERBODY;
 	}
 	
-	worm->length = 0; // kill worm
+	// kill worm
+	worm->length = 0; 
+	wormcount--;
+
 	addScore(SCORE_WORMHEAD);
 
 	break;
@@ -295,8 +305,8 @@ void shootWormBody(){
     newWorm->startidx = worm->startidx + split + 1;
     newWorm->length = worm->length - split - 1;
     newWorm->direction = 1 - worm->direction;
-    newWorm->tailidx = newWorm->startidx; // @TODO fixme
-
+    newWorm->tailidx = newWorm->startidx;
+    wormcount++;
   }
     
   // shorten first part of worm
@@ -586,14 +596,10 @@ int main(){
     // init level
     clearScreen();
 
+
     // init worms
-    wormmax = 0;
-    for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
-      worms[i].length = 0;
-    }
-    initWorm(17, 6, 5, 1);
-    initWorm(23, 4, 9, 0);
-    
+    wormcount = 0;
+
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
       drawMushroom1( rand()%MAXX, rand()%(MAXY-1) );
@@ -614,6 +620,15 @@ int main(){
     // GAME LOOP
 
     while(alive){
+
+      if (wormcount == 0) {
+	wormmax = 0;
+	for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
+	  worms[i].length = 0;
+	}
+	initWorm(17, 6, 5, 1);
+	initWorm(23, 4, 9, 0);
+      }
 
       WaitVsync(WAIT);
       movePlayer();
