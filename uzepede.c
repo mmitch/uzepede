@@ -490,6 +490,7 @@ void moveShot(){
   // off screen?
   if (shot_y == 0) {
     shooting = 0;
+    return;
   }
 
   // move shot
