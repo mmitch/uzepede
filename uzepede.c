@@ -422,6 +422,23 @@ void moveWorm(Scalar i){
       y = rand()%3;
     } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
+    // expand worm as much as possible
+    Scalar newEnd = MAXWORMLEN;
+    for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
+      if (worms + i != theWorm                     // not us
+	  && worms[i].length > 0                   // alive
+	  && worms[i].startidx > theWorm->startidx // behind us
+	  && worms[i].startidx < newEnd            // but before new end
+	  ) {
+	newEnd = worms[i].startidx;
+      }
+    }
+    for (Scalar i = theWorm->startidx + theWorm->length; i < newEnd; i++) {
+      wormx[i] = OFFSCREEN;
+      wormy[i] = OFFSCREEN;
+    }
+    theWorm->length = newEnd - theWorm->startidx;
+
   }
 
   wormx[theWorm->tailidx] = x;
