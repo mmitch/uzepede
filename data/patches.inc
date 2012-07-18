@@ -7,7 +7,7 @@ const char fx_titlescreen[] PROGMEM ={
 0,PC_ENV_SPEED,1,
 128,PC_ENV_SPEED,0,
 32,PC_ENV_SPEED,-1,
-128,PATCH_END
+0,PATCH_END
 };
 
 const char fx_shot[] PROGMEM ={ 
@@ -77,6 +77,23 @@ const char fx_wormbody[] PROGMEM ={
 0,PATCH_END
 };
 
+const char fx_spider_fall[] PROGMEM ={ 
+0,PC_WAVE,4,
+0,PC_NOTE_UP,24,
+0,PC_SLIDE_SPEED,64,
+0,PC_SLIDE,-24,
+0,PC_ENV_SPEED,-4,
+0,PATCH_END
+};
+
+const char fx_spider[] PROGMEM ={ 
+0,PC_NOISE_PARAMS,1,
+0,PC_ENV_VOL,0,
+0,PC_ENV_SPEED,64,
+4,PC_ENV_SPEED,-8,
+0,PATCH_END
+};
+
 #define FX_TITLESCREEN 0
 #define FX_START 1
 #define FX_SHOT 2
@@ -85,6 +102,8 @@ const char fx_wormbody[] PROGMEM ={
 #define FX_GAMEOVER2 5
 #define FX_WORMHEAD 6
 #define FX_WORMBODY 7
+#define FX_SPIDERFALL 8
+#define FX_SPIDER 9
 
 const struct PatchStruct patches[] PROGMEM = {
 {0,NULL,fx_titlescreen,0,0},
@@ -95,4 +114,6 @@ const struct PatchStruct patches[] PROGMEM = {
 {1,NULL,fx_gameover2,0,0},
 {1,NULL,fx_wormhead,0,0},
 {1,NULL,fx_wormbody,0,0},
+{0,NULL,fx_spider_fall,0,0},
+{1,NULL,fx_spider,0,0},
 };

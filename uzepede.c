@@ -13,8 +13,9 @@
 #define MAXX_SCREEN 40
 #define MAXY_SCREEN 28
 #define OFFSCREEN 255
-#define MAXWORMLEN 32
-#define MAXWORMCOUNT 32
+#define MAXWORMLEN 16
+#define MAXWORMCOUNT 16
+#define SPIDER_AFTER_WORMS 5
 
 #define WAIT 1
 
@@ -31,6 +32,7 @@
 #define T_WMHR (int)(Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
 #define T_PLYR (int)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
 #define T_SHOT (int)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SPDR (int)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
 
 
 typedef unsigned char Scalar;
@@ -55,11 +57,16 @@ Scalar wormcount;
 Scalar player_x, player_y, alive;
 Scalar shot_x, shot_y, shooting;
 
+Scalar spider_x, spider_y;
+
+Scalar wormkills;
+
 unsigned int score;
 #define SCORE_MUSHROOM 1
 #define SCORE_WORMBODY 5
 #define SCORE_WORMHEAD 100
 #define SCORE_WORMHEAD_PERBODY 10
+#define SCORE_SPIDER 50
 
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
@@ -95,6 +102,10 @@ void drawShot(Scalar x, Scalar y){
 
 void drawPlayer(Scalar x, Scalar y){
   DrawMap(x, y, t_player);
+}
+
+void drawSpider(Scalar x, Scalar y){
+  DrawMap(x, y, t_spider);
 }
 
 void gameOver(){
@@ -187,6 +198,22 @@ void addScore(Scalar add){
   printScore();
 }
 
+void initSpider(){
+  spider_y = 0;
+
+  do {
+    spider_x = rand()%MAXY;
+  } while (    LEVEL(spider_x, spider_y) != T_FREE
+	    && LEVEL(spider_x, spider_y) != T_MSH1
+	    && LEVEL(spider_x, spider_y) != T_MSH2
+	    && LEVEL(spider_x, spider_y) != T_MSH3
+	       ); // @FIXME lockup with super-long worms on first line
+
+  TriggerFx(FX_SPIDERFALL, 0xdf, true);
+  drawSpider(spider_x, spider_y);
+
+}
+
 void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
 
   Worm *newWorm = worms;
@@ -246,6 +273,7 @@ void shootWormHead(){
 	// kill worm
 	worm->length = 0; 
 	wormcount--;
+	wormkills++;
 
 	addScore(SCORE_WORMHEAD);
 
@@ -493,7 +521,7 @@ void movePlayer(){
       player_x = x;
       player_y = y;
 
-    } else if ((LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL)) {
+    } else if ((LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL) || LEVEL(x,y) == T_SPDR) {
 
       gameOver();
 
@@ -502,6 +530,35 @@ void movePlayer(){
       // ran into something, don't move at all
 
     }
+  }
+
+}
+
+void moveSpider() {
+  
+  // replace old spider
+  if (rand()%2) {
+    drawMushroom1(spider_x, spider_y);
+  } else {
+    drawEmpty(spider_x, spider_y);
+  }
+
+  // move spider
+  spider_y++;
+
+  // draw / remove spider
+  if (spider_y == MAXY) {
+    drawEmpty(spider_x, spider_y - 1); // no mushrooms on base row
+    spider_x = OFFSCREEN;
+    spider_y = OFFSCREEN;
+  } else {
+    drawSpider(spider_x, spider_y);
+
+    if (spider_x == player_x && spider_y == player_y) {
+      // got you!
+      gameOver();
+    }
+
   }
 
 }
@@ -571,6 +628,17 @@ void moveShot(){
     shootWormBody();
     shooting = 0;
 
+  } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
+
+    // kill spider, create mushroom, remove bullet
+    TriggerFx(FX_SPIDER, 0xe0, true);
+    drawMushroom1(shot_x, shot_y);
+    shooting = 0;
+    addScore(SCORE_SPIDER);
+
+    spider_x = OFFSCREEN;
+    spider_y = OFFSCREEN;
+
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
@@ -627,9 +695,13 @@ int main(){
     // init level
     clearScreen();
 
-
     // init worms
     wormcount = 0;
+    wormkills = 0;
+
+    // init spider
+    spider_x = OFFSCREEN;
+    spider_y = OFFSCREEN;
 
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
@@ -675,6 +747,15 @@ int main(){
 
       for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
 	moveWorm(i);
+      }
+
+      if (spider_x != OFFSCREEN) {
+	moveSpider();
+      } else {
+	if (wormkills >= SPIDER_AFTER_WORMS) {
+	  wormkills = 0;
+	  initSpider();
+	}
       }
       
     }
