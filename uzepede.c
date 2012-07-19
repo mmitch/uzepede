@@ -63,10 +63,10 @@ Scalar wormkills;
 
 unsigned int score;
 #define SCORE_MUSHROOM 1
-#define SCORE_WORMBODY 5
-#define SCORE_WORMHEAD 100
-#define SCORE_WORMHEAD_PERBODY 10
-#define SCORE_SPIDER 50
+#define SCORE_WORMBODY 3
+#define SCORE_WORMHEAD 5
+#define SCORE_WORMHEAD_PERBODY 2
+#define SCORE_SPIDER 7
 
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
@@ -768,7 +768,8 @@ int main(){
 
     //    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-    printScore();
+    print( (MAXX - 4) / 2 - 1, MAXY / 2 + 2, score);
+    Fill( 0, MAXY, 5, 1, 0); // remove score from bottom left
 
     // tap once to continue
     while (ReadJoypad(0) != 0) {};
