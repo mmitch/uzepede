@@ -655,7 +655,11 @@ int main(){
   // TITLE SCREEN
 
   clearScreen();
-  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 13, t_title);
+  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
+  DrawMap( 1, 22, t_version);
+  DrawMap( 1, 23, t_copyright);
+  DrawMap( 1, 24, t_gnugpl);
+  DrawMap( 1, 25, t_url);
   TriggerFx(FX_TITLESCREEN, 0xff, false);
 
   int button = 0;
@@ -664,14 +668,14 @@ int main(){
 
     int i;
 
-    DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, t_pressstart);
+    DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 17, t_pressstart);
 
     for (i = 0; button == 0 && i < 32000; i++) {
       button = ReadJoypad(0);
     }
 
     if (button == 0) {
-      Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 18, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
+      Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 17, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
 
       for (i = 0; button == 0 && i < 32000; i++) {
 	button = ReadJoypad(0);
