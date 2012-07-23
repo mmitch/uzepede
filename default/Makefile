@@ -15,6 +15,7 @@ INFO=../gameinfo.properties
 KERNEL_DIR = /home/mitch/git/uzebox/kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=1 -DINTRO_LOGO=0
 
+GCONVERT_BIN = $(KERNEL_DIR)/../tools/gconvert/gconvert
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
@@ -55,7 +56,11 @@ LINKONLYOBJECTS =
 INCLUDES = -I"$(KERNEL_DIR)" 
 
 ## Build
-all: $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size 
+all: ../data/tiles.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size 
+
+## Rebuild graphic ressources
+../data/tiles.inc: ../data/tiles.raw ../data/tiles.xml
+	$(GCONVERT_BIN) ../data/tiles.xml
 
 ## Compile Kernel files
 uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
@@ -107,7 +112,7 @@ size: ${TARGET}
 ## Clean target
 .PHONY: clean
 clean:
-	-rm -rf $(OBJECTS) $(GAME).* dep/* *.uze ../data/gfx.inc
+	-rm -rf $(OBJECTS) $(GAME).* dep/* *.uze ../data/tiles.inc 
 
 
 ## Other dependencies
