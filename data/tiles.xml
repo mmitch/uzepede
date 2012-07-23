@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <gfx-xform version="1">
-  <input file="tiles.raw" type="raw" tile-width="6" tile-height="8" width="156" height="72"/>
-  <output file="tiles.inc">
+  <input file="../data/tiles.raw" type="raw" tile-width="6" tile-height="8" width="156" height="72"/>
+  <output file="../data/tiles.inc">
     <tiles var-name="Tiles"/>
     <maps pointers-size="16">
       <map var-name="t_black"         left="0" top="0" width="1" height="1"/>
