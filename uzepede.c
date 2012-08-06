@@ -1,3 +1,13 @@
+/*
+ * uzepede - a centipede clone for uzebox
+ *
+ * Copyright (C) 2012 by  Christian Garbs <mitch@cgarbs.de>
+ * licensed under the GNU GPL v3 or later
+ *
+ * see https://github.com/mmitch/uzepede
+ *
+ */
+
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
