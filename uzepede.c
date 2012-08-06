@@ -68,6 +68,8 @@ unsigned int score;
 #define SCORE_WORMHEAD_PERBODY 2
 #define SCORE_SPIDER 7
 
+const char* builddate = COMPILEDATE;
+
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
 }
@@ -654,6 +656,68 @@ void creditScreen(){
   DrawMap( 4, 6, t_copyright);
   DrawMap( 4, 7, t_gnugpl);
   DrawMap( 4, 8, t_url);
+
+  // print compiledate
+  Scalar x = 1;
+  Scalar y = MAXY-2;
+  DrawMap(x++, y, score_B);
+  DrawMap(x++, y, score_U);
+  DrawMap(x++, y, score_I);
+  DrawMap(x++, y, score_L);
+  DrawMap(x++, y, score_D);
+
+  x = 1;
+  y++;
+  for (const char* c = builddate; *c; x++, c++) { // TODO refactor to print routine
+    switch (*c) {
+
+    case '-':
+      DrawMap(x, y, score_dash);
+      break;
+
+    case '0':
+      DrawMap(x, y, score_0);
+      break;
+
+    case '1':
+      DrawMap(x, y, score_1);
+      break;
+
+    case '2':
+      DrawMap(x, y, score_2);
+      break;
+
+    case '3':
+      DrawMap(x, y, score_3);
+      break;
+
+    case '4':
+      DrawMap(x, y, score_4);
+      break;
+
+    case '5':
+      DrawMap(x, y, score_5);
+      break;
+
+    case '6':
+      DrawMap(x, y, score_6);
+      break;
+
+    case '7':
+      DrawMap(x, y, score_7);
+      break;
+
+    case '8':
+      DrawMap(x, y, score_8);
+      break;
+
+    case '9':
+      DrawMap(x, y, score_9);
+      break;
+
+    }
+  }
+
   FadeIn(WAIT, 1);
 
   // tap once to continue

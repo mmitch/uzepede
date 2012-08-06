@@ -10,6 +10,8 @@ TARGET = $(GAME).elf
 CC = avr-gcc
 INFO=../gameinfo.properties
 
+COMPILEDATE=$(shell date +%Y-%m-%d)
+
 ## Kernel settings
 #KERNEL_DIR = ../../../kernel
 KERNEL_DIR = /home/mitch/git/uzebox/kernel
@@ -81,7 +83,7 @@ uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 ## Compile game sources
 
 $(GAME).o: ../$(GAME).c
-	$(CC) $(INCLUDES) $(CFLAGS) -c  $<
+	$(CC) -DCOMPILEDATE=\"$(COMPILEDATE)\" $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
 $(TARGET): $(OBJECTS)
