@@ -33,14 +33,19 @@
       <map var-name="score_D"         left="8" top="1" width="1" height="1"/>
       <map var-name="score_E"         left="9" top="1" width="1" height="1"/>
       <map var-name="score_F"         left="9" top="0" width="1" height="1"/>
+      <!-- TODO: rename this, this is not for scores any more -->
+      <map var-name="score_dash"      left="7" top="0" width="1" height="1"/>
+      <map var-name="score_U"         left="8" top="0" width="1" height="1"/>
+      <map var-name="score_I"         left="10" top="0" width="1" height="1"/>
+      <map var-name="score_L"         left="10" top="1" width="1" height="1"/>
       
       <map var-name="t_gameover"      left="0" top="3" width="10" height="1"/>
       <map var-name="t_title"         left="0" top="4" width="8"  height="1"/>
       <map var-name="t_pressstart"    left="0" top="5" width="10" height="1"/>
+      <map var-name="t_selectcredits" left="10" top="5" width="14" height="1"/>
 
       <map var-name="t_copyright"     left="0"  top="6" width="15" height="1"/>
       <map var-name="t_gnugpl"        left="15" top="6" width="7"  height="1"/>
-      <map var-name="t_version"       left="22" top="6" width="1"  height="1"/>
       <map var-name="t_url"           left="0"  top="7" width="24" height="2"/>
       
     </maps>

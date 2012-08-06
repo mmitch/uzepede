@@ -647,19 +647,31 @@ void moveShot(){
 
 }
 
-int main(){
+void creditScreen(){
+  FadeOut(WAIT, 1);
+  clearScreen();
+  DrawMap( 4, 4, t_title);
+  DrawMap( 4, 6, t_copyright);
+  DrawMap( 4, 7, t_gnugpl);
+  DrawMap( 4, 8, t_url);
+  FadeIn(WAIT, 1);
 
-  SetTileTable(Tiles);
-  InitMusicPlayer(patches);
+  // tap once to continue
+  while (ReadJoypad(0) != 0) {};
+  while (ReadJoypad(0) == 0) {};
+  
+  FadeOut(WAIT, 1);
+  clearScreen();
+  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title); // TODO: stupid code duplication!
+  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
+  FadeIn(WAIT, 1);
+}
 
-  // TITLE SCREEN
+void titleScreen(){
 
   clearScreen();
   DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
-  DrawMap( 1, 22, t_version);
-  DrawMap( 1, 23, t_copyright);
-  DrawMap( 1, 24, t_gnugpl);
-  DrawMap( 1, 25, t_url);
+  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
   TriggerFx(FX_TITLESCREEN, 0xff, false);
 
   int button = 0;
@@ -668,14 +680,14 @@ int main(){
 
     int i;
 
-    DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 17, t_pressstart);
+    DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 16, t_pressstart);
 
     for (i = 0; button == 0 && i < 32000; i++) {
       button = ReadJoypad(0);
     }
 
     if (button == 0) {
-      Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 17, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
+      Fill( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 16, T_PRESSSTART_WIDTH, T_PRESSSTART_HEIGHT, 0);
 
       for (i = 0; button == 0 && i < 32000; i++) {
 	button = ReadJoypad(0);
@@ -684,7 +696,26 @@ int main(){
 
     srand(i);
 
+    if (button != BTN_START) {
+
+      if (button == BTN_SELECT) {
+	creditScreen();
+      }
+
+      button = 0; // stay on title screen
+
+    }
+
   }
+
+}
+
+int main(){
+
+  SetTileTable(Tiles);
+  InitMusicPlayer(patches);
+
+  titleScreen();
 
   while (1) {
 
@@ -776,7 +807,7 @@ int main(){
     Fill( 0, MAXY, 5, 1, 0); // remove score from bottom left
 
     // tap once to continue
-    while (ReadJoypad(0) != 0) {};
+    while (ReadJoypad(0) != 0) {}; // TODO refactor out
     while (ReadJoypad(0) == 0) {};
 
   }
