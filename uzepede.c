@@ -124,7 +124,108 @@ void gameOver(){
   alive = 0;
 }
 
-void print(Scalar x, Scalar y, unsigned int value){
+void printString(Scalar x, Scalar y, const char *c){
+
+  for (; *c; x++, c++) {
+    switch (*c) {
+
+    case '-':
+      DrawMap(x, y, score_dash);
+      break;
+
+    case 'a':
+    case 'A':
+      DrawMap(x, y, score_A);
+      break;
+
+    case 'b':
+    case 'B':
+      DrawMap(x, y, score_B);
+      break;
+
+    case 'c':
+    case 'C':
+      DrawMap(x, y, score_C);
+      break;
+
+    case 'd':
+    case 'D':
+      DrawMap(x, y, score_D);
+      break;
+
+    case 'e':
+    case 'E':
+      DrawMap(x, y, score_E);
+      break;
+
+    case 'f':
+    case 'F':
+      DrawMap(x, y, score_F);
+      break;
+
+    case 'i':
+    case 'I':
+      DrawMap(x, y, score_I);
+      break;
+
+    case 'l':
+    case 'L':
+      DrawMap(x, y, score_L);
+      break;
+
+    case 'u':
+    case 'U':
+    case 'v':
+    case 'V':
+      DrawMap(x, y, score_U);
+      break;
+
+    case '0':
+      DrawMap(x, y, score_0);
+      break;
+
+    case '1':
+      DrawMap(x, y, score_1);
+      break;
+
+    case '2':
+      DrawMap(x, y, score_2);
+      break;
+
+    case '3':
+      DrawMap(x, y, score_3);
+      break;
+
+    case '4':
+      DrawMap(x, y, score_4);
+      break;
+
+    case '5':
+      DrawMap(x, y, score_5);
+      break;
+
+    case '6':
+      DrawMap(x, y, score_6);
+      break;
+
+    case '7':
+      DrawMap(x, y, score_7);
+      break;
+
+    case '8':
+      DrawMap(x, y, score_8);
+      break;
+
+    case '9':
+      DrawMap(x, y, score_9);
+      break;
+
+    }
+  }
+
+}
+
+void printHex(Scalar x, Scalar y, unsigned int value){
   // @FIXME prints one position too the right
 
   for (Scalar nibble = 4; nibble > 0; nibble--) {
@@ -202,7 +303,7 @@ void print(Scalar x, Scalar y, unsigned int value){
 }
 
 void printScore(){
-  print( 0, MAXY, score );
+  printHex( 0, MAXY, score );
 }
 
 void addScore(Scalar add){
@@ -668,66 +769,8 @@ void creditScreen(){
   DrawMap( 4, 8, t_url);
 
   // print compiledate
-  Scalar x = 1;
-  Scalar y = MAXY-2;
-  DrawMap(x++, y, score_B);
-  DrawMap(x++, y, score_U);
-  DrawMap(x++, y, score_I);
-  DrawMap(x++, y, score_L);
-  DrawMap(x++, y, score_D);
-
-  x = 1;
-  y++;
-  for (const char* c = builddate; *c; x++, c++) { // TODO refactor to print routine
-    switch (*c) {
-
-    case '-':
-      DrawMap(x, y, score_dash);
-      break;
-
-    case '0':
-      DrawMap(x, y, score_0);
-      break;
-
-    case '1':
-      DrawMap(x, y, score_1);
-      break;
-
-    case '2':
-      DrawMap(x, y, score_2);
-      break;
-
-    case '3':
-      DrawMap(x, y, score_3);
-      break;
-
-    case '4':
-      DrawMap(x, y, score_4);
-      break;
-
-    case '5':
-      DrawMap(x, y, score_5);
-      break;
-
-    case '6':
-      DrawMap(x, y, score_6);
-      break;
-
-    case '7':
-      DrawMap(x, y, score_7);
-      break;
-
-    case '8':
-      DrawMap(x, y, score_8);
-      break;
-
-    case '9':
-      DrawMap(x, y, score_9);
-      break;
-
-    }
-  }
-
+  printString(1, MAXY - 2, "build");
+  printString(1, MAXY - 1, builddate);
   FadeIn(WAIT, 1);
 
   // tap once to continue
@@ -877,7 +920,7 @@ int main(){
 
     //    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-    print( (MAXX - 4) / 2 - 1, MAXY / 2 + 2, score);
+    printHex( (MAXX - 4) / 2 - 1, MAXY / 2 + 2, score);
     Fill( 0, MAXY, 5, 1, 0); // remove score from bottom left
 
     // tap once to continue
