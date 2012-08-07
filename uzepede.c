@@ -130,94 +130,112 @@ void printString(Scalar x, Scalar y, const char *c){
     switch (*c) {
 
     case '-':
-      DrawMap(x, y, score_dash);
+      DrawMap(x, y, char_dash);
+      break;
+
+    case '/':
+      DrawMap(x, y, char_slash);
       break;
 
     case 'a':
     case 'A':
-      DrawMap(x, y, score_A);
+      DrawMap(x, y, char_A);
       break;
 
     case 'b':
     case 'B':
-      DrawMap(x, y, score_B);
+      DrawMap(x, y, char_B);
       break;
 
     case 'c':
     case 'C':
-      DrawMap(x, y, score_C);
+      DrawMap(x, y, char_C);
       break;
 
     case 'd':
     case 'D':
-      DrawMap(x, y, score_D);
+      DrawMap(x, y, char_D);
       break;
 
     case 'e':
     case 'E':
-      DrawMap(x, y, score_E);
+      DrawMap(x, y, char_E);
       break;
 
     case 'f':
     case 'F':
-      DrawMap(x, y, score_F);
+      DrawMap(x, y, char_F);
+      break;
+
+    case 'g':
+    case 'G':
+      DrawMap(x, y, char_G);
       break;
 
     case 'i':
     case 'I':
-      DrawMap(x, y, score_I);
+      DrawMap(x, y, char_I);
       break;
 
     case 'l':
     case 'L':
-      DrawMap(x, y, score_L);
+      DrawMap(x, y, char_L);
+      break;
+
+    case 't':
+    case 'T':
+      DrawMap(x, y, char_T);
       break;
 
     case 'u':
     case 'U':
     case 'v':
     case 'V':
-      DrawMap(x, y, score_U);
+      DrawMap(x, y, char_U);
       break;
 
     case '0':
-      DrawMap(x, y, score_0);
+      DrawMap(x, y, char_0);
       break;
 
     case '1':
-      DrawMap(x, y, score_1);
+      DrawMap(x, y, char_1);
       break;
 
     case '2':
-      DrawMap(x, y, score_2);
+      DrawMap(x, y, char_2);
       break;
 
     case '3':
-      DrawMap(x, y, score_3);
+      DrawMap(x, y, char_3);
       break;
 
     case '4':
-      DrawMap(x, y, score_4);
+      DrawMap(x, y, char_4);
       break;
 
     case '5':
-      DrawMap(x, y, score_5);
+      DrawMap(x, y, char_5);
       break;
 
     case '6':
-      DrawMap(x, y, score_6);
+      DrawMap(x, y, char_6);
       break;
 
     case '7':
-      DrawMap(x, y, score_7);
+      DrawMap(x, y, char_7);
       break;
 
     case '8':
-      DrawMap(x, y, score_8);
+      DrawMap(x, y, char_8);
       break;
 
     case '9':
-      DrawMap(x, y, score_9);
+      DrawMap(x, y, char_9);
+      break;
+
+    defaukt:
+      DrawMap(x, y, char_space);
       break;
 
     }
@@ -235,67 +253,67 @@ void printHex(Scalar x, Scalar y, unsigned int value){
     switch (displayNibble) {
 
     case 0:
-      DrawMap(x + nibble, y, score_0);
+      DrawMap(x + nibble, y, char_0);
       break;
 
     case 1:
-      DrawMap(x + nibble, y, score_1);
+      DrawMap(x + nibble, y, char_1);
       break;
 
     case 2:
-      DrawMap(x + nibble, y, score_2);
+      DrawMap(x + nibble, y, char_2);
       break;
 
     case 3:
-      DrawMap(x + nibble, y, score_3);
+      DrawMap(x + nibble, y, char_3);
       break;
 
     case 4:
-      DrawMap(x + nibble, y, score_4);
+      DrawMap(x + nibble, y, char_4);
       break;
 
     case 5:
-      DrawMap(x + nibble, y, score_5);
+      DrawMap(x + nibble, y, char_5);
       break;
 
     case 6:
-      DrawMap(x + nibble, y, score_6);
+      DrawMap(x + nibble, y, char_6);
       break;
 
     case 7:
-      DrawMap(x + nibble, y, score_7);
+      DrawMap(x + nibble, y, char_7);
       break;
 
     case 8:
-      DrawMap(x + nibble, y, score_8);
+      DrawMap(x + nibble, y, char_8);
       break;
 
     case 9:
-      DrawMap(x + nibble, y, score_9);
+      DrawMap(x + nibble, y, char_9);
       break;
 
     case 10:
-      DrawMap(x + nibble, y, score_A);
+      DrawMap(x + nibble, y, char_A);
       break;
 
     case 11:
-      DrawMap(x + nibble, y, score_B);
+      DrawMap(x + nibble, y, char_B);
       break;
 
     case 12:
-      DrawMap(x + nibble, y, score_C);
+      DrawMap(x + nibble, y, char_C);
       break;
 
     case 13:
-      DrawMap(x + nibble, y, score_D);
+      DrawMap(x + nibble, y, char_D);
       break;
 
     case 14:
-      DrawMap(x + nibble, y, score_E);
+      DrawMap(x + nibble, y, char_E);
       break;
 
     case 15:
-      DrawMap(x + nibble, y, score_F);
+      DrawMap(x + nibble, y, char_F);
       break;
 
     }

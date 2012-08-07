@@ -10,7 +10,7 @@ TARGET = $(GAME).elf
 CC = avr-gcc
 INFO=../gameinfo.properties
 
-COMPILEDATE=$(shell date +%Y-%m-%d)
+COMPILEDATE=$(shell date +%Y/%m/%d)
 
 ## Kernel settings
 #KERNEL_DIR = ../../../kernel
