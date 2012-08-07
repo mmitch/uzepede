@@ -8,5 +8,7 @@
 *.o
 *.uze
 
+/data/tiles.inc
+
 /default/dep/
 /default/eeprom.bin
