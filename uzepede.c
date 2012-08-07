@@ -133,11 +133,14 @@ void printString(Scalar x, Scalar y, const char *c){
       DrawMap(x, y, char_dash);
       break;
 
+    case '.':
+      DrawMap(x, y, char_underscore);
+      break;
+
     case '/':
       DrawMap(x, y, char_slash);
       break;
 
-    case 'a':
     case 'A':
       DrawMap(x, y, char_A);
       break;
@@ -147,50 +150,47 @@ void printString(Scalar x, Scalar y, const char *c){
       DrawMap(x, y, char_B);
       break;
 
-    case 'c':
     case 'C':
       DrawMap(x, y, char_C);
       break;
 
     case 'd':
-    case 'D':
       DrawMap(x, y, char_D);
       break;
 
-    case 'e':
     case 'E':
       DrawMap(x, y, char_E);
       break;
 
-    case 'f':
     case 'F':
       DrawMap(x, y, char_F);
       break;
 
-    case 'g':
     case 'G':
       DrawMap(x, y, char_G);
       break;
 
     case 'i':
-    case 'I':
       DrawMap(x, y, char_I);
       break;
 
-    case 'l':
-    case 'L':
+    case 'I':
       DrawMap(x, y, char_L);
       break;
 
-    case 't':
+    case 'l':
+      DrawMap(x, y, char_L);
+      break;
+
     case 'T':
       DrawMap(x, y, char_T);
       break;
 
     case 'u':
-    case 'U':
+      DrawMap(x, y, char_U);
+      break;
+
     case 'v':
-    case 'V':
       DrawMap(x, y, char_U);
       break;
 
@@ -234,7 +234,7 @@ void printString(Scalar x, Scalar y, const char *c){
       DrawMap(x, y, char_9);
       break;
 
-    defaukt:
+    default:
       DrawMap(x, y, char_space);
       break;
 
@@ -781,14 +781,15 @@ void moveShot(){
 void creditScreen(){
   FadeOut(WAIT, 1);
   clearScreen();
-  DrawMap( 4, 4, t_title);
-  DrawMap( 4, 6, t_copyright);
-  DrawMap( 4, 7, t_gnugpl);
-  DrawMap( 4, 8, t_url);
+  DrawMap( 6, 4, t_title);
+  DrawMap( 6, 6, t_copyright);
+  DrawMap( 6, 7, t_gnugpl);
+  DrawMap( 6, 8, t_url);
 
   // print compiledate
-  printString(1, MAXY - 2, "build");
-  printString(1, MAXY - 1, builddate);
+  printString(3, MAXY - 3, "build");
+  printString(3, MAXY - 2, VERSION);
+  printString(3, MAXY - 1, builddate);
   FadeIn(WAIT, 1);
 
   // tap once to continue

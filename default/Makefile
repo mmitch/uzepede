@@ -2,6 +2,8 @@
 # Makefile for the project uzepede
 ###############################################################################
 
+VERSION=v1.01-GIT
+
 ## General Flags
 PROJECT = uzepede
 GAME = uzepede
@@ -83,7 +85,7 @@ uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 ## Compile game sources
 
 $(GAME).o: ../$(GAME).c
-	$(CC) -DCOMPILEDATE=\"$(COMPILEDATE)\" $(INCLUDES) $(CFLAGS) -c  $<
+	$(CC) -DVERSION=\"$(VERSION)\" -DCOMPILEDATE=\"$(COMPILEDATE)\" $(INCLUDES) $(CFLAGS) -c  $<
 
 ##Link
 $(TARGET): $(OBJECTS)
