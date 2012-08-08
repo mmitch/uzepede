@@ -78,6 +78,8 @@ unsigned int score;
 #define SCORE_WORMHEAD_PERBODY 2
 #define SCORE_SPIDER 7
 
+char *score_string = "0000000000";
+
 const char* builddate = COMPILEDATE;
 
 void clearScreen(){
@@ -124,6 +126,7 @@ void gameOver(){
   alive = 0;
 }
 
+// print a string usind 7-segment display
 void printString(Scalar x, Scalar y, const char *c){
 
   for (; *c; x++, c++) {
@@ -243,90 +246,22 @@ void printString(Scalar x, Scalar y, const char *c){
 
 }
 
-void printHex(Scalar x, Scalar y, unsigned int value){
-  // @FIXME prints one position too the right
-
-  for (Scalar nibble = 4; nibble > 0; nibble--) {
-    Scalar displayNibble = value & 0x0F;
-    value >>= 4;
-
-    switch (displayNibble) {
-
-    case 0:
-      DrawMap(x + nibble, y, char_0);
-      break;
-
-    case 1:
-      DrawMap(x + nibble, y, char_1);
-      break;
-
-    case 2:
-      DrawMap(x + nibble, y, char_2);
-      break;
-
-    case 3:
-      DrawMap(x + nibble, y, char_3);
-      break;
-
-    case 4:
-      DrawMap(x + nibble, y, char_4);
-      break;
-
-    case 5:
-      DrawMap(x + nibble, y, char_5);
-      break;
-
-    case 6:
-      DrawMap(x + nibble, y, char_6);
-      break;
-
-    case 7:
-      DrawMap(x + nibble, y, char_7);
-      break;
-
-    case 8:
-      DrawMap(x + nibble, y, char_8);
-      break;
-
-    case 9:
-      DrawMap(x + nibble, y, char_9);
-      break;
-
-    case 10:
-      DrawMap(x + nibble, y, char_A);
-      break;
-
-    case 11:
-      DrawMap(x + nibble, y, char_B);
-      break;
-
-    case 12:
-      DrawMap(x + nibble, y, char_C);
-      break;
-
-    case 13:
-      DrawMap(x + nibble, y, char_D);
-      break;
-
-    case 14:
-      DrawMap(x + nibble, y, char_E);
-      break;
-
-    case 15:
-      DrawMap(x + nibble, y, char_F);
-      break;
-
-    }
-  }
+// convert int->char
+void scoreToString() {
+  int tmp_score = score;
+  char *c = score_string + 10;
+  do {
+    c--;
+    *c = '0' + (tmp_score % 10);
+    tmp_score = tmp_score / 10;
+  } while (c != score_string);
 }
 
-void printScore(){
-  printHex( 0, MAXY, score );
-}
-
+// change, convert and display score
 void addScore(Scalar add){
   score += add;
-  printScore();
+  scoreToString();
+  printString( 0, MAXY, score_string );
 }
 
 void initSpider(){
@@ -885,7 +820,7 @@ int main(){
     drawPlayer(player_x, player_y);
     alive = 1;
     score = 0;
-    printScore();
+    addScore(0); // print initial score
 
     // init shot
     shooting = 0;
@@ -939,8 +874,8 @@ int main(){
 
     //    clearScreen();
     DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-    printHex( (MAXX - 4) / 2 - 1, MAXY / 2 + 2, score);
-    Fill( 0, MAXY, 5, 1, 0); // remove score from bottom left
+    printString( (MAXX - 10) / 2 - 1, MAXY / 2 + 2, score_string);
+    Fill( 0, MAXY, 10, 1, 0); // remove score from bottom left
 
     // tap once to continue
     while (ReadJoypad(0) != 0) {}; // TODO refactor out
