@@ -26,7 +26,7 @@
 #define MAXWORMLEN 16
 #define MAXWORMCOUNT 16
 #define SPIDER_AFTER_WORMS 5
-#define BUG_AFTER_WORMS 3
+#define BUG_AFTER_WORMS 6
 
 #define WAIT 1
 
@@ -297,7 +297,7 @@ void initBug(){
     bug_dirx = true;
   } else {
     bug_x = MAXX - 1;
-    bug_diry = false;
+    bug_dirx = false;
   }
   bug_y = MAXY-2-(rand()%6);
   bug_diry = rand()%2;
