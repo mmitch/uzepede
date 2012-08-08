@@ -90,6 +90,8 @@ char *score_string = "0000000000";
 
 const char* builddate = COMPILEDATE;
 
+int tmp_level; // for repeated LEVEL() checks
+
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
 }
@@ -277,11 +279,12 @@ void addScore(Scalar add){
 }
 
 void getBugSave(){
-  if (LEVEL(bug_x, bug_y) == T_MSH1) {
+  tmp_level = LEVEL(bug_x, bug_y);
+  if (tmp_level == T_MSH1) {
     bug_save = 1;
-  } else if (LEVEL(bug_x, bug_y) == T_MSH2) {
+  } else if (tmp_level == T_MSH2) {
     bug_save = 2;
-  } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
+  } else if (tmp_level == T_MSH3) {
     bug_save = 3;
   } else {
     bug_save = 0;
@@ -308,10 +311,11 @@ void initSpider(){
 
   do {
     spider_x = rand()%MAXY;
-  } while (    LEVEL(spider_x, spider_y) != T_FREE
-	    && LEVEL(spider_x, spider_y) != T_MSH1
-	    && LEVEL(spider_x, spider_y) != T_MSH2
-	    && LEVEL(spider_x, spider_y) != T_MSH3
+    tmp_level = LEVEL(spider_x, spider_y);
+  } while (    tmp_level != T_FREE
+	    && tmp_level != T_MSH1
+	    && tmp_level != T_MSH2
+	    && tmp_level != T_MSH3
 	       ); // @FIXME lockup with super-long worms on first line
 
   TriggerFx(FX_SPIDERFALL, 0xdf, true);
@@ -512,12 +516,13 @@ void moveWorm(Scalar i){
     }
 
     if (moved) {
+      tmp_level = LEVEL(x,y);
 
-      if ((LEVEL(x,y) == T_PLYR)) {
+      if (tmp_level == T_PLYR) {
 	// got you!
 	gameOver();
 	
-      } else if((LEVEL(x,y)) != T_FREE) {
+      } else if(tmp_level != T_FREE) {
 	// can't go there
 	moved = 0;
 	x = oldx;
@@ -531,12 +536,13 @@ void moveWorm(Scalar i){
     if (! moved) {
       y++;
       theWorm->direction = 1 - theWorm->direction;
+      tmp_level = LEVEL(x,y);
       
-      if ((LEVEL(x,y) == T_PLYR)) {
+      if (tmp_level == T_PLYR) {
 	// got you!
 	gameOver();
 	
-      } else if((LEVEL(x,y)) != T_FREE) {
+      } else if(tmp_level != T_FREE) {
 	// can't go there
 	moved = 0;
 
@@ -620,14 +626,16 @@ void movePlayer(){
 
   if (player_x != x || player_y != y) {
 
-    if ((LEVEL(x,y)) == T_FREE) {
+    tmp_level = LEVEL(x,y);
+
+    if (tmp_level == T_FREE) {
 
       drawEmpty(player_x, player_y);
       drawPlayer(x, y);
       player_x = x;
       player_y = y;
 
-    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BUG ){
+    } else if (tmp_level == T_WORM || tmp_level == T_WMHL || tmp_level == T_WMHL || tmp_level == T_SPDR || tmp_level == T_BUG ){
 
       gameOver();
 
@@ -753,12 +761,14 @@ void moveShot(){
   shot_y--;
   
   // test for hit
-  if ( LEVEL(shot_x, shot_y) == T_FREE ) {
+  tmp_level = LEVEL(shot_x, shot_y);
+
+  if ( tmp_level == T_FREE ) {
 
     // draw bullet
     drawShot( shot_x, shot_y );
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
+  } else if ( tmp_level == T_MSH1 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xc0, true);
@@ -766,7 +776,7 @@ void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
+  } else if ( tmp_level == T_MSH2 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xb0, true);
@@ -774,7 +784,7 @@ void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
+  } else if ( tmp_level == T_MSH3 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xa0, true);
@@ -782,19 +792,19 @@ void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
+  } else if ( tmp_level == T_WMHL || tmp_level == T_WMHR ) {
 
     // head shot, kill whole worm, remove bullet
     shootWormHead();
     shooting = 0;
 
-  } else if ( LEVEL(shot_x, shot_y) == T_WORM ) {
+  } else if ( tmp_level == T_WORM ) {
 
     // body shot, split worm, remove bullet
     shootWormBody();
     shooting = 0;
 
-  } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
+  } else if ( tmp_level == T_SPDR ) {
 
     // kill spider, create mushroom, remove bullet
     TriggerFx(FX_SPIDER, 0xe0, true);
@@ -804,7 +814,7 @@ void moveShot(){
 
     spider_x = spider_y = OFFSCREEN;
 
-  } else if ( LEVEL(shot_x, shot_y) == T_BUG ) {
+  } else if ( tmp_level == T_BUG ) {
 
     // kill bug, create mushroom, remove bullet
     TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
@@ -814,7 +824,7 @@ void moveShot(){
 
     bug_x = bug_y = OFFSCREEN;
 
-  } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
+  } else if ( tmp_level == T_PLYR ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
     shooting = 0;
