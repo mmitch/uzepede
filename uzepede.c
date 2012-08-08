@@ -120,20 +120,20 @@ void drawMushroom3(Scalar x, Scalar y){
   DrawMap(x, y, t_mushroom3);
 }
 
-void drawShot(Scalar x, Scalar y){
-  DrawMap(x, y, t_shot);
+void drawShot(){
+  DrawMap(shot_x, shot_y, t_shot);
 }
 
-void drawPlayer(Scalar x, Scalar y){
-  DrawMap(x, y, t_player);
+void drawPlayer(){
+  DrawMap(player_x, player_y, t_player);
 }
 
-void drawSpider(Scalar x, Scalar y){
-  DrawMap(x, y, t_spider);
+void drawSpider(){
+  DrawMap(spider_x, spider_y, t_spider);
 }
 
-void drawBug(Scalar x, Scalar y){
-  DrawMap(x, y, t_bug);
+void drawBug(){
+  DrawMap(bug_x, bug_y, t_bug);
 }
 
 void gameOver(){
@@ -303,7 +303,7 @@ void initBug(){
   bug_diry = rand()%2;
 
   getBugSave();
-  drawBug(bug_x, bug_y);
+  drawBug();
 }
 
 void initSpider(){
@@ -319,7 +319,7 @@ void initSpider(){
 	       ); // @FIXME lockup with super-long worms on first line
 
   TriggerFx(FX_SPIDERFALL, 0xdf, true);
-  drawSpider(spider_x, spider_y);
+  drawSpider();
 
 }
 
@@ -631,9 +631,9 @@ void movePlayer(){
     if (tmp_level == T_FREE) {
 
       drawEmpty(player_x, player_y);
-      drawPlayer(x, y);
       player_x = x;
       player_y = y;
+      drawPlayer();
 
     } else if (tmp_level == T_WORM || tmp_level == T_WMHL || tmp_level == T_WMHL || tmp_level == T_SPDR || tmp_level == T_BUG ){
 
@@ -700,7 +700,7 @@ void moveBug() {
 
   // draw bug
   getBugSave();
-  drawBug(bug_x, bug_y);
+  drawBug();
   
   if (bug_x == player_x && bug_y == player_y) {
       // got you!
@@ -726,7 +726,7 @@ void moveSpider() {
     drawEmpty(spider_x, spider_y - 1); // no mushrooms on base row
     spider_x = spider_y = OFFSCREEN;
   } else {
-    drawSpider(spider_x, spider_y);
+    drawSpider();
 
     if (spider_x == player_x && spider_y == player_y) {
       // got you!
@@ -766,7 +766,7 @@ void moveShot(){
   if ( tmp_level == T_FREE ) {
 
     // draw bullet
-    drawShot( shot_x, shot_y );
+    drawShot();
 
   } else if ( tmp_level == T_MSH1 ) {
 
@@ -939,7 +939,7 @@ int main(){
     // init player
     player_x = MAXX / 2 - 1;
     player_y = MAXY - 1;
-    drawPlayer(player_x, player_y);
+    drawPlayer();
     alive = 1;
     score = 0;
     addScore(0); // print initial score
