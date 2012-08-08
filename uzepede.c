@@ -848,12 +848,7 @@ int main(){
       }
       
       WaitVsync(WAIT);
-      movePlayer();
       moveShot();
-
-      for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
-	moveWorm(i);
-      }
 
       if (spider_x != OFFSCREEN) {
 	moveSpider();
@@ -864,6 +859,17 @@ int main(){
 	}
       }
       
+      WaitVsync(WAIT);
+      movePlayer();
+      moveShot();
+
+      for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
+	moveWorm(i);
+      }
+
+      WaitVsync(WAIT);
+      moveShot();
+
     }
 
     // GAME OVER

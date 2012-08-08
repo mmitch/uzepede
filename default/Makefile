@@ -17,7 +17,7 @@ COMPILEDATE=$(shell date +%Y/%m/%d)
 ## Kernel settings
 #KERNEL_DIR = ../../../kernel
 KERNEL_DIR = /home/mitch/git/uzebox/kernel
-KERNEL_OPTIONS  = -DVIDEO_MODE=1 -DINTRO_LOGO=0
+KERNEL_OPTIONS  = -DVIDEO_MODE=1 -DINTRO_LOGO=0 -DMODE1_FAST_VSYNC=1 
 
 GCONVERT_BIN = $(KERNEL_DIR)/../tools/gconvert/gconvert
 
