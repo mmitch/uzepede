@@ -2,6 +2,10 @@
 # Makefile for the project uzepede
 ###############################################################################
 
+## Configure this
+#UZEBOX_DIR = ../../uzebox
+UZEBOX_DIR = /home/mitch/git/uzebox
+
 VERSION=v1.01-GIT
 
 ## General Flags
@@ -15,11 +19,11 @@ INFO=../gameinfo.properties
 COMPILEDATE=$(shell date +%Y/%m/%d)
 
 ## Kernel settings
-#KERNEL_DIR = ../../../kernel
-KERNEL_DIR = /home/mitch/git/uzebox/kernel
+KERNEL_DIR = $(UZEBOX_DIR)/kernel
 KERNEL_OPTIONS  = -DVIDEO_MODE=1 -DINTRO_LOGO=0 -DMODE1_FAST_VSYNC=1 
 
-GCONVERT_BIN = $(KERNEL_DIR)/../tools/gconvert/gconvert
+GCONVERT_BIN = $(UZEBOX_DIR)/bin/gconvert
+PACKROM_BIN = $(UZEBOX_DIR)/bin/packrom
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
@@ -101,7 +105,7 @@ $(TARGET): $(OBJECTS)
 	avr-objdump -h -S $< > $@
 
 %.uze: $(TARGET)
-	-$(UZEBIN_DIR)packrom $(GAME).hex $@ $(INFO)
+	-$(PACKROM_BIN) $(GAME).hex $@ $(INFO)
 
 UNAME := $(shell sh -c 'uname -s 2>/dev/null || echo not')
 AVRSIZEFLAGS := -A ${TARGET}
