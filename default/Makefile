@@ -67,7 +67,7 @@ INCLUDES = -I"$(KERNEL_DIR)"
 all: ../data/tiles.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size 
 
 ## Rebuild graphic ressources
-../data/tiles.inc: ../data/tiles.raw ../data/tiles.xml
+../data/tiles.inc: ../data/tiles.raw ../data/tiles.xml $(GCONVERT_BIN)
 	$(GCONVERT_BIN) ../data/tiles.xml
 
 ## Compile Kernel files
@@ -104,7 +104,7 @@ $(TARGET): $(OBJECTS)
 %.lss: $(TARGET)
 	avr-objdump -h -S $< > $@
 
-%.uze: $(TARGET)
+%.uze: $(TARGET) $(PACKROM_BIN)
 	-$(PACKROM_BIN) $(GAME).hex $@ $(INFO)
 
 UNAME := $(shell sh -c 'uname -s 2>/dev/null || echo not')
@@ -126,3 +126,10 @@ clean:
 ## Other dependencies
 -include $(shell mkdir dep 2>/dev/null) $(wildcard dep/*)
 
+
+## Auto-compile the tools needed from Uzebox
+$(PACKROM_BIN): $(UZEBOX_DIR)
+	make -C $(UZEBOX_DIR) tools/packrom
+
+$(GCONVERT_BIN): $(UZEBOX_DIR)
+	make -C $(UZEBOX_DIR) tools/gconvert
