@@ -30,25 +30,28 @@
 
 #define WAIT 1
 
+typedef u8  Scalar;
+typedef u8  Boolean;
+typedef u16 Tile;
+typedef u16 Joypad;
+typedef unsigned int BigScalar;
+
 // read tile from VRAM
-#define LEVEL(x,y) *((int*)(vram + (2*(x)) + (80*(y) ) ))
+#define LEVEL(x,y) *((Tile*)(vram + (2*(x)) + (80*(y) ) ))
 
 // comparison tile pointers for VRAM
-#define T_FREE (int)(Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH1 (int)(Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH2 (int)(Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH3 (int)(Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WORM (int)(Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHL (int)(Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHR (int)(Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
-#define T_PLYR (int)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SHOT (int)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SPDR (int)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_BUG  (int)(Tiles + (t_bug[2]           * TILE_WIDTH * TILE_HEIGHT ))
+#define T_FREE (Tile)(Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH1 (Tile)(Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH2 (Tile)(Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH3 (Tile)(Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WORM (Tile)(Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHL (Tile)(Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHR (Tile)(Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
+#define T_PLYR (Tile)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SHOT (Tile)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SPDR (Tile)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_BUG  (Tile)(Tiles + (t_bug[2]           * TILE_WIDTH * TILE_HEIGHT ))
 
-
-typedef unsigned char Scalar;
-typedef unsigned char Boolean;
 
 typedef struct {
   Boolean direction;
@@ -78,7 +81,7 @@ Scalar bug_save;
 Scalar wormkills_spider;
 Scalar wormkills_bug;
 
-unsigned int score;
+BigScalar score;
 #define SCORE_MUSHROOM 1
 #define SCORE_WORMBODY 3
 #define SCORE_WORMHEAD 5
@@ -90,7 +93,7 @@ char *score_string = "0000000000";
 
 const char* builddate = COMPILEDATE;
 
-int tmp_level; // for repeated LEVEL() checks
+Tile tmp_level; // for repeated LEVEL() checks
 
 void clearScreen(){
   Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
@@ -262,7 +265,7 @@ void printString(Scalar x, Scalar y, const char *c){
 
 // convert int->char
 void scoreToString() {
-  int tmp_score = score;
+  BigScalar tmp_score = score;
   char *c = score_string + 10;
   do {
     c--;
@@ -600,7 +603,7 @@ void movePlayer(){
   Scalar x = player_x;
   Scalar y = player_y;
 
-  int buttons = ReadJoypad(0);
+  Joypad buttons = ReadJoypad(0);
 
   if ((buttons & BTN_LEFT)  && x > 0) {
     x--;
@@ -864,7 +867,7 @@ void titleScreen(){
   DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
   TriggerFx(FX_TITLESCREEN, 0xff, false);
 
-  int button = 0;
+  Joypad button = 0;
 
   while (button == 0) {
 
