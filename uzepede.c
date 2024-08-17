@@ -883,14 +883,26 @@ void drawGameOver(){
   Fill( 0, MAXY, 10, 1, 0); // remove score from bottom left
 }
 
+void joypadWaitForAnyRelease(){
+  while (ReadJoypad(0) != 0) {};
+}
+
+void joypadWaitForAnyPress(){
+  while (ReadJoypad(0) == 0) {};
+}
+
+void joypadWaitForAnyTap(){
+  joypadWaitForAnyRelease();
+  joypadWaitForAnyPress();
+}
+
 void creditScreen(){
   FadeOut(WAIT, 1);
   drawCreditScreen();
   FadeIn(WAIT, 1);
 
   // tap once to continue
-  while (ReadJoypad(0) != 0) {};
-  while (ReadJoypad(0) == 0) {};
+  joypadWaitForAnyTap();
   
   FadeOut(WAIT, 1);
   drawTitleScreen();
@@ -951,7 +963,7 @@ int main(){
     TriggerFx(FX_START, 0xff, false);
 
     // wait for button release
-    while (ReadJoypad(0) != 0) {};
+    joypadWaitForAnyRelease();
 
     // INIT GAME
 
@@ -1050,8 +1062,7 @@ int main(){
     drawGameOver();
 
     // tap once to continue
-    while (ReadJoypad(0) != 0) {}; // TODO refactor out
-    while (ReadJoypad(0) == 0) {};
+    joypadWaitForAnyTap();
 
   }
 
