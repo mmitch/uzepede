@@ -835,31 +835,42 @@ void moveShot(){
 
 }
 
-void drawBorder(){
+void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, const Scalar ymax, const Boolean clear){
   Scalar i;
-  for (i = 1; i < MAXX_SCREEN-1; i++) {
-    DrawMap( i, 0,             border_top    );
-    DrawMap( i, MAXY_SCREEN-1, border_bottom );
+
+  // corners are always drawn
+  DrawMap( xmin, ymin, border_tl );
+  DrawMap( xmax, ymin, border_tr );
+  DrawMap( xmin, ymax, border_bl );
+  DrawMap( xmax, ymax, border_br );
+
+  // sides can be skipped on small boxes
+  // OPTIMIZATION: don't check for this, we don't draw any small boxes
+  for (i = xmin+1; i < xmax; i++) {
+    DrawMap( i, ymin, border_top    );
+    DrawMap( i, ymax, border_bottom );
   }
-  for (i = 1; i < MAXY_SCREEN-1; i++) {
-    DrawMap( 0,             i, border_left  );
-    DrawMap( MAXX_SCREEN-1, i, border_right );
+  for (i = ymin+1; i < ymax; i++) {
+    DrawMap( xmin, i, border_left  );
+    DrawMap( xmax, i, border_right );
   }
-  DrawMap( 0,             0,           border_tl );
-  DrawMap( MAXX_SCREEN-1, 0,           border_tr );
-  DrawMap( 0,             MAXY_SCREEN-1, border_bl );
-  DrawMap( MAXX_SCREEN-1, MAXY_SCREEN-1, border_br );
+
+  if (clear) {
+    Fill( xmin+1, ymin+1, xmax-xmin-1, ymax-ymin-1, 0 );
+  }
+}
+
+void drawBorder(){
+  drawBox( 0, 0, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
 }
 
 void drawTitleScreen(){
-  clearScreen();
   drawBorder();
   DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
   DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
 }
 
 void drawCreditScreen(){
-  clearScreen();
   drawBorder();
   DrawMap( 6, 4, t_title);
   DrawMap( 6, 6, t_copyright);
