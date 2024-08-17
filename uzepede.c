@@ -835,8 +835,13 @@ void moveShot(){
 
 }
 
-void creditScreen(){
-  FadeOut(WAIT, 1);
+void drawTitleScreen(){
+  clearScreen();
+  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
+  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
+}
+
+void drawCreditScreen(){
   clearScreen();
   DrawMap( 6, 4, t_title);
   DrawMap( 6, 6, t_copyright);
@@ -847,6 +852,22 @@ void creditScreen(){
   printString(3, MAXY - 3, "build");
   printString(3, MAXY - 2, VERSION);
   printString(3, MAXY - 1, builddate);
+}
+
+void drawLevel(){
+  clearScreen();
+}
+
+void drawGameOver(){
+  // clearScreen();
+  DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
+  printString( (MAXX - 10) / 2 - 1, MAXY / 2 + 2, score_string);
+  Fill( 0, MAXY, 10, 1, 0); // remove score from bottom left
+}
+
+void creditScreen(){
+  FadeOut(WAIT, 1);
+  drawCreditScreen();
   FadeIn(WAIT, 1);
 
   // tap once to continue
@@ -854,17 +875,13 @@ void creditScreen(){
   while (ReadJoypad(0) == 0) {};
   
   FadeOut(WAIT, 1);
-  clearScreen();
-  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title); // TODO: stupid code duplication!
-  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
+  drawTitleScreen();
   FadeIn(WAIT, 1);
 }
 
 void titleScreen(){
 
-  clearScreen();
-  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
-  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
+  drawTitleScreen();
   TriggerFx(FX_TITLESCREEN, 0xff, false);
 
   Joypad button = 0;
@@ -921,7 +938,7 @@ int main(){
     // INIT GAME
 
     // init level
-    clearScreen();
+    drawLevel();
 
     // init worms
     wormcount = 0;
@@ -1012,10 +1029,7 @@ int main(){
     TriggerFx(FX_GAMEOVER1, 0xff, false);
     TriggerFx(FX_GAMEOVER2, 0xbf, false);
 
-    //    clearScreen();
-    DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-    printString( (MAXX - 10) / 2 - 1, MAXY / 2 + 2, score_string);
-    Fill( 0, MAXY, 10, 1, 0); // remove score from bottom left
+    drawGameOver();
 
     // tap once to continue
     while (ReadJoypad(0) != 0) {}; // TODO refactor out
