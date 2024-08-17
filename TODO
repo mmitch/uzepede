@@ -1,5 +1,12 @@
-- release/announce on uzebox wiki (at least as WIP)
 - add Trauerrand (don't use full screen)
+  - try a colored border, perhaps my TV then already syncs correctly
+- fix bugs with sped up shots
+  - worms should not change direction when encountering a shot, but die instead
+  - sometimes a spider can phase though a shot
+  - the bug should do the same when jumping into a shut (never stumbled upon that problem but I guess it's there)
 - add sounds for bug monster
+- release/announce the update on uzebox wiki + forum
+  - replace the old version? name this UZEPEDE 2?  what is the norm for other games?
 - add bee monster
+  - the sprite is already drawn, but what should it do?
 - create a rotated version for portrait mode :)
