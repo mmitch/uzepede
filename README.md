@@ -1,6 +1,6 @@
 # uzepede - a centipede clone for uzebox
 
-Copyright (C) 2012 by  Christian Garbs <mitch@cgarbs.de>  
+Copyright (C) 2012, 2024 by  Christian Garbs <mitch@cgarbs.de>  
 licensed under the GNU GPL v3 or later
 
 <https://github.com/mmitch/uzepede>

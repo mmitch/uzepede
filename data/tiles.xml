@@ -2,14 +2,14 @@
 <!--
  * uzepede - a centipede clone for uzebox
  *
- * Copyright (C) 2012 by  Christian Garbs <mitch@cgarbs.de>
+ * Copyright (C) 2012, 2024 by  Christian Garbs <mitch@cgarbs.de>
  * licensed under the GNU GPL v3 or later
  *
  * see https://github.com/mmitch/uzepede
  *
 -->
 <gfx-xform version="1">
-  <input file="../data/tiles.raw" type="raw" tile-width="6" tile-height="8" width="156" height="72"/>
+  <input file="../data/tiles.png" type="png" tile-width="6" tile-height="8"/>
   <output file="../data/tiles.inc">
     <tiles var-name="Tiles"/>
     <maps pointers-size="16">

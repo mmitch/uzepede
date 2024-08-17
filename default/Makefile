@@ -67,7 +67,7 @@ INCLUDES = -I"$(KERNEL_DIR)"
 all: ../data/tiles.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size 
 
 ## Rebuild graphic ressources
-../data/tiles.inc: ../data/tiles.raw ../data/tiles.xml $(GCONVERT_BIN)
+../data/tiles.inc: ../data/tiles.png ../data/tiles.xml $(GCONVERT_BIN)
 	$(GCONVERT_BIN) ../data/tiles.xml
 
 ## Compile Kernel files
