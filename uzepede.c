@@ -89,7 +89,8 @@ BigScalar score;
 #define SCORE_SPIDER 7
 #define SCORE_BUG 10
 
-char *score_string = "0000000000";
+#define SCORE_WIDTH 10
+char score_string[SCORE_WIDTH+1] = "0000000000";
 
 const char* builddate = COMPILEDATE;
 
@@ -266,7 +267,7 @@ void printString(Scalar x, Scalar y, const char *c){
 // convert int->char
 void scoreToString() {
   BigScalar tmp_score = score;
-  char *c = score_string + 10;
+  char *c = score_string + SCORE_WIDTH;
   do {
     c--;
     *c = '0' + (tmp_score % 10);
@@ -890,8 +891,8 @@ void drawLevel(){
 void drawGameOver(){
   // clearScreen();
   DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-  printString( (MAXX - 10) / 2 - 1, MAXY / 2 + 2, score_string);
-  Fill( 0, MAXY, 10, 1, 0); // remove score from bottom left
+  printString( (MAXX - SCORE_WIDTH) / 2 - 1, MAXY / 2 + 2, score_string);
+  Fill( 0, MAXY, SCORE_WIDTH, 1, 0); // remove score from bottom left
 }
 
 void joypadWaitForAnyRelease(){
