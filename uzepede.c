@@ -32,7 +32,7 @@
 
 typedef u8  Scalar;
 typedef u8  Boolean;
-typedef u16 Tile;
+typedef int Tile;
 typedef u16 Joypad;
 typedef unsigned int BigScalar;
 
@@ -867,7 +867,7 @@ void drawBorder(){
   drawBox( 0, 0, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
 }
 
-void drawMapXCentered( const Scalar y, const int *tile, const Scalar width){
+void drawMapXCentered( const Scalar y, const VRAM_PTR_TYPE *tile, const Scalar width){
   DrawMap( X_CENTERED(width), y, tile );
 }
 
