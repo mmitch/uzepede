@@ -52,7 +52,9 @@ typedef unsigned int BigScalar;
 #define T_SPDR (Tile)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
 #define T_BUG  (Tile)(Tiles + (t_bug[2]           * TILE_WIDTH * TILE_HEIGHT ))
 
-
+#define X_CENTERED(width) ((MAXX_SCREEN - (width)) / 2 - 1)
+#define Y_CENTER (MAXY_SCREEN / 2 - 1)
+	
 typedef struct {
   Boolean direction;
   // worm has a ringbuffer of body elements
@@ -865,10 +867,14 @@ void drawBorder(){
   drawBox( 0, 0, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
 }
 
+void drawMapXCentered( const Scalar y, const int *tile, const Scalar width){
+  DrawMap( X_CENTERED(width), y, tile );
+}
+
 void drawTitleScreen(){
   drawBorder();
-  DrawMap( (MAXX - T_TITLE_WIDTH) / 2 - 1, 12, t_title);
-  DrawMap( (MAXX - T_SELECTCREDITS_WIDTH) / 2 - 1, 20, t_selectcredits);
+  drawMapXCentered( 12, t_title, T_TITLE_WIDTH );
+  drawMapXCentered( 20, t_selectcredits, T_SELECTCREDITS_WIDTH );
 }
 
 void drawCreditScreen(){
@@ -879,9 +885,9 @@ void drawCreditScreen(){
   DrawMap( 6, 8, t_url);
 
   // print compiledate
-  printString(3, MAXY - 3, "build");
-  printString(3, MAXY - 2, VERSION);
-  printString(3, MAXY - 1, builddate);
+  printString( 3, MAXY - 3, "build" );
+  printString( 3, MAXY - 2, VERSION );
+  printString( 3, MAXY - 1, builddate );
 }
 
 void drawLevel(){
@@ -890,9 +896,9 @@ void drawLevel(){
 
 void drawGameOver(){
   // clearScreen();
-  DrawMap( (MAXX - T_GAMEOVER_WIDTH) / 2 - 1, MAXY / 2 - 1, t_gameover);
-  printString( (MAXX - SCORE_WIDTH) / 2 - 1, MAXY / 2 + 2, score_string);
-  Fill( 0, MAXY, SCORE_WIDTH, 1, 0); // remove score from bottom left
+  drawMapXCentered( Y_CENTER, t_gameover, T_GAMEOVER_WIDTH );
+  printString( X_CENTERED(SCORE_WIDTH), Y_CENTER + 3, score_string );
+  Fill( 0, MAXY, SCORE_WIDTH, 1, 0 ); // remove score from bottom left
 }
 
 void joypadWaitForAnyRelease(){
