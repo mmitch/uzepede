@@ -1,3 +1,13 @@
+/*
+ * uzepede - a centipede clone for uzebox
+ *
+ * Copyright (C) 2012-2024 by  Christian Garbs <mitch@cgarbs.de>
+ * licensed under the GNU GPL v3 or later
+ *
+ * see https://github.com/mmitch/uzepede
+ *
+ */
+
 const char fx_titlescreen[] PROGMEM ={ 
 0,PC_WAVE,0,
 0,PC_NOTE_DOWN,24,

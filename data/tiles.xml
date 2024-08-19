@@ -2,7 +2,7 @@
 <!--
  * uzepede - a centipede clone for uzebox
  *
- * Copyright (C) 2012, 2024 by  Christian Garbs <mitch@cgarbs.de>
+ * Copyright (C) 2012-2024 by  Christian Garbs <mitch@cgarbs.de>
  * licensed under the GNU GPL v3 or later
  *
  * see https://github.com/mmitch/uzepede
@@ -68,8 +68,8 @@
       <map var-name="t_pressstart"    left="0" top="5" width="10" height="1"/>
       <map var-name="t_selectcredits" left="10" top="5" width="14" height="1"/>
 
-      <map var-name="t_copyright"     left="0"  top="6" width="15" height="1"/>
-      <map var-name="t_gnugpl"        left="15" top="6" width="7"  height="1"/>
+      <map var-name="t_copyright"     left="0"  top="6" width="19" height="1"/>
+      <map var-name="t_gnugpl"        left="19" top="6" width="7"  height="1"/>
       <map var-name="t_url"           left="0"  top="7" width="24" height="2"/>
       
     </maps>
