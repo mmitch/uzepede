@@ -1007,8 +1007,8 @@ int main(){
     }
     
     // init player
-    player_x = MAXX / 2 - 1;
-    player_y = MAXY - 1;
+    player_x = X_CENTERED(0); // center of line
+    player_y = MAXY - 1; // last line
     drawPlayer();
     alive = 1;
     score = 0;
