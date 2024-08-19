@@ -148,7 +148,7 @@ void gameOver(){
   alive = 0;
 }
 
-// print a string usind 7-segment display
+// print a string using 7-segment display
 void printString(Scalar x, Scalar y, const char *c){
 
   for (; *c; x++, c++) {
