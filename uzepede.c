@@ -894,15 +894,17 @@ void drawTitleScreen(){
 
 void drawCreditScreen(){
   drawBorder();
-  DrawMap( 6, 4, t_title);
-  DrawMap( 6, 6, t_copyright);
-  DrawMap( 6, 7, t_gnugpl);
-  DrawMap( 6, 8, t_url);
+
+  const Scalar left_align = X_CENTERED( T_URL_WIDTH );
+  DrawMap( left_align, MINY + 4, t_title);
+  DrawMap( left_align, MINY + 6, t_copyright);
+  DrawMap( left_align, MINY + 7, t_gnugpl);
+  DrawMap( left_align, MINY + 8, t_url);
 
   // print compiledate
-  printString( 3, MAXY - 3, "build" );
-  printString( 3, MAXY - 2, VERSION );
-  printString( 3, MAXY - 1, builddate );
+  printString( MINX, MAXY - 3, "build" );
+  printString( MINX, MAXY - 2, VERSION );
+  printString( MINX, MAXY - 1, builddate );
 }
 
 void drawLevel(){
