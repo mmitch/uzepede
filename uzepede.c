@@ -54,7 +54,9 @@ typedef unsigned int BigScalar;
 
 #define X_CENTERED(width) ((MAXX_SCREEN - (width)) / 2 - 1)
 #define Y_CENTER (MAXY_SCREEN / 2 - 1)
-	
+
+#define RAND_RANGE(min_incl, max_excl) ( (rand()%((max_excl)-(min_incl))) + (min_incl) )
+
 typedef struct {
   Boolean direction;
   // worm has a ringbuffer of body elements
@@ -307,7 +309,7 @@ void initBug(){
     bug_x = MAXX - 1;
     bug_dirx = false;
   }
-  bug_y = MAXY-2-(rand()%6);
+  bug_y = RAND_RANGE( MAXY-7, MAXY-2 );
   bug_diry = rand()%2;
 
   getBugSave();
@@ -318,7 +320,7 @@ void initSpider(){
   spider_y = 0;
 
   do {
-    spider_x = rand()%MAXY;
+    spider_x = RAND_RANGE( 0, MAXX );
     tmp_level = LEVEL(spider_x, spider_y);
   } while (    tmp_level != T_FREE
 	    && tmp_level != T_MSH1
@@ -566,8 +568,8 @@ void moveWorm(Scalar i){
   if ( y >= MAXY ) {
 
     do {
-      x = rand()%MAXX;
-      y = rand()%3;
+      x = RAND_RANGE( 0, MAXX );
+      y = RAND_RANGE( 0, 3    );
     } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
     // expand worm as much as possible
@@ -1003,7 +1005,7 @@ int main(){
 
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
-      drawMushroom1( rand()%MAXX, rand()%(MAXY-1) );
+      drawMushroom1( RAND_RANGE( 0, MAXX ), RAND_RANGE( 0, MAXY-1 ) );
     }
     
     // init player
