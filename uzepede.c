@@ -65,6 +65,8 @@ typedef unsigned int BigScalar;
 
 #define RAND_RANGE(min_incl, max_excl) ( (rand()%((max_excl)-(min_incl))) + (min_incl) )
 
+#define MAX(x,y) ((x)>(y)?(x):(y))
+
 typedef struct {
   Boolean direction;
   // worm has a ringbuffer of body elements
@@ -908,11 +910,19 @@ void drawLevel(){
 }
 
 void drawGameOver(){
-  drawMapXCentered( Y_CENTER, t_gameover, T_GAMEOVER_WIDTH );
-  printString( X_CENTERED(SCORE_WIDTH), Y_CENTER + 3, score_string );
 
   // redraw border to remove score from bottom left
   drawBox( MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN-1, MAXY_SCREEN-1, false );
+
+  // draw filled box in center
+  const Scalar boxWidth = MAX( T_GAMEOVER_WIDTH, SCORE_WIDTH ) + 3;
+  const Scalar boxLeft  = X_CENTERED( boxWidth );
+  drawBox( boxLeft, Y_CENTER - 3, boxLeft + boxWidth, Y_CENTER + 3, true );
+
+  // populate box
+  drawMapXCentered( Y_CENTER - 1, t_gameover, T_GAMEOVER_WIDTH );
+  printString( X_CENTERED(SCORE_WIDTH), Y_CENTER + 1, score_string );
+
 }
 
 void joypadWaitForAnyRelease(){
