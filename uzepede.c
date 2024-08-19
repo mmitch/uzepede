@@ -909,6 +909,8 @@ void drawCreditScreen(){
 
 void drawLevel(){
   drawBorder();
+  DrawMap( SCORE_X - 1,           SCORE_Y, border_scorel );
+  DrawMap( SCORE_X + SCORE_WIDTH, SCORE_Y, border_scorer );
 }
 
 void drawGameOver(){

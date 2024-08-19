@@ -27,13 +27,15 @@
       <map var-name="t_mushroom3"     left="4" top="1" width="1" height="1"/>
 
       <map var-name="border_tl"       left="12" top="0" width="1" height="1"/>
-      <map var-name="border_top"      left="13" top="0" width="1" height="1"/>
-      <map var-name="border_tr"       left="14" top="0" width="1" height="1"/>
+      <map var-name="border_top"      left="15" top="0" width="1" height="1"/>
+      <map var-name="border_tr"       left="16" top="0" width="1" height="1"/>
       <map var-name="border_left"     left="12" top="1" width="1" height="1"/>
-      <map var-name="border_right"    left="14" top="1" width="1" height="1"/>
+      <map var-name="border_right"    left="16" top="1" width="1" height="1"/>
       <map var-name="border_bl"       left="12" top="2" width="1" height="1"/>
-      <map var-name="border_bottom"   left="13" top="2" width="1" height="1"/>
-      <map var-name="border_br"       left="14" top="2" width="1" height="1"/>
+      <map var-name="border_scorel"   left="13" top="2" width="1" height="1"/>
+      <map var-name="border_scorer"   left="14" top="2" width="1" height="1"/>
+      <map var-name="border_bottom"   left="15" top="2" width="1" height="1"/>
+      <map var-name="border_br"       left="16" top="2" width="1" height="1"/>
       
       <map var-name="char_0"          left="0" top="2" width="1" height="1"/>
       <map var-name="char_1"          left="1" top="2" width="1" height="1"/>
