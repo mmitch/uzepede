@@ -167,6 +167,10 @@ void printString(Scalar x, Scalar y, const char *c){
   for (; *c; x++, c++) {
     switch (*c) {
 
+    case ' ':
+      DrawMap(x, y, char_space);
+      break;
+
     case '-':
       DrawMap(x, y, char_dash);
       break;
@@ -179,44 +183,28 @@ void printString(Scalar x, Scalar y, const char *c){
       DrawMap(x, y, char_slash);
       break;
 
-    case 'A':
-      DrawMap(x, y, char_A);
-      break;
-
     case 'b':
     case 'B':
       DrawMap(x, y, char_B);
       break;
 
-    case 'C':
-      DrawMap(x, y, char_C);
-      break;
-
     case 'd':
+    case 'D':
       DrawMap(x, y, char_D);
       break;
 
-    case 'E':
-      DrawMap(x, y, char_E);
-      break;
-
-    case 'F':
-      DrawMap(x, y, char_F);
-      break;
-
+    case 'g':
     case 'G':
       DrawMap(x, y, char_G);
       break;
 
     case 'i':
+    case 'I':
       DrawMap(x, y, char_I);
       break;
 
-    case 'I':
-      DrawMap(x, y, char_L);
-      break;
-
     case 'l':
+    case 'L':
       DrawMap(x, y, char_L);
       break;
 
@@ -225,10 +213,9 @@ void printString(Scalar x, Scalar y, const char *c){
       break;
 
     case 'u':
-      DrawMap(x, y, char_U);
-      break;
-
+    case 'U':
     case 'v':
+    case 'V':
       DrawMap(x, y, char_U);
       break;
 
@@ -273,7 +260,7 @@ void printString(Scalar x, Scalar y, const char *c){
       break;
 
     default:
-      DrawMap(x, y, char_space);
+      DrawMap(x, y, char_unknown);
       break;
 
     }
