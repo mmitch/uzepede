@@ -91,6 +91,8 @@ BigScalar score;
 #define SCORE_SPIDER 7
 #define SCORE_BUG 10
 
+#define SCORE_X 0
+#define SCORE_Y (MAXY_SCREEN - 1)
 #define SCORE_WIDTH 10
 char score_string[SCORE_WIDTH+1] = "0000000000";
 
@@ -281,7 +283,7 @@ void scoreToString() {
 void addScore(Scalar add){
   score += add;
   scoreToString();
-  printString( 0, MAXY, score_string );
+  printString( SCORE_X, SCORE_Y, score_string );
 }
 
 void getBugSave(){
@@ -898,7 +900,7 @@ void drawGameOver(){
   // clearScreen();
   drawMapXCentered( Y_CENTER, t_gameover, T_GAMEOVER_WIDTH );
   printString( X_CENTERED(SCORE_WIDTH), Y_CENTER + 3, score_string );
-  Fill( 0, MAXY, SCORE_WIDTH, 1, 0 ); // remove score from bottom left
+  Fill( SCORE_X, SCORE_Y, SCORE_WIDTH, 1, 0 ); // remove score from bottom left
 }
 
 void joypadWaitForAnyRelease(){
