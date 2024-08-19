@@ -7,4 +7,8 @@
   - replace the old version? name this UZEPEDE 2?  what is the norm for other games?
 - add bee monster
   - the sprite is already drawn, but what should it do?
+- switch to mode 5
+  - massive RAM save
+  - 256 tiles are enough for us
+  - but something hangs, does WaitVsync() work correctly?
 - create a rotated version for portrait mode :)
