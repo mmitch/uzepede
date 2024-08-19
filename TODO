@@ -1,5 +1,3 @@
-- add Trauerrand (don't use full screen)
-  - try a colored border, perhaps my TV then already syncs correctly
 - fix bugs with sped up shots
   - worms should not change direction when encountering a shot, but die instead
   - sometimes a spider can phase though a shot

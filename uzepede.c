@@ -19,15 +19,15 @@
 #include "data/patches.inc"
 
 // playable area inside border
-#define MINX 1
+#define MINX 3
 #define MINY 1
-#define MAXX 39
+#define MAXX 37
 #define MAXY 27
 
 // whole screen with borders
-#define MINX_SCREEN 0
+#define MINX_SCREEN 2
 #define MINY_SCREEN 0
-#define MAXX_SCREEN 40
+#define MAXX_SCREEN 38
 #define MAXY_SCREEN 28
 
 #define OFFSCREEN 255
@@ -111,7 +111,8 @@ const char* builddate = COMPILEDATE;
 Tile tmp_level; // for repeated LEVEL() checks
 
 void clearScreen(){
-  Fill(MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN, MAXY_SCREEN, 0);
+  // clear whole mode 1 screen regardless of our internal screen size
+  Fill(0, 0, 40, 28, 0);
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
@@ -985,6 +986,7 @@ int main(){
 
   SetTileTable(Tiles);
   InitMusicPlayer(patches);
+  clearScreen();
 
   titleScreen();
 
