@@ -18,10 +18,18 @@
 #include "data/tiles.inc"
 #include "data/patches.inc"
 
-#define MAXX 40
+// playable area inside border
+#define MINX 1
+#define MINY 1
+#define MAXX 39
 #define MAXY 27
+
+// whole screen with borders
+#define MINX_SCREEN 0
+#define MINY_SCREEN 0
 #define MAXX_SCREEN 40
 #define MAXY_SCREEN 28
+
 #define OFFSCREEN 255
 #define MAXWORMLEN 16
 #define MAXWORMCOUNT 16
@@ -52,8 +60,8 @@ typedef unsigned int BigScalar;
 #define T_SPDR (Tile)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
 #define T_BUG  (Tile)(Tiles + (t_bug[2]           * TILE_WIDTH * TILE_HEIGHT ))
 
-#define X_CENTERED(width) ((MAXX_SCREEN - (width)) / 2 - 1)
-#define Y_CENTER (MAXY_SCREEN / 2 - 1)
+#define X_CENTERED(width) ((MAXX_SCREEN - MINX_SCREEN - (width)) / 2 - 1 + MINX_SCREEN)
+#define Y_CENTER ((MAXY_SCREEN + MINY_SCREEN) / 2 - 1 + MINY_SCREEN)
 
 #define RAND_RANGE(min_incl, max_excl) ( (rand()%((max_excl)-(min_incl))) + (min_incl) )
 
@@ -93,7 +101,7 @@ BigScalar score;
 #define SCORE_SPIDER 7
 #define SCORE_BUG 10
 
-#define SCORE_X 0
+#define SCORE_X (MINX_SCREEN + 3)
 #define SCORE_Y (MAXY_SCREEN - 1)
 #define SCORE_WIDTH 10
 char score_string[SCORE_WIDTH+1] = "0000000000";
@@ -103,7 +111,7 @@ const char* builddate = COMPILEDATE;
 Tile tmp_level; // for repeated LEVEL() checks
 
 void clearScreen(){
-  Fill(0, 0, MAXX_SCREEN, MAXY_SCREEN, 0);
+  Fill(MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN, MAXY_SCREEN, 0);
 }
 
 void drawWormHead(Scalar x, Scalar y, Boolean direction){
@@ -303,7 +311,7 @@ void getBugSave(){
 
 void initBug(){
   if (rand()%2) {
-    bug_x = 0;
+    bug_x = MINX;
     bug_dirx = true;
   } else {
     bug_x = MAXX - 1;
@@ -317,10 +325,10 @@ void initBug(){
 }
 
 void initSpider(){
-  spider_y = 0;
+  spider_y = MINY;
 
   do {
-    spider_x = RAND_RANGE( 0, MAXX );
+    spider_x = RAND_RANGE( MINX, MAXX );
     tmp_level = LEVEL(spider_x, spider_y);
   } while (    tmp_level != T_FREE
 	    && tmp_level != T_MSH1
@@ -519,7 +527,7 @@ void moveWorm(Scalar i){
 	moved = 1;
       }
     } else {
-      if( x > 0 ) {
+      if( x > MINX ) {
 	x--;
 	moved = 1;
       }
@@ -568,8 +576,8 @@ void moveWorm(Scalar i){
   if ( y >= MAXY ) {
 
     do {
-      x = RAND_RANGE( 0, MAXX );
-      y = RAND_RANGE( 0, 3    );
+      x = RAND_RANGE( MINX, MAXX );
+      y = RAND_RANGE( MINY, MINY+3 );
     } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
     // expand worm as much as possible
@@ -612,7 +620,7 @@ void movePlayer(){
 
   Joypad buttons = ReadJoypad(0);
 
-  if ((buttons & BTN_LEFT)  && x > 0) {
+  if ((buttons & BTN_LEFT)  && x > MINX) {
     x--;
   }
 
@@ -620,7 +628,7 @@ void movePlayer(){
     x++;
   }
 
-  if ((buttons & BTN_UP)    && y > 0) {
+  if ((buttons & BTN_UP)    && y > MINY) {
     y--;
   }
 
@@ -688,7 +696,7 @@ void moveBug() {
       return;
     }
   } else {
-    if (bug_x == 0) {
+    if (bug_x == MINX) {
       bug_x = bug_y = OFFSCREEN;
       return;
     }
@@ -762,7 +770,7 @@ void moveShot(){
   }
 
   // off screen?
-  if (shot_y == 0) {
+  if (shot_y == MINY) {
     shooting = 0;
     return;
   }
@@ -868,7 +876,7 @@ void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, const Scal
 }
 
 void drawBorder(){
-  drawBox( 0, 0, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
+  drawBox( MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
 }
 
 void drawMapXCentered( const Scalar y, const VRAM_PTR_TYPE *tile, const Scalar width){
@@ -895,14 +903,15 @@ void drawCreditScreen(){
 }
 
 void drawLevel(){
-  clearScreen();
+  drawBorder();
 }
 
 void drawGameOver(){
-  // clearScreen();
   drawMapXCentered( Y_CENTER, t_gameover, T_GAMEOVER_WIDTH );
   printString( X_CENTERED(SCORE_WIDTH), Y_CENTER + 3, score_string );
-  Fill( SCORE_X, SCORE_Y, SCORE_WIDTH, 1, 0 ); // remove score from bottom left
+
+  // redraw border to remove score from bottom left
+  drawBox( MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN-1, MAXY_SCREEN-1, false );
 }
 
 void joypadWaitForAnyRelease(){
@@ -1005,7 +1014,7 @@ int main(){
 
     // init mushrooms
     for (Scalar i = 0; i < 20; i++) {
-      drawMushroom1( RAND_RANGE( 0, MAXX ), RAND_RANGE( 0, MAXY-1 ) );
+      drawMushroom1( RAND_RANGE( MINX, MAXX ), RAND_RANGE( MINY, MAXY-1 ) );
     }
     
     // init player
