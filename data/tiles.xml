@@ -18,7 +18,7 @@
       <map var-name="t_wormheadright" left="2" top="0" width="1" height="1"/>
       <map var-name="t_wormheadleft"  left="3" top="0" width="1" height="1"/>
       <map var-name="t_spider"        left="4" top="0" width="1" height="1"/>
-      <map var-name="t_bee"           left="5" top="0" width="1" height="1"/>
+<!--  <map var-name="t_bee"           left="5" top="0" width="1" height="1"/> -->
       <map var-name="t_bug"           left="6" top="0" width="1" height="1"/>
       <map var-name="t_player"        left="0" top="1" width="1" height="1"/>
       <map var-name="t_shot"          left="1" top="1" width="1" height="1"/>
