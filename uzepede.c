@@ -445,7 +445,7 @@ void shootWormBody(){
     worm->tailidx++;
   }
 
-  // create new worm of last part of there is something left
+  // create new worm of last part if there is something left
   if (split < worm->length - 1) {
 
     Worm *newWorm = worms;
