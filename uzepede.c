@@ -951,7 +951,7 @@ void titleScreen(){
 
   while (button == 0) {
 
-    int i;
+    BigScalar i;
 
     DrawMap( (MAXX - T_PRESSSTART_WIDTH) / 2 - 1, 16, t_pressstart);
 
