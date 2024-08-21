@@ -33,8 +33,11 @@
 #define OFFSCREEN 255
 #define MAXWORMLEN 16
 #define MAXWORMCOUNT 16
+
+// game parameters
 #define SPIDER_AFTER_WORMS 5
 #define BUG_AFTER_WORMS 6
+#define INITIAL_MUSHROOMS 20
 
 #define WAIT 1
 
@@ -1013,7 +1016,7 @@ int main(){
     bug_x = bug_y = OFFSCREEN;
 
     // init mushrooms
-    for (Scalar i = 0; i < 20; i++) {
+    for (Scalar i = 0; i < INITIAL_MUSHROOMS; i++) {
       drawMushroom1( RAND_RANGE( MINX, MAXX ), RAND_RANGE( MINY, MAXY-1 ) );
     }
     
