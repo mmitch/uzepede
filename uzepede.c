@@ -398,8 +398,6 @@ void shootWormHead(){
       }
     }
   }
-    
-
 }
 
 void shootWormBody(){
