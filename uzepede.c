@@ -365,10 +365,9 @@ void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
 
 void shootWormHead(){
   Worm *worm;
-  Scalar i;
 
   // find worm that got shot
-  for(worm = worms, i=0; i < MAXWORMCOUNT; worm++, i++) {
+  for(worm = worms; worm < worms + MAXWORMCOUNT; worm++) {
     if (worm->length) {
 
       // get head position
@@ -382,7 +381,7 @@ void shootWormHead(){
 	TriggerFx(FX_WORMHEAD, 0xef, true);
 
 	// change worm to mushrooms
-	for(i=0, idx=worm->startidx; i < worm->length; i++, idx++){
+	for(idx=worm->startidx; idx < worm->startidx + worm->length; idx++){
 	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
 	  score += SCORE_WORMHEAD_PERBODY;
 	}
