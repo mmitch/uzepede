@@ -294,6 +294,8 @@ static void getBugSave(){
     bug_save = 2;
   } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
     bug_save = 3;
+  } else if (LEVEL(bug_x, bug_y) == T_SHOT) {
+    bug_save = 4;
   } else {
     bug_save = 0;
   }
@@ -732,6 +734,10 @@ static void moveBug() {
     gameOver();
   }
 
+  // ran into shot -> selfkill
+  if (bug_save == 4) {
+    shootBug();
+  }
 }
 
 // kill spider, create mushroom, remove bullet
