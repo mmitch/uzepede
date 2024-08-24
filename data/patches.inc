@@ -30,10 +30,10 @@ const char fx_shot[] PROGMEM ={
 };
 
 const char fx_mushroom[] PROGMEM ={ 
-0,PC_WAVE,4,
-0,PC_NOTE_DOWN,36,
-2,PC_NOTE_CUT,0,
-0,PATCH_END
+0,PC_NOISE_PARAMS,64,
+0,PC_ENV_VOL,255,
+0,PC_ENV_SPEED,-64,
+2,PATCH_END
 };
 
 const char fx_start[] PROGMEM ={ 
@@ -146,7 +146,7 @@ const struct PatchStruct patches[] PROGMEM = {
 {0,NULL,fx_titlescreen,0,0},
 {0,NULL,fx_start,0,0},
 {0,NULL,fx_shot,0,0},
-{0,NULL,fx_mushroom,0,0},
+{1,NULL,fx_mushroom,0,0},
 {0,NULL,fx_gameover1,0,0},
 {1,NULL,fx_gameover2,0,0},
 {1,NULL,fx_wormhead,0,0},
