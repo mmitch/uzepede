@@ -1,5 +1,4 @@
 - fix bugs with sped up shots
-  - worms should not change direction when encountering a shot, but die instead
   - sometimes a spider can phase though a shot
   - the bug should do the same when jumping into a shut (never stumbled upon that problem but I guess it's there)
 - add sounds for bug monster
