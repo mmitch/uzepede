@@ -301,8 +301,6 @@ static void getBugSave(){
     bug_save = 2;
   } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
     bug_save = 3;
-  } else if (IS_SHOT_AT_TILED(bug_x, bug_y)) {
-    bug_save = 4;
   } else {
     bug_save = 0;
   }
@@ -742,7 +740,7 @@ static void moveBug() {
   }
 
   // ran into shot -> selfkill
-  if (bug_save == 4) {
+  if (IS_SHOT_AT(bug_x, bug_y)) {
     shootBug();
   }
 }
