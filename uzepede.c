@@ -70,6 +70,13 @@ typedef unsigned int BigScalar;
 
 #define MAX(x,y) ((x)>(y)?(x):(y))
 
+// #optimization:
+// - generally, IS_SHOT_AT() is faster and shorter
+// - but if we already are in a comparison using LEVEL(x,y),
+//   IS_SHOT_AT_TILED() is better, because the registers are already set up
+#define IS_SHOT_AT(x,y) (shot_x == (x) && shot_y == (y))
+#define IS_SHOT_AT_TILED(x,y) (LEVEL((x),(y)) == T_SHOT)
+
 typedef struct {
   Boolean direction;
   // worm has a ringbuffer of body elements
@@ -294,7 +301,7 @@ static void getBugSave(){
     bug_save = 2;
   } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
     bug_save = 3;
-  } else if (LEVEL(bug_x, bug_y) == T_SHOT) {
+  } else if (IS_SHOT_AT_TILED(bug_x, bug_y)) {
     bug_save = 4;
   } else {
     bug_save = 0;
@@ -378,7 +385,7 @@ static void shootWormHead(){
 	idx = worm->startidx;
       }
 
-      if (shot_x == wormx[idx] && shot_y == wormy[idx]){
+      if (IS_SHOT_AT(wormx[idx], wormy[idx])){
 
 	TriggerFx(FX_WORMHEAD, 0xef, true);
 
@@ -408,7 +415,7 @@ static void shootWormBody(){
 
   // find worm index that got hit
   Scalar idx;
-  for (idx = 0; ! (wormx[idx] == shot_x && wormy[idx] == shot_y); idx++);
+  for (idx = 0; ! IS_SHOT_AT(wormx[idx], wormy[idx]); idx++);
 
   // find worm that belongs to index
   Worm *worm;
@@ -532,7 +539,7 @@ static void moveWorm(const Scalar i){
 	// got you!
 	gameOver();
 
-      } else if(LEVEL(x,y) == T_SHOT) {
+      } else if(IS_SHOT_AT_TILED(x,y)) {
         // move there, but be dead afterwards
 	selfkill = 1;
 
@@ -555,7 +562,7 @@ static void moveWorm(const Scalar i){
 	// got you!
 	gameOver();
 	
-      } else if(LEVEL(x,y) == T_SHOT) {
+      } else if(IS_SHOT_AT_TILED(x,y)) {
         // move there, but be dead afterwards
 	selfkill = 1;
 
@@ -767,7 +774,7 @@ static void moveSpider() {
     spider_x = spider_y = OFFSCREEN;
   } else {
 
-    if (spider_x == shot_x && spider_y == shot_y) {
+    if (IS_SHOT_AT(spider_x, spider_y)) {
       shootSpider();
     } else {
 
