@@ -78,7 +78,7 @@ typedef unsigned int BigScalar;
 #define IS_SHOT_AT_TILED(x,y) (LEVEL((x),(y)) == T_SHOT)
 
 typedef struct {
-  Boolean direction;
+  Boolean direction_right;
   // worm has a ringbuffer of body elements
   // buffer "head" is the tail element
   Scalar tailidx;
@@ -99,7 +99,7 @@ Scalar shot_x, shot_y, shooting;
 Scalar spider_x, spider_y;
 
 Scalar bee_x, bee_y;
-Boolean bee_dirx, bee_diry;
+Boolean bee_dirx_right, bee_diry_down;
 Boolean bee_over_mushroom;
 
 Scalar wormkills_spider;
@@ -125,8 +125,8 @@ static void clearScreen(){
   Fill(0, 0, 40, 28, 0);
 }
 
-static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction){
-  DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
+static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
+  DrawMap(x, y, direction_right ? t_wormheadright : t_wormheadleft);
 }
 
 static void drawWormBody(const Scalar x, const Scalar y){
@@ -303,13 +303,13 @@ static void getBeeSave(){
 static void initBee(){
   if (rand()%2) {
     bee_x = MINX;
-    bee_dirx = true;
+    bee_dirx_right = true;
   } else {
     bee_x = MAXX - 1;
-    bee_dirx = false;
+    bee_dirx_right = false;
   }
   bee_y = RAND_RANGE( MAXY-7, MAXY-2 );
-  bee_diry = rand()%2;
+  bee_diry_down = rand()%2;
 
   getBeeSave();
   drawBee();
@@ -333,7 +333,7 @@ static void initSpider(){
 
 }
 
-static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction){
+static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right){
 
   Worm *newWorm = worms;
 
@@ -345,14 +345,14 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
     newWorm++;
   }
 
-  newWorm->direction = direction;
+  newWorm->direction_right = direction_right;
   if (wormmax + length > MAXWORMLEN) {
     length = MAXWORMLEN - wormmax;
   }
   newWorm->length = length;
   newWorm->tailidx = wormmax + length - 1;
   newWorm->startidx = wormmax;
-  drawWormHead(startx, starty, direction);
+  drawWormHead(startx, starty, direction_right);
 
   for (Scalar i = wormmax; i < wormmax + length; i++) {
     wormx[i] = wormy[i] = OFFSCREEN;
@@ -457,7 +457,7 @@ static void shootWormBody(){
     }
     newWorm->startidx = worm->startidx + split + 1;
     newWorm->length = worm->length - split - 1;
-    newWorm->direction = 1 - worm->direction;
+    newWorm->direction_right = 1 - worm->direction_right;
     newWorm->tailidx = newWorm->startidx;
     wormcount++;
   }
@@ -510,11 +510,11 @@ static void moveWorm(const Scalar i){
   }
 
   // compute new head position and store in old tail position
-  Boolean moved = 0;
+  Boolean moved = false;
   Scalar oldx = x;
   while ( ! moved) {
 
-    if (theWorm->direction) {
+    if (theWorm->direction_right) {
       if (x < MAXX - 1) {
 	x++;
 	moved = 1;
@@ -548,7 +548,7 @@ static void moveWorm(const Scalar i){
 
     if (! moved) {
       y++;
-      theWorm->direction = 1 - theWorm->direction;
+      theWorm->direction_right = 1 - theWorm->direction_right;
       
       if (LEVEL(x,y) == T_PLYR) {
 	// got you!
@@ -600,7 +600,7 @@ static void moveWorm(const Scalar i){
   wormy[theWorm->tailidx] = y;
 
   // draw new head on current position
-  drawWormHead(x, y, theWorm->direction);
+  drawWormHead(x, y, theWorm->direction_right);
 
   // advance tail through buffer
   if (theWorm->tailidx == theWorm->startidx) {
@@ -685,7 +685,7 @@ static void moveBee() {
   }
 
   // move bee
-  if (bee_dirx) {
+  if (bee_dirx_right) {
     bee_x++;
     if (bee_x == MAXX) {
       bee_x = bee_y = OFFSCREEN;
@@ -698,15 +698,15 @@ static void moveBee() {
     }
     bee_x--;
   }
-  if (bee_diry) {
+  if (bee_diry_down) {
     bee_y++;
     if (bee_y == MAXY - 1) {
-      bee_diry = false;
+      bee_diry_down = false;
     }
   } else {
     bee_y--;
     if (bee_y == MAXY - 8) {
-      bee_diry = true;
+      bee_diry_down = true;
     }
   }
 
