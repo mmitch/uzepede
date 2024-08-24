@@ -113,8 +113,6 @@ char score_string[SCORE_WIDTH+1] = "0000000000";
 
 const char* builddate = COMPILEDATE;
 
-Tile tmp_level; // for repeated LEVEL() checks
-
 static void clearScreen(){
   // clear whole mode 1 screen regardless of our internal screen size
   Fill(0, 0, 40, 28, 0);
@@ -290,12 +288,11 @@ static void addScore(const Scalar add){
 }
 
 static void getBugSave(){
-  tmp_level = LEVEL(bug_x, bug_y);
-  if (tmp_level == T_MSH1) {
+  if (LEVEL(bug_x, bug_y) == T_MSH1) {
     bug_save = 1;
-  } else if (tmp_level == T_MSH2) {
+  } else if (LEVEL(bug_x, bug_y) == T_MSH2) {
     bug_save = 2;
-  } else if (tmp_level == T_MSH3) {
+  } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
     bug_save = 3;
   } else {
     bug_save = 0;
@@ -322,11 +319,10 @@ static void initSpider(){
 
   do {
     spider_x = RAND_RANGE( MINX, MAXX );
-    tmp_level = LEVEL(spider_x, spider_y);
-  } while (    tmp_level != T_FREE
-	    && tmp_level != T_MSH1
-	    && tmp_level != T_MSH2
-	    && tmp_level != T_MSH3
+  } while (    LEVEL(spider_x, spider_y) != T_FREE
+	    && LEVEL(spider_x, spider_y) != T_MSH1
+	    && LEVEL(spider_x, spider_y) != T_MSH2
+	    && LEVEL(spider_x, spider_y) != T_MSH3
 	       ); // @FIXME lockup with super-long worms on first line
 
   TriggerFx(FX_SPIDERFALL, 0xdf, true);
@@ -525,17 +521,16 @@ static void moveWorm(const Scalar i){
     }
 
     if (moved) {
-      tmp_level = LEVEL(x,y);
 
-      if (tmp_level == T_PLYR) {
+      if (LEVEL(x,y) == T_PLYR) {
 	// got you!
 	gameOver();
 
-      } else if(tmp_level == T_SHOT) {
+      } else if(LEVEL(x,y) == T_SHOT) {
         // move there, but be dead afterwards
 	selfkill = 1;
 
-      } else if(tmp_level != T_FREE) {
+      } else if(LEVEL(x,y) != T_FREE) {
 	// can't go there
 	moved = 0;
 	x = oldx;
@@ -549,17 +544,16 @@ static void moveWorm(const Scalar i){
     if (! moved) {
       y++;
       theWorm->direction = 1 - theWorm->direction;
-      tmp_level = LEVEL(x,y);
       
-      if (tmp_level == T_PLYR) {
+      if (LEVEL(x,y) == T_PLYR) {
 	// got you!
 	gameOver();
 	
-      } else if(tmp_level == T_SHOT) {
+      } else if(LEVEL(x,y) == T_SHOT) {
         // move there, but be dead afterwards
 	selfkill = 1;
 
-      } else if(tmp_level != T_FREE) {
+      } else if(LEVEL(x,y) != T_FREE) {
 	// can't go there
 	moved = 0;
 
@@ -648,17 +642,16 @@ static void movePlayer(){
 
   if (player_x != x || player_y != y) {
 
-    tmp_level = LEVEL(x,y);
-
-    if (tmp_level == T_FREE) {
+    if (LEVEL(x,y) == T_FREE) {
 
       drawEmpty(player_x, player_y);
       player_x = x;
       player_y = y;
       drawPlayer();
 
-    } else if (tmp_level == T_WORM || tmp_level == T_WMHL || tmp_level == T_WMHL || tmp_level == T_SPDR || tmp_level == T_BUG ){
+    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BUG ){
 
+      // TODO: draw player moving into the obstacle?  sometimes the game over screen looks weird because the enemy is still next to you
       gameOver();
 
     } else {
@@ -723,9 +716,9 @@ static void moveBug() {
   drawBug();
   
   if (bug_x == player_x && bug_y == player_y) {
-      // got you!
-      gameOver();
-    }
+    // got you!
+    gameOver();
+  }
 
 }
 
@@ -781,14 +774,12 @@ static void moveShot(){
   shot_y--;
   
   // test for hit
-  tmp_level = LEVEL(shot_x, shot_y);
-
-  if ( tmp_level == T_FREE ) {
+  if ( LEVEL(shot_x, shot_y) == T_FREE ) {
 
     // draw bullet
     drawShot();
 
-  } else if ( tmp_level == T_MSH1 ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xc0, true);
@@ -796,7 +787,7 @@ static void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( tmp_level == T_MSH2 ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xb0, true);
@@ -804,7 +795,7 @@ static void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( tmp_level == T_MSH3 ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
     // damage mushroom, remove bullet
     TriggerFx(FX_MUSHROOM, 0xa0, true);
@@ -812,19 +803,19 @@ static void moveShot(){
     shooting = 0;
     addScore(SCORE_MUSHROOM);
 
-  } else if ( tmp_level == T_WMHL || tmp_level == T_WMHR ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
 
     // head shot, kill whole worm, remove bullet
     shootWormHead();
     shooting = 0;
 
-  } else if ( tmp_level == T_WORM ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_WORM ) {
 
     // body shot, split worm, remove bullet
     shootWormBody();
     shooting = 0;
 
-  } else if ( tmp_level == T_SPDR ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
 
     // kill spider, create mushroom, remove bullet
     TriggerFx(FX_SPIDER, 0xe0, true);
@@ -834,7 +825,7 @@ static void moveShot(){
 
     spider_x = spider_y = OFFSCREEN;
 
-  } else if ( tmp_level == T_BUG ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_BUG ) {
 
     // kill bug, create mushroom, remove bullet
     TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
@@ -844,7 +835,7 @@ static void moveShot(){
 
     bug_x = bug_y = OFFSCREEN;
 
-  } else if ( tmp_level == T_PLYR ) { // yeah, like he's fast enough
+  } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
     shooting = 0;
