@@ -766,13 +766,18 @@ static void moveSpider() {
     drawEmpty(spider_x, spider_y - 1); // no mushrooms on base row
     spider_x = spider_y = OFFSCREEN;
   } else {
-    drawSpider();
 
-    if (spider_x == player_x && spider_y == player_y) {
-      // got you!
-      gameOver();
+    if (spider_x == shot_x && spider_y == shot_y) {
+      shootSpider();
+    } else {
+
+      drawSpider();
+
+      if (spider_x == player_x && spider_y == player_y) {
+        // got you!
+        gameOver();
+      }
     }
-
   }
 
 }
