@@ -718,8 +718,6 @@ static void moveBug() {
     }
   }
 
-  while (bug_y == 0); // DEBUG_FIND
-
   // draw bug
   getBugSave();
   drawBug();
