@@ -649,7 +649,7 @@ static void movePlayer(){
       player_y = y;
       drawPlayer();
 
-    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BUG ){
+    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHR || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BUG ){
 
       // TODO: draw player moving into the obstacle?  sometimes the game over screen looks weird because the enemy is still next to you
       gameOver();
