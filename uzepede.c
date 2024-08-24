@@ -362,6 +362,7 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
   wormcount++;
 }
 
+// head shot, kill whole worm, remove bullet
 static void shootWormHead(){
   Worm *worm;
 
@@ -392,6 +393,7 @@ static void shootWormHead(){
 	wormkills_bug++;
 
 	addScore(SCORE_WORMHEAD);
+	shooting = 0;
 
 	break;
       }
@@ -399,6 +401,7 @@ static void shootWormHead(){
   }
 }
 
+// body shot, split worm, remove bullet
 static void shootWormBody(){
 
   // find worm index that got hit
@@ -464,6 +467,7 @@ static void shootWormBody(){
   // shot body part is lost forever --> needs memory defragmentation :)
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_WORMBODY);
+  shooting = 0;
 }
 
 static void moveWorm(const Scalar i){
@@ -607,7 +611,6 @@ static void moveWorm(const Scalar i){
   // we might have walked into a shot
   if (selfkill) {
     shootWormHead();
-    shooting = 0; // TODO: not the proper place for this
   }
 }
 
@@ -663,11 +666,13 @@ static void movePlayer(){
 
 }
 
+// kill bug, create mushroom, remove bullet
 static void shootBug() {
   TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BUG);
   bug_x = bug_y = OFFSCREEN;
+  shooting = 0;
 }
 
 static void moveBug() {
@@ -729,11 +734,13 @@ static void moveBug() {
 
 }
 
+// kill spider, create mushroom, remove bullet
 static void shootSpider() {
   TriggerFx(FX_SPIDER, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_SPIDER);
   spider_x = spider_y = OFFSCREEN;
+  shooting = 0;
 }
 
 static void moveSpider() {
@@ -769,6 +776,7 @@ static void shootMushroom1() {
   TriggerFx(FX_MUSHROOM, 0xc0, true);
   drawMushroom2( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
+  shooting = 0;
 }
 
 // damage mushroom, remove bullet
@@ -776,6 +784,7 @@ static void shootMushroom2() {
   TriggerFx(FX_MUSHROOM, 0xb0, true);
   drawMushroom3( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
+  shooting = 0;
 }
 
 // remove mushroom, remove bullet
@@ -783,6 +792,7 @@ static void shootMushroom3() {
   TriggerFx(FX_MUSHROOM, 0xa0, true);
   drawEmpty( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
+  shooting = 0;
 }
 
 static void moveShot(){
@@ -817,41 +827,30 @@ static void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
 
     shootMushroom1();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
     shootMushroom2();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
     shootMushroom3();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
 
-    // head shot, kill whole worm, remove bullet
     shootWormHead();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_WORM ) {
 
-    // body shot, split worm, remove bullet
     shootWormBody();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
 
-    // kill spider, create mushroom, remove bullet
     shootSpider();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_BUG ) {
 
-    // kill bug, create mushroom, remove bullet
     shootBug();
-    shooting = 0;
 
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
