@@ -104,6 +104,31 @@ const char fx_spider[] PROGMEM ={
 0,PATCH_END
 };
 
+const char fx_bee_new[] PROGMEM ={ 
+0,PC_WAVE,5,
+0,PC_PITCH,38,
+0,PC_ENV_VOL,120,
+4,PC_ENV_VOL,0,
+2,PC_ENV_VOL,180,
+4,PC_ENV_VOL,0,
+2,PC_ENV_VOL,250,
+4,PC_NOTE_CUT,0,
+0,PATCH_END
+};
+
+const char fx_bee_kill[] PROGMEM ={ 
+0,PC_WAVE,7,
+0,PC_ENV_VOL,250,
+0,PC_ENV_SPEED,-8,
+0,PC_PITCH,48,
+3,PC_NOTE_DOWN,2,
+3,PC_NOTE_DOWN,2,
+3,PC_NOTE_DOWN,2,
+3,PC_NOTE_DOWN,2,
+3,PC_NOTE_DOWN,2,
+0,PATCH_END
+};
+
 #define FX_TITLESCREEN 0
 #define FX_START 1
 #define FX_SHOT 2
@@ -114,6 +139,8 @@ const char fx_spider[] PROGMEM ={
 #define FX_WORMBODY 7
 #define FX_SPIDERFALL 8
 #define FX_SPIDER 9
+#define FX_BEE_NEW 10
+#define FX_BEE_KILL 11
 
 const struct PatchStruct patches[] PROGMEM = {
 {0,NULL,fx_titlescreen,0,0},
@@ -126,4 +153,6 @@ const struct PatchStruct patches[] PROGMEM = {
 {1,NULL,fx_wormbody,0,0},
 {0,NULL,fx_spider_fall,0,0},
 {1,NULL,fx_spider,0,0},
+{0,NULL,fx_bee_new,0,0},
+{0,NULL,fx_bee_kill,0,0},
 };

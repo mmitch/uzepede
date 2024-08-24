@@ -313,6 +313,8 @@ static void initBee(){
 
   getBeeSave();
   drawBee();
+  
+  TriggerFx(FX_BEE_NEW, 0xdf, true);
 }
 
 static void initSpider(){
@@ -666,7 +668,7 @@ static void movePlayer(){
 
 // kill bee, create mushroom, remove bullet
 static void shootBee() {
-  TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
+  TriggerFx(FX_BEE_KILL, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BEE);
   bee_x = bee_y = OFFSCREEN;
