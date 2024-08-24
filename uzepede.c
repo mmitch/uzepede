@@ -120,27 +120,27 @@ void clearScreen(){
   Fill(0, 0, 40, 28, 0);
 }
 
-void drawWormHead(Scalar x, Scalar y, Boolean direction){
+void drawWormHead(const Scalar x, const Scalar y, const Boolean direction){
   DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
 }
 
-void drawWormBody(Scalar x, Scalar y){
+void drawWormBody(const Scalar x, const Scalar y){
   DrawMap(x, y, t_wormbody);
 }
 
-void drawEmpty(Scalar x, Scalar y){
+void drawEmpty(const Scalar x, const Scalar y){
   DrawMap(x, y, t_black);
 }
 
-void drawMushroom1(Scalar x, Scalar y){
+void drawMushroom1(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom1);
 }
 
-void drawMushroom2(Scalar x, Scalar y){
+void drawMushroom2(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom2);
 }
 
-void drawMushroom3(Scalar x, Scalar y){
+void drawMushroom3(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom3);
 }
 
@@ -165,7 +165,7 @@ void gameOver(){
 }
 
 // print a string using 7-segment display
-void printString(Scalar x, Scalar y, const char *c){
+void printString(Scalar x, const Scalar y, const char *c){
 
   for (; *c; x++, c++) {
     switch (*c) {
@@ -283,7 +283,7 @@ void scoreToString() {
 }
 
 // change, convert and display score
-void addScore(Scalar add){
+void addScore(const Scalar add){
   score += add;
   scoreToString();
   printString( SCORE_X, SCORE_Y, score_string );
@@ -334,7 +334,7 @@ void initSpider(){
 
 }
 
-void initWorm(Scalar startx, Scalar starty, Scalar length, Boolean direction){
+void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction){
 
   Worm *newWorm = worms;
 
@@ -470,7 +470,7 @@ void shootWormBody(){
   addScore(SCORE_WORMBODY);
 }
 
-void moveWorm(Scalar i){
+void moveWorm(const Scalar i){
   // move head, turn around if needed
 
   Scalar x, y;
