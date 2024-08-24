@@ -115,57 +115,57 @@ const char* builddate = COMPILEDATE;
 
 Tile tmp_level; // for repeated LEVEL() checks
 
-void clearScreen(){
+static void clearScreen(){
   // clear whole mode 1 screen regardless of our internal screen size
   Fill(0, 0, 40, 28, 0);
 }
 
-void drawWormHead(const Scalar x, const Scalar y, const Boolean direction){
+static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction){
   DrawMap(x, y, direction ? t_wormheadright : t_wormheadleft);
 }
 
-void drawWormBody(const Scalar x, const Scalar y){
+static void drawWormBody(const Scalar x, const Scalar y){
   DrawMap(x, y, t_wormbody);
 }
 
-void drawEmpty(const Scalar x, const Scalar y){
+static void drawEmpty(const Scalar x, const Scalar y){
   DrawMap(x, y, t_black);
 }
 
-void drawMushroom1(const Scalar x, const Scalar y){
+static void drawMushroom1(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom1);
 }
 
-void drawMushroom2(const Scalar x, const Scalar y){
+static void drawMushroom2(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom2);
 }
 
-void drawMushroom3(const Scalar x, const Scalar y){
+static void drawMushroom3(const Scalar x, const Scalar y){
   DrawMap(x, y, t_mushroom3);
 }
 
-void drawShot(){
+static void drawShot(){
   DrawMap(shot_x, shot_y, t_shot);
 }
 
-void drawPlayer(){
+static void drawPlayer(){
   DrawMap(player_x, player_y, t_player);
 }
 
-void drawSpider(){
+static void drawSpider(){
   DrawMap(spider_x, spider_y, t_spider);
 }
 
-void drawBug(){
+static void drawBug(){
   DrawMap(bug_x, bug_y, t_bug);
 }
 
-void gameOver(){
+static void gameOver(){
   alive = 0;
 }
 
 // print a string using 7-segment display
-void printString(Scalar x, const Scalar y, const char *c){
+static void printString(Scalar x, const Scalar y, const char *c){
 
   for (; *c; x++, c++) {
     switch (*c) {
@@ -272,7 +272,7 @@ void printString(Scalar x, const Scalar y, const char *c){
 }
 
 // convert int->char
-void scoreToString() {
+static void scoreToString() {
   BigScalar tmp_score = score;
   char *c = score_string + SCORE_WIDTH;
   do {
@@ -283,13 +283,13 @@ void scoreToString() {
 }
 
 // change, convert and display score
-void addScore(const Scalar add){
+static void addScore(const Scalar add){
   score += add;
   scoreToString();
   printString( SCORE_X, SCORE_Y, score_string );
 }
 
-void getBugSave(){
+static void getBugSave(){
   tmp_level = LEVEL(bug_x, bug_y);
   if (tmp_level == T_MSH1) {
     bug_save = 1;
@@ -302,7 +302,7 @@ void getBugSave(){
   }
 }
 
-void initBug(){
+static void initBug(){
   if (rand()%2) {
     bug_x = MINX;
     bug_dirx = true;
@@ -317,7 +317,7 @@ void initBug(){
   drawBug();
 }
 
-void initSpider(){
+static void initSpider(){
   spider_y = MINY;
 
   do {
@@ -334,7 +334,7 @@ void initSpider(){
 
 }
 
-void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction){
+static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction){
 
   Worm *newWorm = worms;
 
@@ -366,7 +366,7 @@ void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boo
   wormcount++;
 }
 
-void shootWormHead(){
+static void shootWormHead(){
   Worm *worm;
 
   // find worm that got shot
@@ -403,7 +403,7 @@ void shootWormHead(){
   }
 }
 
-void shootWormBody(){
+static void shootWormBody(){
 
   // find worm index that got hit
   Scalar idx;
@@ -470,7 +470,7 @@ void shootWormBody(){
   addScore(SCORE_WORMBODY);
 }
 
-void moveWorm(const Scalar i){
+static void moveWorm(const Scalar i){
   // move head, turn around if needed
 
   Scalar x, y;
@@ -603,7 +603,7 @@ void moveWorm(const Scalar i){
 
 }
 
-void movePlayer(){
+static void movePlayer(){
 
   Scalar x = player_x;
   Scalar y = player_y;
@@ -656,7 +656,7 @@ void movePlayer(){
 
 }
 
-void moveBug() {
+static void moveBug() {
   
   // replace old bug
   switch (bug_save) {
@@ -717,7 +717,7 @@ void moveBug() {
 
 }
 
-void moveSpider() {
+static void moveSpider() {
   
   // replace old spider
   if (rand()%2) {
@@ -745,7 +745,7 @@ void moveSpider() {
 
 }
 
-void moveShot(){
+static void moveShot(){
   
   if (! shooting) {
     return;
@@ -840,7 +840,7 @@ void moveShot(){
 
 }
 
-void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, const Scalar ymax, const Boolean clear){
+static void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, const Scalar ymax, const Boolean clear){
   Scalar i;
 
   // corners are always drawn
@@ -865,21 +865,21 @@ void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, const Scal
   }
 }
 
-void drawBorder(){
+static void drawBorder(){
   drawBox( MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN-1, MAXY_SCREEN-1, true );
 }
 
-void drawMapXCentered( const Scalar y, const VRAM_PTR_TYPE *tile, const Scalar width){
+static void drawMapXCentered( const Scalar y, const VRAM_PTR_TYPE *tile, const Scalar width){
   DrawMap( X_CENTERED(width), y, tile );
 }
 
-void drawTitleScreen(){
+static void drawTitleScreen(){
   drawBorder();
   drawMapXCentered( 12, t_title, T_TITLE_WIDTH );
   drawMapXCentered( 20, t_selectcredits, T_SELECTCREDITS_WIDTH );
 }
 
-void drawCreditScreen(){
+static void drawCreditScreen(){
   drawBorder();
 
   const Scalar left_align = X_CENTERED( T_URL_WIDTH );
@@ -894,13 +894,13 @@ void drawCreditScreen(){
   printString( MINX, MAXY - 1, builddate );
 }
 
-void drawLevel(){
+static void drawLevel(){
   drawBorder();
   DrawMap( SCORE_X - 1,           SCORE_Y, border_scorel );
   DrawMap( SCORE_X + SCORE_WIDTH, SCORE_Y, border_scorer );
 }
 
-void drawGameOver(){
+static void drawGameOver(){
 
   // redraw border to remove score from bottom left
   drawBox( MINX_SCREEN, MINY_SCREEN, MAXX_SCREEN-1, MAXY_SCREEN-1, false );
@@ -916,20 +916,20 @@ void drawGameOver(){
 
 }
 
-void joypadWaitForAnyRelease(){
+static void joypadWaitForAnyRelease(){
   while (ReadJoypad(0) != 0) {};
 }
 
-void joypadWaitForAnyPress(){
+static void joypadWaitForAnyPress(){
   while (ReadJoypad(0) == 0) {};
 }
 
-void joypadWaitForAnyTap(){
+static void joypadWaitForAnyTap(){
   joypadWaitForAnyRelease();
   joypadWaitForAnyPress();
 }
 
-void creditScreen(){
+static void creditScreen(){
   FadeOut(WAIT, 1);
   drawCreditScreen();
   FadeIn(WAIT, 1);
@@ -942,7 +942,7 @@ void creditScreen(){
   FadeIn(WAIT, 1);
 }
 
-void titleScreen(){
+static void titleScreen(){
 
   drawTitleScreen();
   TriggerFx(FX_TITLESCREEN, 0xff, false);
