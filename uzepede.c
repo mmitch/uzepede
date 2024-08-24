@@ -663,6 +663,13 @@ static void movePlayer(){
 
 }
 
+static void shootBug() {
+  TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
+  drawMushroom1(shot_x, shot_y);
+  addScore(SCORE_BUG);
+  bug_x = bug_y = OFFSCREEN;
+}
+
 static void moveBug() {
   
   // replace old bug
@@ -722,6 +729,13 @@ static void moveBug() {
 
 }
 
+static void shootSpider() {
+  TriggerFx(FX_SPIDER, 0xe0, true);
+  drawMushroom1(shot_x, shot_y);
+  addScore(SCORE_SPIDER);
+  spider_x = spider_y = OFFSCREEN;
+}
+
 static void moveSpider() {
   
   // replace old spider
@@ -748,6 +762,27 @@ static void moveSpider() {
 
   }
 
+}
+
+// damage mushroom, remove bullet
+static void shootMushroom1() {
+  TriggerFx(FX_MUSHROOM, 0xc0, true);
+  drawMushroom2( shot_x, shot_y );
+  addScore(SCORE_MUSHROOM);
+}
+
+// damage mushroom, remove bullet
+static void shootMushroom2() {
+  TriggerFx(FX_MUSHROOM, 0xb0, true);
+  drawMushroom3( shot_x, shot_y );
+  addScore(SCORE_MUSHROOM);
+}
+
+// remove mushroom, remove bullet
+static void shootMushroom3() {
+  TriggerFx(FX_MUSHROOM, 0xa0, true);
+  drawEmpty( shot_x, shot_y );
+  addScore(SCORE_MUSHROOM);
 }
 
 static void moveShot(){
@@ -781,27 +816,18 @@ static void moveShot(){
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
 
-    // damage mushroom, remove bullet
-    TriggerFx(FX_MUSHROOM, 0xc0, true);
-    drawMushroom2( shot_x, shot_y );
+    shootMushroom1();
     shooting = 0;
-    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
 
-    // damage mushroom, remove bullet
-    TriggerFx(FX_MUSHROOM, 0xb0, true);
-    drawMushroom3( shot_x, shot_y );
+    shootMushroom2();
     shooting = 0;
-    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
 
-    // damage mushroom, remove bullet
-    TriggerFx(FX_MUSHROOM, 0xa0, true);
-    drawEmpty( shot_x, shot_y );
+    shootMushroom3();
     shooting = 0;
-    addScore(SCORE_MUSHROOM);
 
   } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
 
@@ -818,22 +844,14 @@ static void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
 
     // kill spider, create mushroom, remove bullet
-    TriggerFx(FX_SPIDER, 0xe0, true);
-    drawMushroom1(shot_x, shot_y);
+    shootSpider();
     shooting = 0;
-    addScore(SCORE_SPIDER);
-
-    spider_x = spider_y = OFFSCREEN;
 
   } else if ( LEVEL(shot_x, shot_y) == T_BUG ) {
 
     // kill bug, create mushroom, remove bullet
-    TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
-    drawMushroom1(shot_x, shot_y);
+    shootBug();
     shooting = 0;
-    addScore(SCORE_BUG);
-
-    bug_x = bug_y = OFFSCREEN;
 
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
