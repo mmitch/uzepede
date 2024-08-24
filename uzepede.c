@@ -36,7 +36,7 @@
 
 // game parameters
 #define SPIDER_AFTER_WORMS 5
-#define BUG_AFTER_WORMS 6
+#define BEE_AFTER_WORMS 6
 #define INITIAL_MUSHROOMS 20
 
 #define WAIT 1
@@ -61,7 +61,7 @@ typedef unsigned int BigScalar;
 #define T_PLYR (Tile)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
 #define T_SHOT (Tile)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
 #define T_SPDR (Tile)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_BUG  (Tile)(Tiles + (t_bug[2]           * TILE_WIDTH * TILE_HEIGHT ))
+#define T_BEE  (Tile)(Tiles + (t_bee[2]           * TILE_WIDTH * TILE_HEIGHT ))
 
 #define X_CENTERED(width) ((MAXX_SCREEN - MINX_SCREEN - (width)) / 2 - 1 + MINX_SCREEN)
 #define Y_CENTER ((MAXY_SCREEN + MINY_SCREEN) / 2 - 1 + MINY_SCREEN)
@@ -98,12 +98,12 @@ Scalar shot_x, shot_y, shooting;
 
 Scalar spider_x, spider_y;
 
-Scalar bug_x, bug_y;
-Boolean bug_dirx, bug_diry;
-Boolean bug_over_mushroom;
+Scalar bee_x, bee_y;
+Boolean bee_dirx, bee_diry;
+Boolean bee_over_mushroom;
 
 Scalar wormkills_spider;
-Scalar wormkills_bug;
+Scalar wormkills_bee;
 
 BigScalar score;
 #define SCORE_MUSHROOM 1
@@ -111,7 +111,7 @@ BigScalar score;
 #define SCORE_WORMHEAD 5
 #define SCORE_WORMHEAD_PERBODY 2
 #define SCORE_SPIDER 7
-#define SCORE_BUG 10
+#define SCORE_BEE 10
 
 #define SCORE_X (MINX_SCREEN + 3)
 #define SCORE_Y (MAXY_SCREEN - 1)
@@ -161,8 +161,8 @@ static void drawSpider(){
   DrawMap(spider_x, spider_y, t_spider);
 }
 
-static void drawBug(){
-  DrawMap(bug_x, bug_y, t_bug);
+static void drawBee(){
+  DrawMap(bee_x, bee_y, t_bee);
 }
 
 static void gameOver(){
@@ -294,25 +294,25 @@ static void addScore(const Scalar add){
   printString( SCORE_X, SCORE_Y, score_string );
 }
 
-static void getBugSave(){
-  bug_over_mushroom = (LEVEL(bug_x, bug_y) == T_MSH1)
-                   || (LEVEL(bug_x, bug_y) == T_MSH2)
-                   || (LEVEL(bug_x, bug_y) == T_MSH3);
+static void getBeeSave(){
+  bee_over_mushroom = (LEVEL(bee_x, bee_y) == T_MSH1)
+                   || (LEVEL(bee_x, bee_y) == T_MSH2)
+                   || (LEVEL(bee_x, bee_y) == T_MSH3);
 }
 
-static void initBug(){
+static void initBee(){
   if (rand()%2) {
-    bug_x = MINX;
-    bug_dirx = true;
+    bee_x = MINX;
+    bee_dirx = true;
   } else {
-    bug_x = MAXX - 1;
-    bug_dirx = false;
+    bee_x = MAXX - 1;
+    bee_dirx = false;
   }
-  bug_y = RAND_RANGE( MAXY-7, MAXY-2 );
-  bug_diry = rand()%2;
+  bee_y = RAND_RANGE( MAXY-7, MAXY-2 );
+  bee_diry = rand()%2;
 
-  getBugSave();
-  drawBug();
+  getBeeSave();
+  drawBee();
 }
 
 static void initSpider(){
@@ -391,7 +391,7 @@ static void shootWormHead(){
 	worm->length = 0; 
 	wormcount--;
 	wormkills_spider++;
-	wormkills_bug++;
+	wormkills_bee++;
 
 	addScore(SCORE_WORMHEAD);
 	shooting = 0;
@@ -650,7 +650,7 @@ static void movePlayer(){
       player_y = y;
       drawPlayer();
 
-    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHR || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BUG ){
+    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHR || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BEE ){
 
       // TODO: draw player moving into the obstacle?  sometimes the game over screen looks weird because the enemy is still next to you
       gameOver();
@@ -664,62 +664,62 @@ static void movePlayer(){
 
 }
 
-// kill bug, create mushroom, remove bullet
-static void shootBug() {
+// kill bee, create mushroom, remove bullet
+static void shootBee() {
   TriggerFx(FX_SPIDER, 0xe0, true); // TODO: new sound!
   drawMushroom1(shot_x, shot_y);
-  addScore(SCORE_BUG);
-  bug_x = bug_y = OFFSCREEN;
+  addScore(SCORE_BEE);
+  bee_x = bee_y = OFFSCREEN;
   shooting = 0;
 }
 
-static void moveBug() {
+static void moveBee() {
   
-  // replace old bug
-  if (bug_over_mushroom) {
-    drawMushroom1(bug_x, bug_y);
+  // replace old bee
+  if (bee_over_mushroom) {
+    drawMushroom1(bee_x, bee_y);
   } else {
-    drawEmpty(bug_x, bug_y);
+    drawEmpty(bee_x, bee_y);
   }
 
-  // move bug
-  if (bug_dirx) {
-    bug_x++;
-    if (bug_x == MAXX) {
-      bug_x = bug_y = OFFSCREEN;
+  // move bee
+  if (bee_dirx) {
+    bee_x++;
+    if (bee_x == MAXX) {
+      bee_x = bee_y = OFFSCREEN;
       return;
     }
   } else {
-    if (bug_x == MINX) {
-      bug_x = bug_y = OFFSCREEN;
+    if (bee_x == MINX) {
+      bee_x = bee_y = OFFSCREEN;
       return;
     }
-    bug_x--;
+    bee_x--;
   }
-  if (bug_diry) {
-    bug_y++;
-    if (bug_y == MAXY - 1) {
-      bug_diry = false;
+  if (bee_diry) {
+    bee_y++;
+    if (bee_y == MAXY - 1) {
+      bee_diry = false;
     }
   } else {
-    bug_y--;
-    if (bug_y == MAXY - 8) {
-      bug_diry = true;
+    bee_y--;
+    if (bee_y == MAXY - 8) {
+      bee_diry = true;
     }
   }
 
-  // draw bug
-  getBugSave();
-  drawBug();
+  // draw bee
+  getBeeSave();
+  drawBee();
   
-  if (bug_x == player_x && bug_y == player_y) {
+  if (bee_x == player_x && bee_y == player_y) {
     // got you!
     gameOver();
   }
 
   // ran into shot -> selfkill
-  if (IS_SHOT_AT(bug_x, bug_y)) {
-    shootBug();
+  if (IS_SHOT_AT(bee_x, bee_y)) {
+    shootBee();
   }
 }
 
@@ -842,9 +842,9 @@ static void moveShot(){
 
     shootSpider();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_BUG ) {
+  } else if ( LEVEL(shot_x, shot_y) == T_BEE ) {
 
-    shootBug();
+    shootBee();
 
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
@@ -1021,13 +1021,13 @@ int main(){
     // init worms
     wormcount = 0;
     wormkills_spider = 0;
-    wormkills_bug = 0;
+    wormkills_bee = 0;
 
     // init spider
     spider_x = spider_y = OFFSCREEN;
 
-    // init bug
-    bug_x = bug_y = OFFSCREEN;
+    // init bee
+    bee_x = bee_y = OFFSCREEN;
 
     // init mushrooms
     for (Scalar i = 0; i < INITIAL_MUSHROOMS; i++) {
@@ -1090,12 +1090,12 @@ int main(){
       WaitVsync(WAIT);
       moveShot();
 
-      if (bug_x != OFFSCREEN) {
-	moveBug();
+      if (bee_x != OFFSCREEN) {
+	moveBee();
       } else {
-	if (wormkills_bug >= BUG_AFTER_WORMS) {
-	  wormkills_bug = 0;
-	  initBug();
+	if (wormkills_bee >= BEE_AFTER_WORMS) {
+	  wormkills_bee = 0;
+	  initBee();
 	}
       }
       
