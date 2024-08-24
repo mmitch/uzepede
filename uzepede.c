@@ -100,7 +100,7 @@ Scalar spider_x, spider_y;
 
 Scalar bug_x, bug_y;
 Boolean bug_dirx, bug_diry;
-Scalar bug_save;
+Boolean bug_over_mushroom;
 
 Scalar wormkills_spider;
 Scalar wormkills_bug;
@@ -295,15 +295,9 @@ static void addScore(const Scalar add){
 }
 
 static void getBugSave(){
-  if (LEVEL(bug_x, bug_y) == T_MSH1) {
-    bug_save = 1;
-  } else if (LEVEL(bug_x, bug_y) == T_MSH2) {
-    bug_save = 2;
-  } else if (LEVEL(bug_x, bug_y) == T_MSH3) {
-    bug_save = 3;
-  } else {
-    bug_save = 0;
-  }
+  bug_over_mushroom = (LEVEL(bug_x, bug_y) == T_MSH1)
+                   || (LEVEL(bug_x, bug_y) == T_MSH2)
+                   || (LEVEL(bug_x, bug_y) == T_MSH3);
 }
 
 static void initBug(){
@@ -682,23 +676,10 @@ static void shootBug() {
 static void moveBug() {
   
   // replace old bug
-  switch (bug_save) {
-
-  case 1:
+  if (bug_over_mushroom) {
     drawMushroom1(bug_x, bug_y);
-    break;
-
-  case 2:
-    drawMushroom2(bug_x, bug_y);
-    break;
-
-  case 3:
-    drawMushroom3(bug_x, bug_y);
-    break;
-
-  default:
+  } else {
     drawEmpty(bug_x, bug_y);
-
   }
 
   // move bug
