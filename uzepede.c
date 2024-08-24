@@ -515,7 +515,6 @@ static void moveWorm(const Scalar i){
 
   // compute new head position and store in old tail position
   Boolean moved = 0;
-  Boolean selfkill = 0;
   Scalar oldx = x;
   while ( ! moved) {
 
@@ -538,8 +537,7 @@ static void moveWorm(const Scalar i){
 	gameOver();
 
       } else if(IS_SHOT_AT_TILED(x,y)) {
-        // move there, but be dead afterwards
-	selfkill = 1;
+        // ok, go there, but be dead afterwards
 
       } else if(LEVEL(x,y) != T_FREE) {
 	// can't go there
@@ -561,8 +559,7 @@ static void moveWorm(const Scalar i){
 	gameOver();
 	
       } else if(IS_SHOT_AT_TILED(x,y)) {
-        // move there, but be dead afterwards
-	selfkill = 1;
+        // ok, go there, but be dead afterwards
 
       } else if(LEVEL(x,y) != T_FREE) {
 	// can't go there
@@ -616,7 +613,7 @@ static void moveWorm(const Scalar i){
   theWorm->tailidx--;
 
   // we might have walked into a shot
-  if (selfkill) {
+  if (IS_SHOT_AT(x, y)) {
     shootWormHead();
   }
 }
