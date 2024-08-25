@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 #include "data/tiles.inc"
-#include "data/patches.inc"
+#include "data/patches.h"
 
 // playable area inside border
 #define MINX 3
