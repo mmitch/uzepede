@@ -962,6 +962,69 @@ static void silenceAllSounds(){
   InitMusicPlayer(patches);
 }
 
+static void secretSoundTest(){
+  drawBox(MINX+2, MINY+2, MINX+8, MINY+4, false);
+  printString(MINX+3, MINY+3, "31337");
+  silenceAllSounds();
+
+  Joypad button = 0;
+  while (button != BTN_START) {
+    joypadWaitForAnyRelease();
+    joypadWaitForAnyTap();
+    button = ReadJoypad(0);
+
+    switch(button) {
+    case BTN_A:
+      TriggerFx(FX_SHOT, 0xff, true);
+      break;
+
+    case BTN_B:
+      TriggerFx(FX_MUSHROOM, 0xff, true);
+      break;
+
+    case BTN_X:
+      TriggerFx(FX_WORMHEAD, 0xff, true);
+      break;
+
+    case BTN_Y:
+      TriggerFx(FX_WORMBODY, 0xff, true);
+      break;
+
+    case BTN_UP:
+      TriggerFx(FX_SPIDERFALL, 0xff, true);
+      break;
+
+    case BTN_DOWN:
+      TriggerFx(FX_SPIDER, 0xff, true);
+      break;
+
+    case BTN_LEFT:
+      TriggerFx(FX_BEE_NEW, 0xff, true);
+      break;
+
+    case BTN_RIGHT:
+      TriggerFx(FX_BEE_KILL, 0xff, true);
+      break;
+
+    case BTN_SL:
+      TriggerFx(FX_GAMEOVER1, 0xff, true);
+      TriggerFx(FX_GAMEOVER2, 0xff, true);
+      break;
+
+    case BTN_SR:
+      TriggerFx(FX_TITLESCREEN, 0xff, true);
+      break;
+
+    case BTN_SELECT:
+      TriggerFx(FX_START, 0xff, true);
+      break;
+    };
+  };
+  joypadWaitForAnyRelease();
+
+  Fill(MINX+2, MINY+2, MINX+8, MINY+4, 0);
+}
+
 static void titleScreen(){
 
   drawTitleScreen();
@@ -993,6 +1056,10 @@ static void titleScreen(){
 
       if (button == BTN_SELECT) {
 	creditScreen();
+      }
+
+      if (button == (BTN_SL | BTN_SR)) {
+        secretSoundTest();
       }
 
       button = 0; // stay on title screen

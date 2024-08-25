@@ -68,10 +68,26 @@ The bee regenerates any half-shot mushrooms it passes to full health.
 
 - START to start the game
 - SELECT to show the credits screen
+- SL + SL to enter secret test menu
 
 ### credits screen
 
 - ANY button or movement to return to title screen
+
+### sound test menu
+
+- BUTTON A: fire shot sound
+- BUTTON B: hit mushroom sound
+- BUTTON X: hit worm head sound
+- BUTTON Y: hit worm body sound
+- UP:       new spider sound
+- DOWN:     hit spiter sound
+- LEFT:     new bee sound
+- RIGHT:    kill bee sound
+- SL:       game over sound
+- SR:       title screen sound
+- SELECT:   start game sound
+- START:    return to title screen
 
 ### game over screen
 
