@@ -958,6 +958,10 @@ static void creditScreen(){
   FadeIn(WAIT, 1);
 }
 
+static void silenceAllSounds(){
+  InitMusicPlayer(patches);
+}
+
 static void titleScreen(){
 
   drawTitleScreen();
@@ -1002,14 +1006,14 @@ static void titleScreen(){
 int main(){
 
   SetTileTable(Tiles);
-  InitMusicPlayer(patches);
   clearScreen();
+  silenceAllSounds();
 
   titleScreen();
 
   while (1) {
 
-    InitMusicPlayer(patches); // silence everything
+    silenceAllSounds();
     TriggerFx(FX_START, 0xff, false);
 
     // wait for button release
@@ -1105,7 +1109,7 @@ int main(){
 
     // GAME OVER
 
-    InitMusicPlayer(patches); // silence everything
+    silenceAllSounds();
     TriggerFx(FX_GAMEOVER1, 0xff, false);
     TriggerFx(FX_GAMEOVER2, 0xbf, false);
 
