@@ -573,8 +573,8 @@ static void moveWorm(const Scalar i){
   if ( y >= MAXY ) {
 
     do {
-      x = RAND_RANGE( MINX, MAXX );
-      y = RAND_RANGE( MINY, MINY+3 );
+      x = RAND_RANGE( MINX+2, MAXX-2 );
+      y = RAND_RANGE( MINY,   MINY+3 );
     } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
     // expand worm as much as possible
