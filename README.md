@@ -18,16 +18,16 @@ original Centipede you will find ;-)
 
 This game features:
 
- - multiple worms that split if you don't hit their head
+- multiple worms that split if you don't hit their head
 
- - mushrooms that clutter the level
+- mushrooms that clutter the level
 
- - spiders that produce tails of mushrooms
+- spiders that produce tails of mushrooms
 
- - bees that rejuvenate mushrooms and get in your way at the bottom
+- bees that rejuvenate mushrooms and get in your way at the bottom
 
 - tactical gameplay: close in for faster kills or keep your distance
-   where it's safer
+  where it's safer
 
 ## gameplay
 
@@ -53,29 +53,29 @@ The bee regenerates any half-shot mushrooms it passes to full health.
 
 ## scoring
 
- - hit a mushroom:  1
- - split a worm:    3
- - kill a worm:     5 + 2 per body part
- - kill a spider :  7
- - kill a bee:     10
+- hit a mushroom:  1
+- split a worm:    3
+- kill a worm:     5 + 2 per body part
+- kill a spider :  7
+- kill a bee:     10
 
 ## controls
 
- - UP/DOWN/LEFT/RIGHT to move the player
- - BUTTON A to shoot
+- UP/DOWN/LEFT/RIGHT to move the player
+- BUTTON A to shoot
 
 ### title screen
 
- - START to start the game
- - SELECT to show the credits screen
+- START to start the game
+- SELECT to show the credits screen
 
 ### credits screen
 
- - ANY button or movement to return to title screen
+- ANY button or movement to return to title screen
 
 ### game over screen
 
- - ANY button or movement to start a new game
+- ANY button or movement to start a new game
 
 ## compilation
 
