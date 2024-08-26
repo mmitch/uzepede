@@ -12,7 +12,7 @@
   <input file="../data/tiles.png" type="png" tile-width="6" tile-height="8"/>
   <output file="../data/tiles.inc">
     <tiles var-name="Tiles"/>
-    <maps pointers-size="16">
+    <maps pointers-size="8">
       <map var-name="t_black"         left="0" top="0" width="1" height="1"/>
       <map var-name="t_wormbody"      left="1" top="0" width="1" height="1"/>
       <map var-name="t_wormheadright" left="2" top="0" width="1" height="1"/>

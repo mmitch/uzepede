@@ -44,14 +44,14 @@
 
 #define WAIT 1
 
-typedef u8  Scalar;
-typedef u8  Boolean;
-typedef VRAM_PTR_TYPE Tile;
-typedef u16 Joypad;
+typedef u8   Scalar;
+typedef u8   Boolean;
+typedef char Tile;
+typedef u16  Joypad;
 typedef unsigned int BigScalar;
 
 // read tile from VRAM
-#define LEVEL(x,y) *((Tile*)(vram + (2*(x)) + (80*(y) ) ))
+#define LEVEL(x,y) *(vram + (x) + (40*(y) ))
 
 // constants for the actual first tile content
 // TODO: borders and characters are missing (except for c_slash only used once)
@@ -66,19 +66,6 @@ typedef unsigned int BigScalar;
 #define TILE_SHOT          t_shot[2]
 #define TILE_SPIDER        t_spider[2]
 #define TILE_BEE           t_bee[2]
-
-// comparison tile pointers for VRAM
-#define T_FREE (Tile)(Tiles + (TILE_FREE          * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH1 (Tile)(Tiles + (TILE_MUSHROOM1     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH2 (Tile)(Tiles + (TILE_MUSHROOM2     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH3 (Tile)(Tiles + (TILE_MUSHROOM3     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WORM (Tile)(Tiles + (TILE_WORMBODY      * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHL (Tile)(Tiles + (TILE_WORMHEADLEFT  * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHR (Tile)(Tiles + (TILE_WORMHEADRIGHT * TILE_WIDTH * TILE_HEIGHT ))
-#define T_PLYR (Tile)(Tiles + (TILE_PLAYER        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SHOT (Tile)(Tiles + (TILE_SHOT          * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SPDR (Tile)(Tiles + (TILE_SPIDER        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_BEE  (Tile)(Tiles + (TILE_BEE           * TILE_WIDTH * TILE_HEIGHT ))
 
 #define X_CENTERED(width) ((MAXX_SCREEN - MINX_SCREEN - (width)) / 2 - 1 + MINX_SCREEN)
 #define Y_CENTER ((MAXY_SCREEN + MINY_SCREEN) / 2 - 1 + MINY_SCREEN)
@@ -95,7 +82,7 @@ typedef unsigned int BigScalar;
 // - but if we already are in a comparison using LEVEL(x,y),
 //   IS_SHOT_AT_TILED() is better, because the registers are already set up
 #define IS_SHOT_AT(x,y) (shot_x == (x) && shot_y == (y))
-#define IS_SHOT_AT_TILED(x,y) (LEVEL((x),(y)) == T_SHOT)
+#define IS_SHOT_AT_TILED(x,y) (LEVEL((x),(y)) == TILE_SHOT)
 
 typedef struct {
   Boolean direction_right;
@@ -468,9 +455,9 @@ static void triggerFx3(unsigned char patch, unsigned char volume, bool _retrig){
 }
 
 static void getBeeSave(){
-  bee_over_mushroom = (LEVEL(bee_x, bee_y) == T_MSH1)
-                   || (LEVEL(bee_x, bee_y) == T_MSH2)
-                   || (LEVEL(bee_x, bee_y) == T_MSH3);
+  bee_over_mushroom = (LEVEL(bee_x, bee_y) == TILE_MUSHROOM1)
+                   || (LEVEL(bee_x, bee_y) == TILE_MUSHROOM2)
+                   || (LEVEL(bee_x, bee_y) == TILE_MUSHROOM3);
 }
 
 static void initBee(){
@@ -495,10 +482,10 @@ static void initSpider(){
 
   do {
     spider_x = RAND_RANGE( MINX, MAXX );
-  } while (    LEVEL(spider_x, spider_y) != T_FREE
-	    && LEVEL(spider_x, spider_y) != T_MSH1
-	    && LEVEL(spider_x, spider_y) != T_MSH2
-	    && LEVEL(spider_x, spider_y) != T_MSH3
+  } while (    LEVEL(spider_x, spider_y) != TILE_FREE
+	    && LEVEL(spider_x, spider_y) != TILE_MUSHROOM1
+	    && LEVEL(spider_x, spider_y) != TILE_MUSHROOM2
+	    && LEVEL(spider_x, spider_y) != TILE_MUSHROOM3
 	       ); // @FIXME lockup with super-long worms on first line
 
   triggerFx3(FX_SPIDERFALL, 0xdf, true);
@@ -743,14 +730,14 @@ static void moveWorm(const Scalar wormId){
 
     if (moved) {
 
-      if (LEVEL(x,y) == T_PLYR) {
+      if (LEVEL(x,y) == TILE_PLAYER) {
 	// got you!
 	gameOver();
 
       } else if(IS_SHOT_AT_TILED(x,y)) {
         // ok, go there, but be dead afterwards
 
-      } else if(LEVEL(x,y) != T_FREE) {
+      } else if(LEVEL(x,y) != TILE_FREE) {
 	// can't go there
 	moved = 0;
 	x = oldx;
@@ -765,14 +752,14 @@ static void moveWorm(const Scalar wormId){
       y++;
       theWorm->direction_right = 1 - theWorm->direction_right;
       
-      if (LEVEL(x,y) == T_PLYR) {
+      if (LEVEL(x,y) == TILE_PLAYER) {
 	// got you!
 	gameOver();
 	
       } else if(IS_SHOT_AT_TILED(x,y)) {
         // ok, go there, but be dead afterwards
 
-      } else if(LEVEL(x,y) != T_FREE) {
+      } else if(LEVEL(x,y) != TILE_FREE) {
 	// can't go there
 	moved = 0;
 
@@ -790,7 +777,7 @@ static void moveWorm(const Scalar wormId){
     do {
       x = RAND_RANGE( MINX+2, MAXX-2 );
       y = RAND_RANGE( MINY,   MINY+3 );
-    } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
+    } while ( LEVEL(x,y) != TILE_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
 
     // rotate before expanding the worm so that the head will not suddenly wrap into OFFSCREEN body parts
     rotateWormHeadToStartIdx(theWorm);
@@ -863,14 +850,14 @@ static void movePlayer(){
 
   if (player_x != x || player_y != y) {
 
-    if (LEVEL(x,y) == T_FREE) {
+    if (LEVEL(x,y) == TILE_FREE) {
 
       drawEmpty(player_x, player_y);
       player_x = x;
       player_y = y;
       drawPlayer();
 
-    } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHR || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BEE ){
+    } else if (LEVEL(x,y) == TILE_WORMBODY || LEVEL(x,y) == TILE_WORMHEADLEFT || LEVEL(x,y) == TILE_WORMHEADRIGHT || LEVEL(x,y) == TILE_SPIDER || LEVEL(x,y) == TILE_BEE ){
 
       drawEmpty(player_x, player_y);
       player_x = x;
@@ -1037,40 +1024,40 @@ static void moveShot(){
   shot_y--;
   
   // test for hit
-  if ( LEVEL(shot_x, shot_y) == T_FREE ) {
+  if ( LEVEL(shot_x, shot_y) == TILE_FREE ) {
 
     // draw bullet
     drawShot();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH1 ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_MUSHROOM1 ) {
 
     shootMushroom1();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH2 ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_MUSHROOM2 ) {
 
     shootMushroom2();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_MSH3 ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_MUSHROOM3 ) {
 
     shootMushroom3();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_WMHL || LEVEL(shot_x, shot_y) == T_WMHR ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_WORMHEADLEFT || LEVEL(shot_x, shot_y) == TILE_WORMHEADRIGHT ) {
 
     shootWormHead();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_WORM ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_WORMBODY ) {
 
     shootWormBody();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_SPDR ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_SPIDER ) {
 
     shootSpider();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_BEE ) {
+  } else if ( LEVEL(shot_x, shot_y) == TILE_BEE ) {
 
     shootBee();
 
-  } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
+  } else if ( LEVEL(shot_x, shot_y) == TILE_PLAYER ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
     shooting = false;
