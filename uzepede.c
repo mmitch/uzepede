@@ -33,7 +33,7 @@
 #define MAXX_SCREEN 38
 #define MAXY_SCREEN 28
 
-#define OFFSCREEN 255
+#define OFFSCREEN 0xAA
 #define MAXWORMLEN 16
 #define MAXWORMCOUNT 16
 
