@@ -140,7 +140,7 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
 
   clearScreen();
   DrawMap  ( 4,  3, tile);
-  DrawMap  ( 4,  4, tile);
+  DrawMap  ( 5,  3, tile);
   printByte( 4,  4, val1);
   printByte( 4,  5, val2);
   printByte( 4,  6, val3);
@@ -161,7 +161,7 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   printByte( 4, 12, MAXWORMLEN);
 
   for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
-    Scalar y = i + 1;
+    Scalar y = i + 1 + (i / EXTRA_LINE_EVERY);
     DrawMap  (10, y, t_wormheadleft);
     printByte(11, y, worms[i].startidx);
     DrawMap  (13, y, t_wormheadleft);
