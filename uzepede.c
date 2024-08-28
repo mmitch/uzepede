@@ -446,18 +446,32 @@ static void shootWormBody(){
     worm->tailidx++;
   }
 
-  // create new worm of last part if there is something left
+  // create new worm out of last part if there is something left
   if (split < worm->length - 1) {
 
     Worm *newWorm = worms;
     while (newWorm->length > 0) {
       newWorm++;
     }
-    newWorm->startidx = worm->startidx + split + 1;
-    newWorm->length = worm->length - split - 1;
-    newWorm->direction_right = 1 - worm->direction_right;
-    newWorm->tailidx = newWorm->startidx;
-    wormcount++;
+
+    // this check is only relevant if MAXWORMCOUNT < MAXWORMLEN - 1
+    // (ths - 1 is because one of the body parts of the old worm becomes a mushroom)
+    // the compiler should remove this automatically depending on the compile flags
+    if ((MAXWORMCOUNT < MAXWORMLEN - 1) && (wormcount >= MAXWORMCOUNT)) {
+      // no free place for a new split worm, so make the last part into mushrooms instead
+      for (Scalar i = worm->startidx + split + 1; i < worm->startidx + worm->length; i++) {
+        drawMushroom1(wormx[i], wormy[i]);
+        wormx[i] = wormy[i] = OFFSCREEN;
+      }
+
+    } else {
+      // create the new worm from the leftover part
+      newWorm->startidx = worm->startidx + split + 1;
+      newWorm->length = worm->length - split - 1;
+      newWorm->direction_right = 1 - worm->direction_right;
+      newWorm->tailidx = newWorm->startidx;
+      wormcount++;
+    }
   }
     
   // shorten first part of worm
