@@ -121,8 +121,6 @@ BigScalar score;
 #define SCORE_WIDTH 10
 char score_string[SCORE_WIDTH+1] = "0000000000";
 
-const char* builddate = COMPILEDATE;
-
 static void clearScreen(){
   // clear whole mode 1 screen regardless of our internal screen size
   Fill(0, 0, 40, 28, 0);
@@ -1021,9 +1019,10 @@ static void drawCreditScreen(){
   DrawMap( left_align, MINY + 8, t_url);
 
   // print compiledate
-  printString( MINX, MAXY - 3, "build" );
+  printString( MINX, MAXY - 4, "build" );
+  printString( MINX, MAXY - 3, COMPILEDATE );
   printString( MINX, MAXY - 2, VERSION );
-  printString( MINX, MAXY - 1, builddate );
+  printString( MINX, MAXY - 1, GITCOMMIT );
 }
 
 static void drawLevel(){

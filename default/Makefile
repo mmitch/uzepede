@@ -17,6 +17,7 @@ CC = avr-gcc
 INFO=../gameinfo.properties
 
 COMPILEDATE=$(shell date +%Y/%m/%d)
+GITCOMMIT=$(shell git rev-parse HEAD | cut -c -20)
 
 ## Kernel settings
 KERNEL_DIR = $(UZEBOX_DIR)/kernel
@@ -89,7 +90,7 @@ uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
 ## Compile game sources
 
 $(GAME).o: ../$(GAME).c
-	$(CC) -DVERSION=\"$(VERSION)\" -DCOMPILEDATE=\"$(COMPILEDATE)\" $(INCLUDES) $(CFLAGS) -c $<
+	$(CC) -DVERSION=\"$(VERSION)\" -DCOMPILEDATE=\"$(COMPILEDATE)\" -DGITCOMMIT=\"$(GITCOMMIT)\" $(INCLUDES) $(CFLAGS) -c $<
 
 ##Link
 $(TARGET): $(OBJECTS)
