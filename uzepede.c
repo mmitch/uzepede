@@ -97,7 +97,8 @@ Scalar wormmax;
 Scalar wormcount;
 
 Scalar player_x, player_y, alive;
-Scalar shot_x, shot_y, shooting;
+Scalar shot_x, shot_y;
+Boolean shooting;
 
 Scalar spider_x, spider_y;
 
@@ -490,7 +491,7 @@ static void shootWormHead(){
 	wormkills_bee++;
 
 	addScore(SCORE_WORMHEAD);
-	shooting = 0;
+	shooting = false;
 
 	break;
       }
@@ -584,7 +585,7 @@ static void shootWormBody(){
   // shot body part is lost forever --> needs memory defragmentation :)
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_WORMBODY);
-  shooting = 0;
+  shooting = false;
 }
 
 static void moveWorm(const Scalar i){
@@ -752,7 +753,7 @@ static void movePlayer(){
   }
 
   if ((buttons & BTN_A)     && ! shooting) {
-    shooting = 1;
+    shooting = true;
     shot_x = shot_y = OFFSCREEN;
     TriggerFx(FX_SHOT, 0xd0, true);
   }
@@ -786,7 +787,7 @@ static void shootBee() {
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BEE);
   bee_x = bee_y = OFFSCREEN;
-  shooting = 0;
+  shooting = false;
 }
 
 static void moveBee() {
@@ -845,7 +846,7 @@ static void shootSpider() {
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_SPIDER);
   spider_x = spider_y = OFFSCREEN;
-  shooting = 0;
+  shooting = false;
 }
 
 static void moveSpider() {
@@ -886,7 +887,7 @@ static void shootMushroom1() {
   TriggerFx(FX_MUSHROOM, 0xc0, true);
   drawMushroom2( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = 0;
+  shooting = false;
 }
 
 // damage mushroom, remove bullet
@@ -894,7 +895,7 @@ static void shootMushroom2() {
   TriggerFx(FX_MUSHROOM, 0xb0, true);
   drawMushroom3( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = 0;
+  shooting = false;
 }
 
 // remove mushroom, remove bullet
@@ -902,7 +903,7 @@ static void shootMushroom3() {
   TriggerFx(FX_MUSHROOM, 0xa0, true);
   drawEmpty( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = 0;
+  shooting = false;
 }
 
 static void moveShot(){
@@ -921,7 +922,7 @@ static void moveShot(){
 
   // off screen?
   if (shot_y == MINY) {
-    shooting = 0;
+    shooting = false;
     return;
   }
 
@@ -965,7 +966,7 @@ static void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == T_PLYR ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
-    shooting = 0;
+    shooting = false;
   }
 
 }
@@ -1231,7 +1232,7 @@ int main(){
     addScore(0); // print initial score
 
     // init shot
-    shooting = 0;
+    shooting = false;
     shot_x = shot_y = OFFSCREEN;
 
     // GAME LOOP
