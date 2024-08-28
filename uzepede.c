@@ -354,9 +354,6 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
   newWorm->startidx = wormmax;
   drawWormHead(startx, starty, direction_right);
 
-  for (Scalar i = wormmax; i < wormmax + length; i++) {
-    wormx[i] = wormy[i] = OFFSCREEN;
-  }
   wormx[wormmax] = startx;
   wormy[wormmax] = starty;
 
@@ -386,6 +383,7 @@ static void shootWormHead(){
 	// change worm to mushrooms
 	for(idx=worm->startidx; idx < worm->startidx + worm->length; idx++){
 	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
+	  wormx[idx] = wormy[idx] = OFFSCREEN;
 	  score += SCORE_WORMHEAD_PERBODY;
 	}
 	
@@ -1127,6 +1125,9 @@ int main(){
 	wormmax = 0;
 	for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
 	  worms[i].length = 0;
+	}
+	for (Scalar i = 0; i < MAXWORMLEN; i++) {
+	  wormx[i] = wormy[i] = OFFSCREEN;
 	}
 	initWorm(17, 6, 5, 1);
 	initWorm(23, 4, 9, 0);
