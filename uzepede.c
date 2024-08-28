@@ -459,6 +459,13 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
   wormcount++;
 }
 
+static void wormToMushrooms(const Scalar startidx, const Scalar endidx_exclusive) {
+  for(Scalar idx = startidx; idx < endidx_exclusive; idx++) {
+    DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
+    wormx[idx] = wormy[idx] = OFFSCREEN;
+  }
+}
+
 // head shot, kill whole worm, remove bullet
 static void shootWormHead(){
   Worm *worm;
@@ -476,13 +483,12 @@ static void shootWormHead(){
       if (IS_SHOT_AT(wormx[idx], wormy[idx])){
 
 	TriggerFx(FX_WORMHEAD, 0xef, true);
+	wormToMushrooms(worm->startidx, worm->startidx + worm->length);
 
-	// change worm to mushrooms
-	for(idx=worm->startidx; idx < worm->startidx + worm->length; idx++){
-	  DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
-	  wormx[idx] = wormy[idx] = OFFSCREEN;
-	  score += SCORE_WORMHEAD_PERBODY;
-	}
+	// only one call to addScore(), because it adds *and displays* the score
+	// TODO: refactor at least the name
+	score += SCORE_WORMHEAD_PERBODY * (worm->length - 1);
+	addScore(SCORE_WORMHEAD);
 	
 	// kill worm
 	worm->length = 0; 
@@ -490,7 +496,6 @@ static void shootWormHead(){
 	wormkills_spider++;
 	wormkills_bee++;
 
-	addScore(SCORE_WORMHEAD);
 	shooting = false;
 
 	break;
@@ -562,10 +567,7 @@ static void shootWormBody(){
     // the compiler should remove this automatically depending on the compile flags
     if ((MAXWORMCOUNT < MAXWORMLEN - 1) && (wormcount >= MAXWORMCOUNT)) {
       // no free place for a new split worm, so make the last part into mushrooms instead
-      for (Scalar i = worm->startidx + split + 1; i < worm->startidx + worm->length; i++) {
-        drawMushroom1(wormx[i], wormy[i]);
-        wormx[i] = wormy[i] = OFFSCREEN;
-      }
+      wormToMushrooms(worm->startidx + split + 1, worm->startidx + worm->length);
 
     } else {
       // create the new worm from the leftover part
