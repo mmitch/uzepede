@@ -131,7 +131,7 @@ static void clearScreen(){
 #ifdef SHOW_DEBUG_DATA_ON_ERROR
 
 // we need a forward declaration
-static void printNumber(const Scalar x, const Scalar y, Scalar i);
+static void printByte(const Scalar x, const Scalar y, Scalar value);
 
 static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
 
@@ -139,43 +139,43 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   Scalar EXTRA_LINE_EVERY = 10;
 
   clearScreen();
-  DrawMap    ( 4,  3, tile);
-  DrawMap    ( 4,  4, tile);
-  printNumber( 4,  4, val1);
-  printNumber( 4,  5, val2);
-  printNumber( 4,  6, val3);
+  DrawMap  ( 4,  3, tile);
+  DrawMap  ( 4,  4, tile);
+  printByte( 4,  4, val1);
+  printByte( 4,  5, val2);
+  printByte( 4,  6, val3);
 
-  DrawMap    ( 3,  8, t_shot);
-  printNumber( 4,  8, shot_x);
-  DrawMap(     6,  8, char_slash);
-  printNumber( 7,  8, shot_y);
+  DrawMap  ( 3,  8, t_shot);
+  printByte( 4,  8, shot_x);
+  DrawMap  ( 6,  8, char_slash);
+  printByte( 7,  8, shot_y);
 
-  DrawMap    ( 3,  9, t_player);
-  printNumber( 4,  9, player_x);
-  DrawMap(     6,  9, char_slash);
-  printNumber( 7,  9, player_y);
+  DrawMap  ( 3,  9, t_player);
+  printByte( 4,  9, player_x);
+  DrawMap  ( 6,  9, char_slash);
+  printByte( 7,  9, player_y);
 
-  DrawMap    ( 3, 11, t_wormheadleft);
-  printNumber( 4, 11, MAXWORMCOUNT);
-  DrawMap    ( 3, 12, t_wormbody);
-  printNumber( 4, 12, MAXWORMLEN);
+  DrawMap  ( 3, 11, t_wormheadleft);
+  printByte( 4, 11, MAXWORMCOUNT);
+  DrawMap  ( 3, 12, t_wormbody);
+  printByte( 4, 12, MAXWORMLEN);
 
   for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
     Scalar y = i + 1;
-    DrawMap(    10, y, t_wormheadleft);
-    printNumber(11, y, worms[i].startidx);
-    DrawMap(    13, y, t_wormheadleft);
-    printNumber(14, y, worms[i].tailidx);
-    DrawMap(    16, y, t_wormbody);
-    printNumber(17, y, worms[i].length);
+    DrawMap  (10, y, t_wormheadleft);
+    printByte(11, y, worms[i].startidx);
+    DrawMap  (13, y, t_wormheadleft);
+    printByte(14, y, worms[i].tailidx);
+    DrawMap  (16, y, t_wormbody);
+    printByte(17, y, worms[i].length);
   }
 
   for (Scalar i = 0; i < MAXWORMLEN; i++) {
     Scalar x = 20 + ( i / LINES_PER_COLUMN ) * 6;
     Scalar y = 1 + i % LINES_PER_COLUMN + (i % LINES_PER_COLUMN) / EXTRA_LINE_EVERY;
-    printNumber(x,   y, wormx[i]);
-    DrawMap(    x+2, y, char_slash);
-    printNumber(x+3, y, wormy[i]);
+    printByte(x,   y, wormx[i]);
+    DrawMap  (x+2, y, char_slash);
+    printByte(x+3, y, wormy[i]);
   }
 
   while (1);
@@ -255,14 +255,34 @@ static void printString(Scalar x, const Scalar y, const char *c){
       DrawMap(x, y, char_slash);
       break;
 
+    case 'a':
+    case 'A':
+      DrawMap(x, y, char_A);
+      break;
+
     case 'b':
     case 'B':
       DrawMap(x, y, char_B);
       break;
 
+    case 'c':
+    case 'C':
+      DrawMap(x, y, char_C);
+      break;
+
     case 'd':
     case 'D':
       DrawMap(x, y, char_D);
+      break;
+
+    case 'e':
+    case 'E':
+      DrawMap(x, y, char_E);
+      break;
+
+    case 'f':
+    case 'F':
+      DrawMap(x, y, char_F);
       break;
 
     case 'g':
@@ -340,16 +360,17 @@ static void printString(Scalar x, const Scalar y, const char *c){
 
 }
 
-static void printNumber(const Scalar x, const Scalar y, Scalar i) {
+static char nibbleToChar(Scalar nibble) {
+  if (nibble < 0x0A) {
+    return '0' + nibble;
+  }
+  return 'A' + nibble - 0x0A;
+}
 
-  char *buf = "00";
-  char *c = buf + 2;
-  do {
-    c--;
-    *c = '0' + (i % 10);
-    i = i / 10;
-  } while (c != buf);
-
+static void printByte(const Scalar x, const Scalar y, const Scalar value) {
+  char *buf = "  ";
+  buf[0] = nibbleToChar((value >> 4) & 0x0F);
+  buf[1] = nibbleToChar( value       & 0x0F);
   printString(x, y, buf);
 }
 
@@ -488,7 +509,7 @@ static void shootWormBody(){
 
   if (idx >= MAXWORMLEN) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, 0, 11, t_wormbody);
+    showDebugDataAndStopExecution(idx, 0, 0x11, t_wormbody);
     return;
   }
 
@@ -501,11 +522,9 @@ static void shootWormBody(){
 
   if (i == MAXWORMCOUNT) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, i, 22, t_wormbody);
+    showDebugDataAndStopExecution(idx, i, 0x22, t_wormbody);
     return;
   }
-
-  TriggerFx(FX_WORMBODY, 0xdf, true);
 
   // calculate body part "number" that got shot (relative index to head)
   Scalar split = idx;
