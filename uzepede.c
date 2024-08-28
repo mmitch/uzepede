@@ -431,8 +431,8 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
   newWorm->startidx = wormmax;
   drawWormHead(startx, starty, direction_right);
 
-  wormx[wormmax] = startx;
-  wormy[wormmax] = starty;
+  wormx[newWorm->startidx] = startx;
+  wormy[newWorm->startidx] = starty;
 
   wormmax += length;
 
