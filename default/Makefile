@@ -54,6 +54,8 @@ HEX_EEPROM_FLAGS = -j .eeprom
 HEX_EEPROM_FLAGS += --set-section-flags=.eeprom="alloc,load"
 HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 
+## changing the Makefile should rebuild everything to let things like build flags propagate properly
+MAKEFILE = Makefile
 
 ## Objects that must be built in order to link
 OBJECTS = uzeboxVideoEngineCore.o uzeboxCore.o uzeboxSoundEngine.o uzeboxSoundEngineCore.o uzeboxVideoEngine.o $(GAME).o
@@ -68,32 +70,32 @@ INCLUDES = -I"$(KERNEL_DIR)"
 all: ../data/tiles.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
 
 ## Rebuild graphic ressources
-../data/tiles.inc: ../data/tiles.png ../data/tiles.xml $(GCONVERT_BIN)
+../data/tiles.inc: ../data/tiles.png ../data/tiles.xml $(GCONVERT_BIN) $(MAKEFILE)
 	$(GCONVERT_BIN) ../data/tiles.xml
 
 ## Compile Kernel files
-uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s
+uzeboxVideoEngineCore.o: $(KERNEL_DIR)/uzeboxVideoEngineCore.s $(MAKEFILE)
 	$(CC) $(INCLUDES) $(ASMFLAGS) -c $<
 
-uzeboxSoundEngineCore.o: $(KERNEL_DIR)/uzeboxSoundEngineCore.s
+uzeboxSoundEngineCore.o: $(KERNEL_DIR)/uzeboxSoundEngineCore.s $(MAKEFILE)
 	$(CC) $(INCLUDES) $(ASMFLAGS) -c $<
 
-uzeboxCore.o: $(KERNEL_DIR)/uzeboxCore.c
+uzeboxCore.o: $(KERNEL_DIR)/uzeboxCore.c $(MAKEFILE)
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
-uzeboxSoundEngine.o: $(KERNEL_DIR)/uzeboxSoundEngine.c
+uzeboxSoundEngine.o: $(KERNEL_DIR)/uzeboxSoundEngine.c $(MAKEFILE)
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
-uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c
+uzeboxVideoEngine.o: $(KERNEL_DIR)/uzeboxVideoEngine.c $(MAKEFILE)
 	$(CC) $(INCLUDES) $(CFLAGS) -c $<
 
 ## Compile game sources
 
-$(GAME).o: ../$(GAME).c
+$(GAME).o: ../$(GAME).c $(MAKEFILE)
 	$(CC) -DVERSION=\"$(VERSION)\" -DCOMPILEDATE=\"$(COMPILEDATE)\" -DGITCOMMIT=\"$(GITCOMMIT)\" $(INCLUDES) $(CFLAGS) -c $<
 
 ##Link
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) $(MAKEFILE)
 	 $(CC) $(LDFLAGS) $(OBJECTS) $(LINKONLYOBJECTS) $(LIBDIRS) $(LIBS) -o $(TARGET)
 
 %.hex: $(TARGET)
