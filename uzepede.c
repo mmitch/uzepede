@@ -18,6 +18,9 @@
 #include "data/tiles.inc"
 #include "data/patches.h"
 
+// leave this in as long as there is no memory pressure
+#define SHOW_DEBUG_DATA_ON_ERROR
+
 // playable area inside border
 #define MINX 3
 #define MINY 1
@@ -124,6 +127,67 @@ static void clearScreen(){
   // clear whole mode 1 screen regardless of our internal screen size
   Fill(0, 0, 40, 28, 0);
 }
+
+#ifdef SHOW_DEBUG_DATA_ON_ERROR
+
+// we need a forward declaration
+static void printNumber(const Scalar x, const Scalar y, Scalar i);
+
+static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
+
+  Scalar LINES_PER_COLUMN = 20;
+  Scalar EXTRA_LINE_EVERY = 10;
+
+  clearScreen();
+  DrawMap    ( 4,  3, tile);
+  DrawMap    ( 4,  4, tile);
+  printNumber( 4,  4, val1);
+  printNumber( 4,  5, val2);
+  printNumber( 4,  6, val3);
+
+  DrawMap    ( 3,  8, t_shot);
+  printNumber( 4,  8, shot_x);
+  DrawMap(     6,  8, char_slash);
+  printNumber( 7,  8, shot_y);
+
+  DrawMap    ( 3,  9, t_player);
+  printNumber( 4,  9, player_x);
+  DrawMap(     6,  9, char_slash);
+  printNumber( 7,  9, player_y);
+
+  DrawMap    ( 3, 11, t_wormheadleft);
+  printNumber( 4, 11, MAXWORMCOUNT);
+  DrawMap    ( 3, 12, t_wormbody);
+  printNumber( 4, 12, MAXWORMLEN);
+
+  for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
+    Scalar y = i + 1;
+    DrawMap(    10, y, t_wormheadleft);
+    printNumber(11, y, worms[i].startidx);
+    DrawMap(    13, y, t_wormheadleft);
+    printNumber(14, y, worms[i].tailidx);
+    DrawMap(    16, y, t_wormbody);
+    printNumber(17, y, worms[i].length);
+  }
+
+  for (Scalar i = 0; i < MAXWORMLEN; i++) {
+    Scalar x = 20 + ( i / LINES_PER_COLUMN ) * 6;
+    Scalar y = 1 + i % LINES_PER_COLUMN + (i % LINES_PER_COLUMN) / EXTRA_LINE_EVERY;
+    printNumber(x,   y, wormx[i]);
+    DrawMap(    x+2, y, char_slash);
+    printNumber(x+3, y, wormy[i]);
+  }
+
+  while (1);
+};
+
+#else // SHOW_DEBUG_DATA_ON_ERROR
+
+static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
+  // debug disabled, do nothing
+}
+
+#endif // SHOW_DEBUG_DATA_ON_ERROR
 
 static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
   DrawMap(x, y, direction_right ? t_wormheadright : t_wormheadleft);
@@ -276,6 +340,19 @@ static void printString(Scalar x, const Scalar y, const char *c){
 
 }
 
+static void printNumber(const Scalar x, const Scalar y, Scalar i) {
+
+  char *buf = "00";
+  char *c = buf + 2;
+  do {
+    c--;
+    *c = '0' + (i % 10);
+    i = i / 10;
+  } while (c != buf);
+
+  printString(x, y, buf);
+}
+
 // convert int->char
 static void scoreToString() {
   BigScalar tmp_score = score;
@@ -407,7 +484,13 @@ static void shootWormBody(){
 
   // find worm index that got hit
   Scalar idx;
-  for (idx = 0; ! IS_SHOT_AT(wormx[idx], wormy[idx]); idx++);
+  for (idx = 0; (idx < MAXWORMLEN) && (! IS_SHOT_AT(wormx[idx], wormy[idx])); idx++);
+
+  if (idx >= MAXWORMLEN) {
+    // belt AND suspenders: this should never happen, but if it does, show why
+    showDebugDataAndStopExecution(idx, 0, 11, t_wormbody);
+    return;
+  }
 
   // find worm that belongs to index
   Worm *worm;
@@ -417,6 +500,8 @@ static void shootWormBody(){
        worm++, i++);
 
   if (i == MAXWORMCOUNT) {
+    // belt AND suspenders: this should never happen, but if it does, show why
+    showDebugDataAndStopExecution(idx, i, 22, t_wormbody);
     return;
   }
 
