@@ -636,8 +636,9 @@ static void shootWormBody(){
   worm->tailidx = worm->startidx + worm->length - 1;
   
   // set mushroom on collision point, add score
-  // shot body part is lost forever --> needs memory defragmentation :)
-  drawMushroom1(shot_x, shot_y);
+  // shot body part is lost forever --> this needs memory defragmentation,
+  // which happens when all worms have been killed and new ones appear
+  wormToMushrooms(worm->startidx + split, worm->startidx + split + 1);
   addScore(SCORE_WORMBODY);
   shooting = false;
 }
