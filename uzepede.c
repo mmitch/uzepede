@@ -391,6 +391,58 @@ static void addScore(const Scalar add){
   printString( SCORE_X, SCORE_Y, score_string );
 }
 
+// To make triggerFx3() work, we have to expose TriggerCommon() from kernel/uzeboxSoundEngine.c
+// This will of course break when the kernel changes, we're walking on thin ice here.
+extern void TriggerCommon(Track* track,u8 patch,u8 volume,u8 note);
+
+// This function is based on TriggerFx() from uzebox kernel/uzeboxSoundEngine.c
+// It is drop-in compatible with the original.  In case of errors with future kernels,
+// rename all calls to triggerFx3() to TriggerFx() and you are back to the original code.
+//
+// Uzepede only uses Fx, no music, thus our triggerFx3() has the following differences:
+// - We want all 3 wave channels with voice stealing for Fx, not just 1+2 like in the kernel.
+// - We also always want to retrigger, so remove the retrig check from the conditions.
+// - We also don't use PCM (type == 2), so remove that branch.
+static void triggerFx3(unsigned char patch, unsigned char volume, bool _retrig){
+  unsigned char channel;
+
+  unsigned char type=(unsigned char)pgm_read_byte(&(patches[patch].type));
+
+  //find the channel to play the fx
+  //try to steal voice 2 then 1 then 0
+  if(type==1){
+    //noise channel fx
+    channel=3;
+  }else if( (tracks[0].flags&TRACK_FLAGS_PRIORITY)==0 || (tracks[0].fxPatchNo==patch && (tracks[0].flags&TRACK_FLAGS_PRIORITY)!=0)){ //fx already playing
+    channel=0;
+  }else if( (tracks[1].flags&TRACK_FLAGS_PRIORITY)==0 || (tracks[1].fxPatchNo==patch && (tracks[1].flags&TRACK_FLAGS_PRIORITY)!=0)){ //fx already playing
+    channel=1;
+  }else if( (tracks[2].flags&TRACK_FLAGS_PRIORITY)==0 || (tracks[2].fxPatchNo==patch && (tracks[2].flags&TRACK_FLAGS_PRIORITY)!=0)){ //fx already playing
+    channel=2;
+  }else{
+    //all channels have fx playing, use the oldest one
+    if(tracks[1].patchPlayingTime>tracks[2].patchPlayingTime){
+      if(tracks[0].patchPlayingTime>tracks[1].patchPlayingTime){
+	channel=0;
+      }else{
+	channel=1;
+      }
+    }else{
+      if(tracks[0].patchPlayingTime>tracks[2].patchPlayingTime){
+	channel=0;
+      }else{
+	      channel=2;
+      }
+    }
+  }
+
+  Track* track=&tracks[channel];
+  track->flags=TRACK_FLAGS_PRIORITY; //priority=1;
+  track->patchCommandStreamPos = NULL;
+  TriggerCommon(track,patch,volume,80);
+  track->flags|=TRACK_FLAGS_PLAYING;
+}
+
 static void getBeeSave(){
   bee_over_mushroom = (LEVEL(bee_x, bee_y) == T_MSH1)
                    || (LEVEL(bee_x, bee_y) == T_MSH2)
@@ -411,7 +463,7 @@ static void initBee(){
   getBeeSave();
   drawBee();
   
-  TriggerFx(FX_BEE_NEW, 0xdf, true);
+  triggerFx3(FX_BEE_NEW, 0xdf, true);
 }
 
 static void initSpider(){
@@ -425,7 +477,7 @@ static void initSpider(){
 	    && LEVEL(spider_x, spider_y) != T_MSH3
 	       ); // @FIXME lockup with super-long worms on first line
 
-  TriggerFx(FX_SPIDERFALL, 0xdf, true);
+  triggerFx3(FX_SPIDERFALL, 0xdf, true);
   drawSpider();
 
 }
@@ -482,7 +534,7 @@ static void shootWormHead(){
 
       if (IS_SHOT_AT(wormx[idx], wormy[idx])){
 
-	TriggerFx(FX_WORMHEAD, 0xef, true);
+	triggerFx3(FX_WORMHEAD, 0xef, true);
 	wormToMushrooms(worm->startidx, worm->startidx + worm->length);
 
 	// only one call to addScore(), because it adds *and displays* the score
@@ -757,7 +809,7 @@ static void movePlayer(){
   if ((buttons & BTN_A)     && ! shooting) {
     shooting = true;
     shot_x = shot_y = OFFSCREEN;
-    TriggerFx(FX_SHOT, 0xd0, true);
+    triggerFx3(FX_SHOT, 0xd0, true);
   }
 
   if (player_x != x || player_y != y) {
@@ -785,7 +837,7 @@ static void movePlayer(){
 
 // kill bee, create mushroom, remove bullet
 static void shootBee() {
-  TriggerFx(FX_BEE_KILL, 0xe0, true);
+  triggerFx3(FX_BEE_KILL, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BEE);
   bee_x = bee_y = OFFSCREEN;
@@ -844,7 +896,7 @@ static void moveBee() {
 
 // kill spider, create mushroom, remove bullet
 static void shootSpider() {
-  TriggerFx(FX_SPIDER, 0xe0, true);
+  triggerFx3(FX_SPIDER, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_SPIDER);
   spider_x = spider_y = OFFSCREEN;
@@ -886,7 +938,7 @@ static void moveSpider() {
 
 // damage mushroom, remove bullet
 static void shootMushroom1() {
-  TriggerFx(FX_MUSHROOM, 0xc0, true);
+  triggerFx3(FX_MUSHROOM, 0xc0, true);
   drawMushroom2( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
   shooting = false;
@@ -894,7 +946,7 @@ static void shootMushroom1() {
 
 // damage mushroom, remove bullet
 static void shootMushroom2() {
-  TriggerFx(FX_MUSHROOM, 0xb0, true);
+  triggerFx3(FX_MUSHROOM, 0xb0, true);
   drawMushroom3( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
   shooting = false;
@@ -902,7 +954,7 @@ static void shootMushroom2() {
 
 // remove mushroom, remove bullet
 static void shootMushroom3() {
-  TriggerFx(FX_MUSHROOM, 0xa0, true);
+  triggerFx3(FX_MUSHROOM, 0xa0, true);
   drawEmpty( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
   shooting = false;
@@ -1093,48 +1145,48 @@ static void secretSoundTest(){
 
     switch(button) {
     case BTN_A:
-      TriggerFx(FX_SHOT, 0xff, true);
+      triggerFx3(FX_SHOT, 0xff, true);
       break;
 
     case BTN_B:
-      TriggerFx(FX_MUSHROOM, 0xff, true);
+      triggerFx3(FX_MUSHROOM, 0xff, true);
       break;
 
     case BTN_X:
-      TriggerFx(FX_WORMHEAD, 0xff, true);
+      triggerFx3(FX_WORMHEAD, 0xff, true);
       break;
 
     case BTN_Y:
-      TriggerFx(FX_WORMBODY, 0xff, true);
+      triggerFx3(FX_WORMBODY, 0xff, true);
       break;
 
     case BTN_UP:
-      TriggerFx(FX_SPIDERFALL, 0xff, true);
+      triggerFx3(FX_SPIDERFALL, 0xff, true);
       break;
 
     case BTN_DOWN:
-      TriggerFx(FX_SPIDER, 0xff, true);
+      triggerFx3(FX_SPIDER, 0xff, true);
       break;
 
     case BTN_LEFT:
-      TriggerFx(FX_BEE_NEW, 0xff, true);
+      triggerFx3(FX_BEE_NEW, 0xff, true);
       break;
 
     case BTN_RIGHT:
-      TriggerFx(FX_BEE_KILL, 0xff, true);
+      triggerFx3(FX_BEE_KILL, 0xff, true);
       break;
 
     case BTN_SL:
-      TriggerFx(FX_GAMEOVER1, 0xff, true);
-      TriggerFx(FX_GAMEOVER2, 0xff, true);
+      triggerFx3(FX_GAMEOVER1, 0xff, true);
+      triggerFx3(FX_GAMEOVER2, 0xff, true);
       break;
 
     case BTN_SR:
-      TriggerFx(FX_TITLESCREEN, 0xff, true);
+      triggerFx3(FX_TITLESCREEN, 0xff, true);
       break;
 
     case BTN_SELECT:
-      TriggerFx(FX_START, 0xff, true);
+      triggerFx3(FX_START, 0xff, true);
       break;
     };
   };
@@ -1146,7 +1198,7 @@ static void secretSoundTest(){
 static void titleScreen(){
 
   drawTitleScreen();
-  TriggerFx(FX_TITLESCREEN, 0xff, false);
+  triggerFx3(FX_TITLESCREEN, 0xff, true);
 
   Joypad button = 0;
 
@@ -1199,7 +1251,7 @@ int main(){
   while (1) {
 
     silenceAllSounds();
-    TriggerFx(FX_START, 0xff, false);
+    triggerFx3(FX_START, 0xff, true);
 
     // wait for button release
     joypadWaitForAnyRelease();
@@ -1298,8 +1350,8 @@ int main(){
     // GAME OVER
 
     silenceAllSounds();
-    TriggerFx(FX_GAMEOVER1, 0xff, false);
-    TriggerFx(FX_GAMEOVER2, 0xbf, false);
+    triggerFx3(FX_GAMEOVER1, 0xff, true);
+    triggerFx3(FX_GAMEOVER2, 0xbf, true);
 
     drawGameOver();
 
