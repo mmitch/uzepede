@@ -492,17 +492,22 @@ static Boolean wormIsAlive(Worm *worm) {
   return worm->length > 0;
 }
 
-static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right){
+static Worm* findFirstFreeWorm() {
+  Worm *deadWorm = worms;
+  while (wormIsAlive(deadWorm)) {
+    deadWorm++;
+  }
+  // FIXME: debug overflow here?  but currently all callers explcitely check beforehand
+  return deadWorm;
+}
 
-  Worm *newWorm = worms;
+static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right){
 
   if (wormcount >= MAXWORMCOUNT) {
     return;
   }
 
-  while (wormIsAlive(newWorm)) {
-    newWorm++;
-  }
+  Worm *newWorm = findFirstFreeWorm();
 
   newWorm->direction_right = direction_right;
   if (wormmax + length > MAXWORMLEN) {
@@ -629,11 +634,6 @@ static void shootWormBody(){
   // create new worm out of last part if there is something left
   if (split < worm->length - 1) {
 
-    Worm *newWorm = worms;
-    while (wormIsAlive(newWorm)) {
-      newWorm++;
-    }
-
     // this check is only relevant if MAXWORMCOUNT < MAXWORMLEN - 1
     // (ths - 1 is because one of the body parts of the old worm becomes a mushroom)
     // the compiler should remove this automatically depending on the compile flags
@@ -642,7 +642,9 @@ static void shootWormBody(){
       wormToMushrooms(worm->startidx + split + 1, ENDIDX_PLUS_1(worm));
 
     } else {
+
       // create the new worm from the leftover part
+      Worm *newWorm = findFirstFreeWorm();
       newWorm->startidx = worm->startidx + split + 1;
       newWorm->length = worm->length - split - 1;
       newWorm->direction_right = 1 - worm->direction_right;
