@@ -129,8 +129,9 @@ static void clearScreen(){
 
 #ifdef SHOW_DEBUG_DATA_ON_ERROR
 
-// we need a forward declaration
+// we need some forward declarations
 static void printByte(const Scalar x, const Scalar y, Scalar value);
+static void printString(Scalar x, const Scalar y, const char *c);
 
 static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
 
@@ -138,6 +139,8 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   Scalar EXTRA_LINE_EVERY = 10;
 
   clearScreen();
+  printString(3, 1, "DEBUG");
+
   DrawMap  ( 4,  3, tile);
   DrawMap  ( 5,  3, tile);
   printByte( 4,  4, val1);
