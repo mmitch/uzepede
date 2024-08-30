@@ -71,6 +71,9 @@ typedef unsigned int BigScalar;
 
 #define RAND_RANGE(min_incl, max_excl) ( (rand()%((max_excl)-(min_incl))) + (min_incl) )
 
+// last idx of a worm + 1
+#define ENDIDX_PLUS_1(worm) ((worm)->startidx + (worm)->length)
+
 #define MAX(x,y) ((x)>(y)?(x):(y))
 
 // #optimization:
@@ -521,6 +524,19 @@ static void wormToMushrooms(const Scalar startidx, const Scalar endidx_exclusive
   }
 }
 
+static Scalar getWormHeadIdx(Worm *worm) {
+
+  // ringbuffer: the head is one idx after the tail
+  Scalar idx = worm->tailidx + 1;
+
+  // wrap around if needed
+  if (idx == ENDIDX_PLUS_1(worm)) {
+    idx = worm->startidx;
+  }
+
+  return idx;
+}
+
 // head shot, kill whole worm, remove bullet
 static void shootWormHead(){
   Worm *worm;
@@ -530,15 +546,12 @@ static void shootWormHead(){
     if (worm->length) {
 
       // get head position
-      Scalar idx = worm->tailidx + 1;
-      if (idx == worm->startidx + worm->length) {
-	idx = worm->startidx;
-      }
+      Scalar idx = getWormHeadIdx(worm);
 
       if (IS_SHOT_AT(wormx[idx], wormy[idx])){
 
 	triggerFx3(FX_WORMHEAD, 0xef, true);
-	wormToMushrooms(worm->startidx, worm->startidx + worm->length);
+	wormToMushrooms(worm->startidx, ENDIDX_PLUS_1(worm));
 
 	// only one call to addScore(), because it adds *and displays* the score
 	// TODO: refactor at least the name
@@ -576,7 +589,7 @@ static void shootWormBody(){
   Worm *worm;
   Scalar i;
   for (i = 0, worm = worms;
-       ! (idx >= worm->startidx && idx < worm->startidx + worm->length) && (i < MAXWORMCOUNT);
+       ! (idx >= worm->startidx && idx < ENDIDX_PLUS_1(worm) && i < MAXWORMCOUNT);
        worm++, i++);
 
   if (i == MAXWORMCOUNT) {
@@ -595,7 +608,7 @@ static void shootWormBody(){
   // rotate worm ringbuffer so head is at startidx
   while (worm->tailidx != worm->startidx + worm->length - 1) {
     Scalar tmpx, tmpy;
-    Scalar i = worm->startidx + worm->length - 1;
+    Scalar i = ENDIDX_PLUS_1(worm) - 1;
     tmpx = wormx[i];
     tmpy = wormy[i];
     while (i > worm->startidx) {
@@ -622,7 +635,7 @@ static void shootWormBody(){
     // the compiler should remove this automatically depending on the compile flags
     if ((MAXWORMCOUNT < MAXWORMLEN - 1) && (wormcount >= MAXWORMCOUNT)) {
       // no free place for a new split worm, so make the last part into mushrooms instead
-      wormToMushrooms(worm->startidx + split + 1, worm->startidx + worm->length);
+      wormToMushrooms(worm->startidx + split + 1, ENDIDX_PLUS_1(worm));
 
     } else {
       // create the new worm from the leftover part
@@ -636,7 +649,7 @@ static void shootWormBody(){
     
   // shorten first part of worm
   worm->length = split;
-  worm->tailidx = worm->startidx + worm->length - 1;
+  worm->tailidx = ENDIDX_PLUS_1(worm) - 1;
   
   // set mushroom on collision point, add score
   // shot body part is lost forever --> this needs memory defragmentation,
@@ -646,13 +659,13 @@ static void shootWormBody(){
   shooting = false;
 }
 
-static void moveWorm(const Scalar i){
+static void moveWorm(const Scalar wormId){
   // move head, turn around if needed
 
   Scalar x, y;
   Worm *theWorm;
 
-  theWorm = worms + i;
+  theWorm = worms + wormId;
 
   // don't move dead worms
   if (theWorm->length == 0) {
@@ -669,21 +682,18 @@ static void moveWorm(const Scalar i){
   }
 
   // select old head
-  if (theWorm->tailidx < theWorm->startidx + theWorm->length - 1){
-    x = wormx[theWorm->tailidx+1];
-    y = wormy[theWorm->tailidx+1];
-  } else {
-    x = wormx[theWorm->startidx];
-    y = wormy[theWorm->startidx];
-  }
+  const Scalar headIdx = getWormHeadIdx(theWorm);
+  x = wormx[headIdx];
+  y = wormy[headIdx];
 
   // draw body where the old head was
   if (theWorm->length > 1) {
     // we're currently on a bug hunt here:
     if (x == OFFSCREEN || y == OFFSCREEN) {
-      showDebugDataAndStopExecution(x, y, 0xDB, t_wormbody);
+      showDebugDataAndStopExecution(headIdx, wormId, 0xdb, t_wormheadright);
+    } else {
+      drawWormBody(x, y);
     }
-    drawWormBody(x, y);
   }
 
   // compute new head position and store in old tail position
@@ -765,7 +775,7 @@ static void moveWorm(const Scalar i){
 	newEnd = worms[i].startidx;
       }
     }
-    for (Scalar i = theWorm->startidx + theWorm->length; i < newEnd; i++) {
+    for (Scalar i = ENDIDX_PLUS_1(theWorm); i < newEnd; i++) {
       wormx[i] = OFFSCREEN;
       wormy[i] = OFFSCREEN;
     }
@@ -785,7 +795,7 @@ static void moveWorm(const Scalar i){
   }
   theWorm->tailidx--;
 
-  // we might have walked into a shot
+  // the worm might have walked into a shot
   if (IS_SHOT_AT(x, y)) {
     shootWormHead();
   }
