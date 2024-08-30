@@ -679,6 +679,10 @@ static void moveWorm(const Scalar i){
 
   // draw body where the old head was
   if (theWorm->length > 1) {
+    // we're currently on a bug hunt here:
+    if (x == OFFSCREEN || y == OFFSCREEN) {
+      showDebugDataAndStopExecution(x, y, 0xDB, t_wormbody);
+    }
     drawWormBody(x, y);
   }
 
