@@ -488,6 +488,10 @@ static void initSpider(){
 
 }
 
+static Boolean wormIsAlive(Worm *worm) {
+  return worm->length > 0;
+}
+
 static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right){
 
   Worm *newWorm = worms;
@@ -496,7 +500,7 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
     return;
   }
 
-  while (newWorm->length > 0) {
+  while (wormIsAlive(newWorm)) {
     newWorm++;
   }
 
@@ -543,7 +547,7 @@ static void shootWormHead(){
 
   // find worm that got shot
   for(worm = worms; worm < worms + MAXWORMCOUNT; worm++) {
-    if (worm->length) {
+    if (wormIsAlive(worm)) {
 
       // get head position
       Scalar idx = getWormHeadIdx(worm);
@@ -626,7 +630,7 @@ static void shootWormBody(){
   if (split < worm->length - 1) {
 
     Worm *newWorm = worms;
-    while (newWorm->length > 0) {
+    while (wormIsAlive(newWorm)) {
       newWorm++;
     }
 
@@ -668,7 +672,7 @@ static void moveWorm(const Scalar wormId){
   theWorm = worms + wormId;
 
   // don't move dead worms
-  if (theWorm->length == 0) {
+  if (! wormIsAlive(theWorm)) {
     return;
   }
 
@@ -768,7 +772,7 @@ static void moveWorm(const Scalar wormId){
     Scalar newEnd = MAXWORMLEN;
     for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
       if (worms + i != theWorm                     // not us
-	  && worms[i].length > 0                   // alive
+	  && wormIsAlive(worms + i)                // alive
 	  && worms[i].startidx > theWorm->startidx // behind us
 	  && worms[i].startidx < newEnd            // but before new end
 	  ) {
