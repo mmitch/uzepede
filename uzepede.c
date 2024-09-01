@@ -46,7 +46,7 @@
 
 typedef u8  Scalar;
 typedef u8  Boolean;
-typedef int Tile;
+typedef VRAM_PTR_TYPE Tile;
 typedef u16 Joypad;
 typedef unsigned int BigScalar;
 
@@ -144,34 +144,34 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   clearScreen();
   printString(3, 1, "DEBUG");
 
-  DrawMap  ( 4,  3, tile);
-  DrawMap  ( 5,  3, tile);
+  SetTile  ( 4,  3, tile[2]);
+  SetTile  ( 5,  3, tile[2]);
   printByte( 4,  4, val1);
   printByte( 4,  5, val2);
   printByte( 4,  6, val3);
 
-  DrawMap  ( 3,  8, t_shot);
+  SetTile  ( 3,  8, t_shot[2]);
   printByte( 4,  8, shot_x);
-  DrawMap  ( 6,  8, char_slash);
+  SetTile  ( 6,  8, char_slash[2]);
   printByte( 7,  8, shot_y);
 
-  DrawMap  ( 3,  9, t_player);
+  SetTile  ( 3,  9, t_player[2]);
   printByte( 4,  9, player_x);
-  DrawMap  ( 6,  9, char_slash);
+  SetTile  ( 6,  9, char_slash[2]);
   printByte( 7,  9, player_y);
 
-  DrawMap  ( 3, 11, t_wormheadleft);
+  SetTile  ( 3, 11, t_wormheadleft[2]);
   printByte( 4, 11, MAXWORMCOUNT);
-  DrawMap  ( 3, 12, t_wormbody);
+  SetTile  ( 3, 12, t_wormbody[2]);
   printByte( 4, 12, MAXWORMLEN);
 
   for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
     Scalar y = i + 1 + (i / EXTRA_LINE_EVERY);
-    DrawMap  (10, y, t_wormheadleft);
+    SetTile  (10, y, t_wormheadleft[2]);
     printByte(11, y, worms[i].startidx);
-    DrawMap  (13, y, t_wormheadleft);
+    SetTile  (13, y, t_wormheadleft[2]);
     printByte(14, y, worms[i].tailidx);
-    DrawMap  (16, y, t_wormbody);
+    SetTile  (16, y, t_wormbody[2]);
     printByte(17, y, worms[i].length);
   }
 
@@ -179,7 +179,7 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
     Scalar x = 20 + ( i / LINES_PER_COLUMN ) * 6;
     Scalar y = 1 + i % LINES_PER_COLUMN + (i % LINES_PER_COLUMN) / EXTRA_LINE_EVERY;
     printByte(x,   y, wormx[i]);
-    DrawMap  (x+2, y, char_slash);
+    SetTile  (x+2, y, char_slash[2]);
     printByte(x+3, y, wormy[i]);
   }
 
@@ -199,43 +199,43 @@ static void clearScreen(){
   Fill(0, 0, 40, 28, 0);
 }
 static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
-  DrawMap(x, y, direction_right ? t_wormheadright : t_wormheadleft);
+  SetTile(x, y, direction_right ? t_wormheadright[2] : t_wormheadleft[2]);
 }
 
 static void drawWormBody(const Scalar x, const Scalar y){
-  DrawMap(x, y, t_wormbody);
+  SetTile(x, y, t_wormbody[2]);
 }
 
 static void drawEmpty(const Scalar x, const Scalar y){
-  DrawMap(x, y, t_black);
+  SetTile(x, y, t_black[2]);
 }
 
 static void drawMushroom1(const Scalar x, const Scalar y){
-  DrawMap(x, y, t_mushroom1);
+  SetTile(x, y, t_mushroom1[2]);
 }
 
 static void drawMushroom2(const Scalar x, const Scalar y){
-  DrawMap(x, y, t_mushroom2);
+  SetTile(x, y, t_mushroom2[2]);
 }
 
 static void drawMushroom3(const Scalar x, const Scalar y){
-  DrawMap(x, y, t_mushroom3);
+  SetTile(x, y, t_mushroom3[2]);
 }
 
 static void drawShot(){
-  DrawMap(shot_x, shot_y, t_shot);
+  SetTile(shot_x, shot_y, t_shot[2]);
 }
 
 static void drawPlayer(){
-  DrawMap(player_x, player_y, t_player);
+  SetTile(player_x, player_y, t_player[2]);
 }
 
 static void drawSpider(){
-  DrawMap(spider_x, spider_y, t_spider);
+  SetTile(spider_x, spider_y, t_spider[2]);
 }
 
 static void drawBee(){
-  DrawMap(bee_x, bee_y, t_bee);
+  SetTile(bee_x, bee_y, t_bee[2]);
 }
 
 static void gameOver(){
@@ -249,119 +249,119 @@ static void printString(Scalar x, const Scalar y, const char *c){
     switch (*c) {
 
     case ' ':
-      DrawMap(x, y, char_space);
+      SetTile(x, y, char_space[2]);
       break;
 
     case '-':
-      DrawMap(x, y, char_dash);
+      SetTile(x, y, char_dash[2]);
       break;
 
     case '.':
-      DrawMap(x, y, char_underscore);
+      SetTile(x, y, char_underscore[2]);
       break;
 
     case '/':
-      DrawMap(x, y, char_slash);
+      SetTile(x, y, char_slash[2]);
       break;
 
     case 'a':
     case 'A':
-      DrawMap(x, y, char_A);
+      SetTile(x, y, char_A[2]);
       break;
 
     case 'b':
     case 'B':
-      DrawMap(x, y, char_B);
+      SetTile(x, y, char_B[2]);
       break;
 
     case 'c':
     case 'C':
-      DrawMap(x, y, char_C);
+      SetTile(x, y, char_C[2]);
       break;
 
     case 'd':
     case 'D':
-      DrawMap(x, y, char_D);
+      SetTile(x, y, char_D[2]);
       break;
 
     case 'e':
     case 'E':
-      DrawMap(x, y, char_E);
+      SetTile(x, y, char_E[2]);
       break;
 
     case 'f':
     case 'F':
-      DrawMap(x, y, char_F);
+      SetTile(x, y, char_F[2]);
       break;
 
     case 'g':
     case 'G':
-      DrawMap(x, y, char_G);
+      SetTile(x, y, char_G[2]);
       break;
 
     case 'i':
     case 'I':
-      DrawMap(x, y, char_I);
+      SetTile(x, y, char_I[2]);
       break;
 
     case 'l':
     case 'L':
-      DrawMap(x, y, char_L);
+      SetTile(x, y, char_L[2]);
       break;
 
     case 'T':
-      DrawMap(x, y, char_T);
+      SetTile(x, y, char_T[2]);
       break;
 
     case 'u':
     case 'U':
     case 'v':
     case 'V':
-      DrawMap(x, y, char_U);
+      SetTile(x, y, char_U[2]);
       break;
 
     case '0':
-      DrawMap(x, y, char_0);
+      SetTile(x, y, char_0[2]);
       break;
 
     case '1':
-      DrawMap(x, y, char_1);
+      SetTile(x, y, char_1[2]);
       break;
 
     case '2':
-      DrawMap(x, y, char_2);
+      SetTile(x, y, char_2[2]);
       break;
 
     case '3':
-      DrawMap(x, y, char_3);
+      SetTile(x, y, char_3[2]);
       break;
 
     case '4':
-      DrawMap(x, y, char_4);
+      SetTile(x, y, char_4[2]);
       break;
 
     case '5':
-      DrawMap(x, y, char_5);
+      SetTile(x, y, char_5[2]);
       break;
 
     case '6':
-      DrawMap(x, y, char_6);
+      SetTile(x, y, char_6[2]);
       break;
 
     case '7':
-      DrawMap(x, y, char_7);
+      SetTile(x, y, char_7[2]);
       break;
 
     case '8':
-      DrawMap(x, y, char_8);
+      SetTile(x, y, char_8[2]);
       break;
 
     case '9':
-      DrawMap(x, y, char_9);
+      SetTile(x, y, char_9[2]);
       break;
 
     default:
-      DrawMap(x, y, char_unknown);
+      SetTile(x, y, char_unknown[2]);
       break;
 
     }
@@ -532,7 +532,7 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
 
 static void wormToMushrooms(const Scalar startidx, const Scalar endidx_exclusive) {
   for(Scalar idx = startidx; idx < endidx_exclusive; idx++) {
-    DrawMap( wormx[idx], wormy[idx], t_mushroom1 );
+    drawMushroom1( wormx[idx], wormy[idx] );
     wormx[idx] = wormy[idx] = OFFSCREEN;
   }
 }
@@ -612,7 +612,7 @@ static void shootWormBody(){
 
   if (idx >= MAXWORMLEN) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, 0, DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW, t_wormbody);
+    showDebugDataAndStopExecution(idx, 0, DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW, t_wormbody[2]);
     return;
   }
 
@@ -625,7 +625,7 @@ static void shootWormBody(){
 
   if (i == MAXWORMCOUNT) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, i, DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW, t_wormbody);
+    showDebugDataAndStopExecution(idx, i, DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW, t_wormbody[2]);
     return;
   }
 
@@ -704,7 +704,7 @@ static void moveWorm(const Scalar wormId){
   if (theWorm->length > 1) {
     if (x == OFFSCREEN || y == OFFSCREEN) {
       // this should not be possible any more since we rotate a worm before enlarging it
-      showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, t_wormheadright);
+      showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, t_wormheadright[2]);
     } else {
       drawWormBody(x, y);
     }
@@ -1068,20 +1068,20 @@ static void drawBox(const Scalar xmin, const Scalar ymin, const Scalar xmax, con
   Scalar i;
 
   // corners are always drawn
-  DrawMap( xmin, ymin, border_tl );
-  DrawMap( xmax, ymin, border_tr );
-  DrawMap( xmin, ymax, border_bl );
-  DrawMap( xmax, ymax, border_br );
+  SetTile( xmin, ymin, border_tl[2] );
+  SetTile( xmax, ymin, border_tr[2] );
+  SetTile( xmin, ymax, border_bl[2] );
+  SetTile( xmax, ymax, border_br[2] );
 
   // sides can be skipped on small boxes
   // OPTIMIZATION: don't check for this, we don't draw any small boxes
   for (i = xmin+1; i < xmax; i++) {
-    DrawMap( i, ymin, border_top    );
-    DrawMap( i, ymax, border_bottom );
+    SetTile( i, ymin, border_top[2]    );
+    SetTile( i, ymax, border_bottom[2] );
   }
   for (i = ymin+1; i < ymax; i++) {
-    DrawMap( xmin, i, border_left  );
-    DrawMap( xmax, i, border_right );
+    SetTile( xmin, i, border_left[2]  );
+    SetTile( xmax, i, border_right[2] );
   }
 
   if (clear) {
@@ -1121,8 +1121,8 @@ static void drawCreditScreen(){
 
 static void drawLevel(){
   drawBorder();
-  DrawMap( SCORE_X - 1,           SCORE_Y, border_scorel );
-  DrawMap( SCORE_X + SCORE_WIDTH, SCORE_Y, border_scorer );
+  SetTile( SCORE_X - 1,           SCORE_Y, border_scorel[2] );
+  SetTile( SCORE_X + SCORE_WIDTH, SCORE_Y, border_scorer[2] );
 }
 
 static void drawGameOver(){
