@@ -854,7 +854,11 @@ static void movePlayer(){
 
     } else if (LEVEL(x,y) == T_WORM || LEVEL(x,y) == T_WMHL || LEVEL(x,y) == T_WMHR || LEVEL(x,y) == T_SPDR || LEVEL(x,y) == T_BEE ){
 
-      // TODO: draw player moving into the obstacle?  sometimes the game over screen looks weird because the enemy is still next to you
+      drawEmpty(player_x, player_y);
+      player_x = x;
+      player_y = y;
+      drawPlayer();
+
       gameOver();
 
     } else {
@@ -1336,14 +1340,26 @@ int main(){
 	initWorm(23, 4, 9, 0);
       }
 
+      if (!alive) {
+	      break;
+      }
+
       WaitVsync(WAIT);
       movePlayer();
       moveShot();
+
+      if (!alive) {
+	      break;
+      }
 
       for (Scalar i = 0; i < MAXWORMCOUNT; i += 2) {
 	moveWorm(i);
       }
       
+      if (!alive) {
+	      break;
+      }
+
       WaitVsync(WAIT);
       moveShot();
 
@@ -1356,12 +1372,24 @@ int main(){
 	}
       }
       
+      if (!alive) {
+	      break;
+      }
+
       WaitVsync(WAIT);
       movePlayer();
       moveShot();
 
+      if (!alive) {
+	      break;
+      }
+
       for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
 	moveWorm(i);
+      }
+
+      if (!alive) {
+	      break;
       }
 
       WaitVsync(WAIT);
@@ -1376,6 +1404,10 @@ int main(){
 	}
       }
       
+      if (!alive) {
+	      break;
+      }
+
     }
 
     // GAME OVER
