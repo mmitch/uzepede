@@ -581,6 +581,24 @@ static void shootWormHead(){
   }
 }
 
+// rotate worm ringbuffer so head is at startidx
+static void rotateWormHeadToStartIdx(Worm *worm) {
+  while (worm->tailidx != worm->startidx + worm->length - 1) {
+    Scalar i = ENDIDX_PLUS_1(worm) - 1;
+    Scalar tmpx = wormx[i];
+    Scalar tmpy = wormy[i];
+    while (i > worm->startidx) {
+      i--;
+      wormx[i+1] = wormx[i];
+      wormy[i+1] = wormy[i];
+    }
+    wormx[i] = tmpx;
+    wormy[i] = tmpy;
+
+    worm->tailidx++;
+  }
+}
+
 // body shot, split worm, remove bullet
 static void shootWormBody(){
 
@@ -614,22 +632,8 @@ static void shootWormBody(){
   }
   split = split - worm->tailidx - 1;
 
-  // rotate worm ringbuffer so head is at startidx
-  while (worm->tailidx != worm->startidx + worm->length - 1) {
-    Scalar tmpx, tmpy;
-    Scalar i = ENDIDX_PLUS_1(worm) - 1;
-    tmpx = wormx[i];
-    tmpy = wormy[i];
-    while (i > worm->startidx) {
-      i--;
-      wormx[i+1] = wormx[i];
-      wormy[i+1] = wormy[i];
-    }
-    wormx[i] = tmpx;
-    wormy[i] = tmpy;
-
-    worm->tailidx++;
-  }
+  // we need the head in front to be able to split properly
+  rotateWormHeadToStartIdx(worm);
 
   // create new worm out of last part if there is something left
   if (split < worm->length - 1) {
