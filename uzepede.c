@@ -698,8 +698,8 @@ static void moveWorm(const Scalar wormId){
 
   // draw body where the old head was
   if (theWorm->length > 1) {
-    // we're currently on a bug hunt here:
     if (x == OFFSCREEN || y == OFFSCREEN) {
+      // this should not be possible any more since we rotate a worm before enlarging it
       showDebugDataAndStopExecution(headIdx, wormId, 0xdb, t_wormheadright);
     } else {
       drawWormBody(x, y);
@@ -773,6 +773,9 @@ static void moveWorm(const Scalar wormId){
       x = RAND_RANGE( MINX+2, MAXX-2 );
       y = RAND_RANGE( MINY,   MINY+3 );
     } while ( LEVEL(x,y) != T_FREE ); // @FIXME will lock up when there are too many mushrooms in upper part
+
+    // rotate before expanding the worm so that the head will not suddenly wrap into OFFSCREEN body parts
+    rotateWormHeadToStartIdx(theWorm);
 
     // expand worm as much as possible
     Scalar newEnd = MAXWORMLEN;
