@@ -53,18 +53,32 @@ typedef unsigned int BigScalar;
 // read tile from VRAM
 #define LEVEL(x,y) *((Tile*)(vram + (2*(x)) + (80*(y) ) ))
 
+// constants for the actual first tile content
+// TODO: borders and characters are missing (except for c_slash only used once)
+#define TILE_FREE          t_black[2]
+#define TILE_MUSHROOM1     t_mushroom1[2]
+#define TILE_MUSHROOM2     t_mushroom2[2]
+#define TILE_MUSHROOM3     t_mushroom3[2]
+#define TILE_WORMBODY      t_wormbody[2]
+#define TILE_WORMHEADLEFT  t_wormheadleft[2]
+#define TILE_WORMHEADRIGHT t_wormheadright[2]
+#define TILE_PLAYER        t_player[2]
+#define TILE_SHOT          t_shot[2]
+#define TILE_SPIDER        t_spider[2]
+#define TILE_BEE           t_bee[2]
+
 // comparison tile pointers for VRAM
-#define T_FREE (Tile)(Tiles + (t_black[2]         * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH1 (Tile)(Tiles + (t_mushroom1[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH2 (Tile)(Tiles + (t_mushroom2[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_MSH3 (Tile)(Tiles + (t_mushroom3[2]     * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WORM (Tile)(Tiles + (t_wormbody[2]      * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHL (Tile)(Tiles + (t_wormheadleft[2]  * TILE_WIDTH * TILE_HEIGHT ))
-#define T_WMHR (Tile)(Tiles + (t_wormheadright[2] * TILE_WIDTH * TILE_HEIGHT ))
-#define T_PLYR (Tile)(Tiles + (t_player[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SHOT (Tile)(Tiles + (t_shot[2]          * TILE_WIDTH * TILE_HEIGHT ))
-#define T_SPDR (Tile)(Tiles + (t_spider[2]        * TILE_WIDTH * TILE_HEIGHT ))
-#define T_BEE  (Tile)(Tiles + (t_bee[2]           * TILE_WIDTH * TILE_HEIGHT ))
+#define T_FREE (Tile)(Tiles + (TILE_FREE          * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH1 (Tile)(Tiles + (TILE_MUSHROOM1     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH2 (Tile)(Tiles + (TILE_MUSHROOM2     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_MSH3 (Tile)(Tiles + (TILE_MUSHROOM3     * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WORM (Tile)(Tiles + (TILE_WORMBODY      * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHL (Tile)(Tiles + (TILE_WORMHEADLEFT  * TILE_WIDTH * TILE_HEIGHT ))
+#define T_WMHR (Tile)(Tiles + (TILE_WORMHEADRIGHT * TILE_WIDTH * TILE_HEIGHT ))
+#define T_PLYR (Tile)(Tiles + (TILE_PLAYER        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SHOT (Tile)(Tiles + (TILE_SHOT          * TILE_WIDTH * TILE_HEIGHT ))
+#define T_SPDR (Tile)(Tiles + (TILE_SPIDER        * TILE_WIDTH * TILE_HEIGHT ))
+#define T_BEE  (Tile)(Tiles + (TILE_BEE           * TILE_WIDTH * TILE_HEIGHT ))
 
 #define X_CENTERED(width) ((MAXX_SCREEN - MINX_SCREEN - (width)) / 2 - 1 + MINX_SCREEN)
 #define Y_CENTER ((MAXY_SCREEN + MINY_SCREEN) / 2 - 1 + MINY_SCREEN)
@@ -136,7 +150,7 @@ static void clearScreen();
 static void printByte(const Scalar x, const Scalar y, Scalar value);
 static void printString(Scalar x, const Scalar y, const char *c);
 
-static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
+static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile tile) {
 
   Scalar LINES_PER_COLUMN = 20;
   Scalar EXTRA_LINE_EVERY = 10;
@@ -144,34 +158,34 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   clearScreen();
   printString(3, 1, "DEBUG");
 
-  SetTile  ( 4,  3, tile[2]);
-  SetTile  ( 5,  3, tile[2]);
+  SetTile  ( 4,  3, tile);
+  SetTile  ( 5,  3, tile);
   printByte( 4,  4, val1);
   printByte( 4,  5, val2);
   printByte( 4,  6, val3);
 
-  SetTile  ( 3,  8, t_shot[2]);
+  SetTile  ( 3,  8, TILE_SHOT);
   printByte( 4,  8, shot_x);
   SetTile  ( 6,  8, char_slash[2]);
   printByte( 7,  8, shot_y);
 
-  SetTile  ( 3,  9, t_player[2]);
+  SetTile  ( 3,  9, TILE_PLAYER);
   printByte( 4,  9, player_x);
   SetTile  ( 6,  9, char_slash[2]);
   printByte( 7,  9, player_y);
 
-  SetTile  ( 3, 11, t_wormheadleft[2]);
+  SetTile  ( 3, 11, TILE_WORMHEADLEFT);
   printByte( 4, 11, MAXWORMCOUNT);
   SetTile  ( 3, 12, t_wormbody[2]);
   printByte( 4, 12, MAXWORMLEN);
 
   for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
     Scalar y = i + 1 + (i / EXTRA_LINE_EVERY);
-    SetTile  (10, y, t_wormheadleft[2]);
+    SetTile  (10, y, TILE_WORMHEADLEFT);
     printByte(11, y, worms[i].startidx);
-    SetTile  (13, y, t_wormheadleft[2]);
+    SetTile  (13, y, TILE_WORMHEADLEFT);
     printByte(14, y, worms[i].tailidx);
-    SetTile  (16, y, t_wormbody[2]);
+    SetTile  (16, y, TILE_WORMBODY);
     printByte(17, y, worms[i].length);
   }
 
@@ -199,43 +213,43 @@ static void clearScreen(){
   Fill(0, 0, 40, 28, 0);
 }
 static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
-  SetTile(x, y, direction_right ? t_wormheadright[2] : t_wormheadleft[2]);
+  SetTile(x, y, direction_right ? TILE_WORMHEADRIGHT : TILE_WORMHEADLEFT);
 }
 
 static void drawWormBody(const Scalar x, const Scalar y){
-  SetTile(x, y, t_wormbody[2]);
+  SetTile(x, y, TILE_WORMBODY);
 }
 
 static void drawEmpty(const Scalar x, const Scalar y){
-  SetTile(x, y, t_black[2]);
+  SetTile(x, y, TILE_FREE);
 }
 
 static void drawMushroom1(const Scalar x, const Scalar y){
-  SetTile(x, y, t_mushroom1[2]);
+  SetTile(x, y, TILE_MUSHROOM1);
 }
 
 static void drawMushroom2(const Scalar x, const Scalar y){
-  SetTile(x, y, t_mushroom2[2]);
+  SetTile(x, y, TILE_MUSHROOM2);
 }
 
 static void drawMushroom3(const Scalar x, const Scalar y){
-  SetTile(x, y, t_mushroom3[2]);
+  SetTile(x, y, TILE_MUSHROOM3);
 }
 
 static void drawShot(){
-  SetTile(shot_x, shot_y, t_shot[2]);
+  SetTile(shot_x, shot_y, TILE_SHOT);
 }
 
 static void drawPlayer(){
-  SetTile(player_x, player_y, t_player[2]);
+  SetTile(player_x, player_y, TILE_PLAYER);
 }
 
 static void drawSpider(){
-  SetTile(spider_x, spider_y, t_spider[2]);
+  SetTile(spider_x, spider_y, TILE_SPIDER);
 }
 
 static void drawBee(){
-  SetTile(bee_x, bee_y, t_bee[2]);
+  SetTile(bee_x, bee_y, TILE_BEE);
 }
 
 static void gameOver(){
@@ -612,7 +626,7 @@ static void shootWormBody(){
 
   if (idx >= MAXWORMLEN) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, 0, DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW, t_wormbody[2]);
+    showDebugDataAndStopExecution(idx, 0, DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW, TILE_WORMBODY);
     return;
   }
 
@@ -625,7 +639,7 @@ static void shootWormBody(){
 
   if (i == MAXWORMCOUNT) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, i, DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW, t_wormbody[2]);
+    showDebugDataAndStopExecution(idx, i, DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW, TILE_WORMBODY);
     return;
   }
 
@@ -704,7 +718,7 @@ static void moveWorm(const Scalar wormId){
   if (theWorm->length > 1) {
     if (x == OFFSCREEN || y == OFFSCREEN) {
       // this should not be possible any more since we rotate a worm before enlarging it
-      showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, t_wormheadright[2]);
+      showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, TILE_WORMHEADRIGHT);
     } else {
       drawWormBody(x, y);
     }
