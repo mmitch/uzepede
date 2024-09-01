@@ -125,14 +125,14 @@ BigScalar score;
 #define SCORE_WIDTH 10
 char score_string[SCORE_WIDTH+1] = "0000000000";
 
-static void clearScreen(){
-  // clear whole mode 1 screen regardless of our internal screen size
-  Fill(0, 0, 40, 28, 0);
-}
+#define DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW   0x11
+#define DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW  0x22
+#define DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN      0x33
 
 #ifdef SHOW_DEBUG_DATA_ON_ERROR
 
 // we need some forward declarations
+static void clearScreen();
 static void printByte(const Scalar x, const Scalar y, Scalar value);
 static void printString(Scalar x, const Scalar y, const char *c);
 
@@ -194,6 +194,10 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
 
 #endif // SHOW_DEBUG_DATA_ON_ERROR
 
+static void clearScreen(){
+  // clear whole mode 1 screen regardless of our internal screen size
+  Fill(0, 0, 40, 28, 0);
+}
 static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
   DrawMap(x, y, direction_right ? t_wormheadright : t_wormheadleft);
 }
@@ -608,7 +612,7 @@ static void shootWormBody(){
 
   if (idx >= MAXWORMLEN) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, 0, 0x11, t_wormbody);
+    showDebugDataAndStopExecution(idx, 0, DEBUG_REASON_SHOOT_WORM_BODY_MAXLEN_OVERFLOW, t_wormbody);
     return;
   }
 
@@ -621,7 +625,7 @@ static void shootWormBody(){
 
   if (i == MAXWORMCOUNT) {
     // belt AND suspenders: this should never happen, but if it does, show why
-    showDebugDataAndStopExecution(idx, i, 0x22, t_wormbody);
+    showDebugDataAndStopExecution(idx, i, DEBUG_REASON_SHOOT_WORM_BODY_MAXWORM_OVERFLOW, t_wormbody);
     return;
   }
 
@@ -700,7 +704,7 @@ static void moveWorm(const Scalar wormId){
   if (theWorm->length > 1) {
     if (x == OFFSCREEN || y == OFFSCREEN) {
       // this should not be possible any more since we rotate a worm before enlarging it
-      showDebugDataAndStopExecution(headIdx, wormId, 0xdb, t_wormheadright);
+      showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, t_wormheadright);
     } else {
       drawWormBody(x, y);
     }
