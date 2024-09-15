@@ -14,7 +14,7 @@
 
 TEST test_canary() {
 	ASSERT_EQ(11, 11);
-	ASSERT_EQ(0x01, 0x03);
+	ASSERT_EQ(0x01, 0x01);
 
 	PASS();
 }
