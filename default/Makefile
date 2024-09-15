@@ -67,7 +67,11 @@ LINKONLYOBJECTS =
 INCLUDES = -I"$(KERNEL_DIR)"
 
 ## Build
-all: ../data/tiles.inc $(TARGET) $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+all: ../data/tiles.inc $(TARGET) test $(GAME).hex $(GAME).eep $(GAME).lss $(GAME).uze size
+
+## run tests on host system
+test:
+	$(MAKE) -C ../test
 
 ## Rebuild graphic ressources
 ../data/tiles.inc: ../data/tiles.png ../data/tiles.xml $(GCONVERT_BIN) $(MAKEFILE)
@@ -121,9 +125,10 @@ size: ${TARGET}
 	@avr-size ${AVRSIZEFLAGS}
 
 ## Clean target
-.PHONY: clean
+.PHONY: clean test
 clean:
 	-rm -rf $(OBJECTS) $(GAME).* dep/* *.uze ../data/tiles.inc
+	-$(MAKE) -C ../test clean
 
 
 ## Other dependencies
