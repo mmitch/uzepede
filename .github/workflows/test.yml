@@ -1,0 +1,29 @@
+---
+# This workflow will only run the unit tests.
+
+name: tests
+
+on:
+  push:
+  pull_request:
+    types: [opened]
+  schedule:
+    - cron: '22 22 22 * *'
+
+jobs:
+  test:
+    name: run unit tests
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: test
+        env:
+          CC: ${{ matrix.compiler }}
+        run: |
+          make -C test
