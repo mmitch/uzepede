@@ -12,3 +12,7 @@
 
 /default/dep/
 /default/eeprom.bin
+
+/test/build
+/test/bin
+
