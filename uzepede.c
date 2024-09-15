@@ -70,12 +70,10 @@ typedef unsigned int BigScalar;
 #define X_CENTERED(width) ((MAXX_SCREEN - MINX_SCREEN - (width)) / 2 - 1 + MINX_SCREEN)
 #define Y_CENTER ((MAXY_SCREEN + MINY_SCREEN) / 2 - 1 + MINY_SCREEN)
 
-#define RAND_RANGE(min_incl, max_excl) ( (rand()%((max_excl)-(min_incl))) + (min_incl) )
+#include "util.h"
 
 // last idx of a worm + 1
 #define ENDIDX_PLUS_1(worm) ((worm)->startidx + (worm)->length)
-
-#define MAX(x,y) ((x)>(y)?(x):(y))
 
 // #optimization:
 // - generally, IS_SHOT_AT() is faster and shorter
