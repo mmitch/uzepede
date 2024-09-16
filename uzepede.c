@@ -163,7 +163,7 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
 
 #else // SHOW_DEBUG_DATA_ON_ERROR
 
-static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
+static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile tile) {
   // debug disabled, do nothing
 }
 
