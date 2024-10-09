@@ -98,27 +98,32 @@ The bee regenerates any half-shot mushrooms it passes to full health.
 These instructions are based on Debian Bookworm in 2024:
 
 1. install the `avr-libc` package via _apt(1)_, _aptitude(1)_ or the like
-2. clone or download the [uzebox source repository][1]
-   - note that _uzepede_ will automatically try to compile both
-     _gconvert_ and _packrom_ from the _uzebox_ toolset
-3. clone or download the [uzepede source directory][2]
+2. clone or download **my fork of** the [uzebox source repository][1]
+   - Note that _uzepede_ will automatically try to compile both
+     _gconvert_ and _packrom_ from the _uzebox_ toolset.
+   - There is currently an upstream bug with video mode 5 that affects
+     _uzepede_.  The bug is fixed in my fork of the _uzebox_ repo, so
+     you can't use the official repo until [this pull request][2] has
+     been merged.
+3. clone or download the [uzepede source directory][3]
 4. enter the `uzepede/` directory
 5. manually edit the `UZEBOX_DIR` setting in `default/Makefile`
    to point to your `uzebox/` directory from step 2
 6. compile _uzepede_ via `cd default; make`
 7. you should now have a `uzepede.uze` file in the `default/` subdirectory
 
-[1]: https://github.com/Uzebox/uzebox
-[2]: https://github.com/mmitch/uzepede
+[1]: https://github.com/mmitch/uzebox
+[2]: https://github.com/Uzebox/uzebox/pull/146
+[3]: https://github.com/mmitch/uzepede
 
 ## usage
 
 There are several ways to play _uzepede_:
 
 - copy `uzepede.uze` to the SD card of your uzebox
-- run `uzepede.uze` in an emulator, eg. [cuzebox][3]
+- run `uzepede.uze` in an emulator, eg. [cuzebox][4]
   (on Debian, you will need to install the `libsdl2-dev` package to compile it yourself)
 - you should also be able to flash `uzepede.hex` directly to your uzebox,
   but you will overwrite the uzebox bootloader by doing so
 
-[3]: https://github.com/Jubatian/cuzebox
+[4]: https://github.com/Jubatian/cuzebox
