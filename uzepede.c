@@ -71,13 +71,6 @@
 // last idx of a worm + 1
 #define ENDIDX_PLUS_1(worm) ((worm)->startidx + (worm)->length)
 
-// #optimization:
-// - generally, IS_SHOT_AT() is faster and shorter
-// - but if we already are in a comparison using LEVEL(x,y),
-//   IS_SHOT_AT_TILED() is better, because the registers are already set up
-#define IS_SHOT_AT(x,y) (shot_x == (x) && shot_y == (y))
-#define IS_SHOT_AT_TILED(x,y) (LEVEL((x),(y)) == TILE_SHOT)
-
 #include "globals.h"
 
 Scalar player_x, player_y, alive;
