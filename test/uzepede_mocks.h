@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 // map Uzebox types to Linux/x86
 typedef uint8_t  u8;
@@ -101,6 +102,8 @@ void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const S
 	UNUSED(val2);
 	UNUSED(val3);
 	UNUSED(tile);
+
+	exit(-1); // hard failure when debug is reached
 }
 
 void addScore(const Scalar add) {
