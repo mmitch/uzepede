@@ -90,7 +90,7 @@ void Fill(const Scalar x1, const Scalar y1, const Scalar x2, const Scalar y2, co
 /*
  *  Uzepede mocks
  */
-void triggerFx3(unsigned char patch, unsigned char volume, bool _retrig) {
+void triggerFx3(const unsigned char patch, const unsigned char volume, const bool _retrig) {
 	UNUSED(patch);
 	UNUSED(volume);
 	UNUSED(_retrig);
