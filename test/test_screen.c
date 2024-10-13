@@ -11,7 +11,6 @@
 #include "assert_utils.h"
 
 #include "../screen.c"
-#include "../worm.c"
 
 TEST initially_the_level_is_empty() {
 	clearScreen();
@@ -22,14 +21,12 @@ TEST initially_the_level_is_empty() {
 }
 
 void FIXME_write_additional_tests_for_these_methods_they_are_currently_unused_and_produce_a_warning() {
-	moveWorm(0);
-	shootWormBody();
-	initWorm(0, 0, 1, true);
-}
-
-void FIXME_find_a_way_around_unused_warnings_for_these() {
+	drawEmpty(0, 0);
+	drawMushroom1(0, 0);
 	drawMushroom2(0, 0);
 	drawMushroom3(0, 0);
+	drawWormBody(0, 0);
+	drawWormHead(0, 0, 0);
 }
 
 GREATEST_MAIN_DEFS();
