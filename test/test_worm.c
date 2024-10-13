@@ -17,12 +17,16 @@ const Boolean looking_right = true;
 const Boolean looking_left  = false;
 
 TEST init_worm_draws_only_the_head_initially() {
+	// GIVEN
 	Scalar initx = 17;
 	Scalar inity = 6;
 	Scalar length = 5;
 	clearScreen();
 
+	// WHEN
 	initWorm(initx, inity, length, looking_right);
+
+	// THEN
 
 	// rows above
 	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
@@ -45,13 +49,17 @@ TEST init_worm_draws_only_the_head_initially() {
 // FIXME: check internal worms[], wormx[], wormy[] structures after init
 
 TEST moving_the_worm_once_moves_the_head_and_puts_a_body_part_where_the_head_was_initially() {
+	// GIVEN
 	Scalar initx = 17;
 	Scalar inity = 6;
 	Scalar length = 5;
 	clearScreen();
-
 	initWorm(initx, inity, length, looking_right);
+
+	// WHEN
 	moveWorm(0);
+
+	// THEN
 
 	// rows above
 	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
@@ -76,9 +84,34 @@ TEST moving_the_worm_once_moves_the_head_and_puts_a_body_part_where_the_head_was
 
 // FIXME: check internal worms[], wormx[], wormy[] structures after init
 
-void FIXME_write_additional_tests_for_these_methods_they_are_currently_unused_and_produce_a_warning() {
+TEST shoot_at_wormbody_with_other_parts_of_wormbody_still_offscreen() {
+	// GIVEN
+	Scalar initx = 17;
+	Scalar inity = 6;
+	Scalar length = 5;
+
+	shot_x = initx;
+	shot_y = inity;
+
+	clearScreen();
+	initWorm(initx, inity, length, looking_right);
+	moveWorm(0);
+	moveWorm(0);
+	moveWorm(0);
+
+	// WHEN
 	shootWormBody();
+
+// THIS SEGFAULTS, YAY! CONTINUE HERE
+
+	// THEN
+
+	// FIXME: ADD TEST CONDITIONS
+
+	PASS();
 }
+
+// FIXME: check internal worms[], wormx[], wormy[] structures after shot
 
 void FIXME_find_a_way_around_unused_warnings_for_these() {
 	drawMushroom2(0, 0);
@@ -96,6 +129,7 @@ int main(int argc, char **argv) {
 	SHUFFLE_TESTS(rand(), {
 			RUN_TEST(init_worm_draws_only_the_head_initially);
 			RUN_TEST(moving_the_worm_once_moves_the_head_and_puts_a_body_part_where_the_head_was_initially);
+			RUN_TEST(shoot_at_wormbody_with_other_parts_of_wormbody_still_offscreen);
 		});
 
 	GREATEST_MAIN_END();
