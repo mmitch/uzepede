@@ -43,13 +43,13 @@ typedef u16* VRAM_PTR_TYPE;
 
 #include "../types.h"
 
-// reinvent Mode 1
+// reinvent Mode 5
 Tile vram[40*28];
 #define TILE_WIDTH 6
 #define TILE_HEIGHT 8
 
 
-#define LEVEL(x,y) *((Tile*)(vram + (2*(x)) + (80*(y) ) ))
+#define LEVEL(x,y) *((Tile*)(vram + (x) + (40*(y)) ))
 
 const Tile TILE_FREE          = 0x00;
 const Tile TILE_MUSHROOM1     = 0x10;
@@ -70,32 +70,32 @@ enum { FX_WORMHEAD
 
 #define UNUSED(x) (void)(x)
 
-void drawEmpty(const Scalar x, const Scalar y) {
-	UNUSED(x);
-	UNUSED(y);
+/*
+ *  Uzebox mocks
+ */
+
+void SetTile(const Scalar x, const Scalar y, const Tile tile) {
+	LEVEL(x,y) = tile;
 }
 
-void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right) {
-	UNUSED(x);
-	UNUSED(y);
-	UNUSED(direction_right);
+void Fill(const Scalar x1, const Scalar y1, const Scalar x2, const Scalar y2, const Tile tile) {
+	Scalar x, y;
+	for (y = y1; y <= y2; y++) {
+		for (x = x1; x <= x2; x++) {
+			SetTile(x, y, tile);
+		}
+	}
 }
 
-void drawWormBody(const Scalar x, const Scalar y) {
-	UNUSED(x);
-	UNUSED(y);
-}
-
-void drawMushroom1(const Scalar x, const Scalar y) {
-	UNUSED(x);
-	UNUSED(y);
-}
-
+/*
+ *  Uzepede mocks
+ */
 void triggerFx3(unsigned char patch, unsigned char volume, bool _retrig) {
 	UNUSED(patch);
 	UNUSED(volume);
 	UNUSED(_retrig);
 }
+
 void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const int tile) {
 	UNUSED(val1);
 	UNUSED(val2);

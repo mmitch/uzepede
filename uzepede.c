@@ -162,33 +162,9 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
 
 #endif // SHOW_DEBUG_DATA_ON_ERROR
 
-static void clearScreen(){
-  // clear whole mode 1 screen regardless of our internal screen size
-  Fill(0, 0, 40, 28, 0);
-}
-static void drawWormHead(const Scalar x, const Scalar y, const Boolean direction_right){
-  SetTile(x, y, direction_right ? TILE_WORMHEADRIGHT : TILE_WORMHEADLEFT);
-}
-
-static void drawWormBody(const Scalar x, const Scalar y){
-  SetTile(x, y, TILE_WORMBODY);
-}
-
-static void drawEmpty(const Scalar x, const Scalar y){
-  SetTile(x, y, TILE_FREE);
-}
-
-static void drawMushroom1(const Scalar x, const Scalar y){
-  SetTile(x, y, TILE_MUSHROOM1);
-}
-
-static void drawMushroom2(const Scalar x, const Scalar y){
-  SetTile(x, y, TILE_MUSHROOM2);
-}
-
-static void drawMushroom3(const Scalar x, const Scalar y){
-  SetTile(x, y, TILE_MUSHROOM3);
-}
+// FIXME: including .c files is ugly!
+// This is just a quick kludge to make the worm functions testable by themselves.
+#include "screen.c"
 
 static void drawShot(){
   SetTile(shot_x, shot_y, TILE_SHOT);
