@@ -313,7 +313,7 @@ static void printString(Scalar x, const Scalar y, const char *c){
 
 }
 
-static char nibbleToChar(Scalar nibble) {
+static char nibbleToChar(const Scalar nibble) {
   if (nibble < 0x0A) {
     return '0' + nibble;
   }
@@ -357,7 +357,7 @@ extern void TriggerCommon(Track* track,u8 patch,u8 volume,u8 note);
 // - We want all 3 wave channels with voice stealing for Fx, not just 1+2 like in the kernel.
 // - We also always want to retrigger, so remove the retrig check from the conditions.
 // - We also don't use PCM (type == 2), so remove that branch.
-static void triggerFx3(unsigned char patch, unsigned char volume, bool _retrig){
+static void triggerFx3(const unsigned char patch, const unsigned char volume, const bool _retrig){
   unsigned char channel;
 
   unsigned char type=(unsigned char)pgm_read_byte(&(patches[patch].type));
