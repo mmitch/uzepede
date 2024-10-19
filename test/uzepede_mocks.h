@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 // map Uzebox types to Linux/x86
@@ -98,11 +99,10 @@ void triggerFx3(const unsigned char patch, const unsigned char volume, const boo
 }
 
 void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const int tile) {
-	UNUSED(val1);
-	UNUSED(val2);
-	UNUSED(val3);
-	UNUSED(tile);
 
+	printf("\n\nDEBUG STOP: val1=%d, val2=%d, val3=%d, tile=%d\n\n",
+	       val1, val2, val3, tile);
+	
 	exit(-1); // hard failure when debug is reached
 }
 
