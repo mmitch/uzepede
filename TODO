@@ -7,3 +7,14 @@
   - 256 tiles are enough for us
   - but something hangs, does WaitVsync() work correctly?
 - create a rotated version for portrait mode :)
+- completely rewrite worm memory handling?
+  - using ringbuffers with different head positions and wraparounds is hard
+  - we seem to have enough CPU cycles to always keep the worms in order in the worms* arrays
+    - first element is the head
+    - after that come the body party
+    - leftover space can be tagged (x/y) as (OFFSCREEN/BELONGS_TO_WORM) and (OFFSCREEN/FREE) to make
+      things like "find me a free part in the worms array" easier
+    - worm arrays would have to be copies over on every turn
+      - memcopy from wormhead to wormhead+1 size wormlength-1 (1 array position byte to the right)
+      - put new computed head position into wormhead
+    - no more rotateUntilHeadIsInFront(), always perfect form
