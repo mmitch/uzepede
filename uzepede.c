@@ -643,18 +643,28 @@ static void shootWormBody(){
   // create new worm out of last part if there is something left
   if (split < worm->length - 1) {
 
-    // this check is only relevant if MAXWORMCOUNT < MAXWORMLEN - 1
-    // (ths - 1 is because one of the body parts of the old worm becomes a mushroom)
-    // the compiler should remove this automatically depending on the compile flags
-    if ((MAXWORMCOUNT < MAXWORMLEN - 1) && (wormcount >= MAXWORMCOUNT)) {
+    Scalar startIdxNewWorm = worm->startidx + split + 1;
+
+    if (wormx[startIdxNewWorm] == OFFSCREEN || wormy[startIdxNewWorm] == OFFSCREEN) {
+      // first body element of last worm part is offscreen,
+      // that makes the whole last worm part offscreen.
+      // don't split the worm then, we would put the head offscreen and that fails
+      // TODO: look for a place for the head, then we could split
+
+      // last part is offscreen, don't split into a second worm
+
+    } else if ((MAXWORMCOUNT < MAXWORMLEN - 1) && (wormcount >= MAXWORMCOUNT)) {
+      // this check is only relevant if MAXWORMCOUNT < MAXWORMLEN - 1
+      // (ths - 1 is because one of the body parts of the old worm becomes a mushroom)
+      // the compiler should remove this automatically depending on the compile flags
+
       // no free place for a new split worm, so make the last part into mushrooms instead
-      wormToMushrooms(worm->startidx + split + 1, ENDIDX_PLUS_1(worm));
+      wormToMushrooms(startIdxNewWorm, ENDIDX_PLUS_1(worm));
 
     } else {
-
       // create the new worm from the leftover part
       Worm *newWorm = findFirstFreeWorm();
-      newWorm->startidx = worm->startidx + split + 1;
+      newWorm->startidx = startIdxNewWorm;
       newWorm->length = worm->length - split - 1;
       newWorm->direction_right = 1 - worm->direction_right;
       newWorm->tailidx = newWorm->startidx;
