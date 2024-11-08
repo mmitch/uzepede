@@ -26,8 +26,8 @@ static char assertMessage[MSGLEN+1];
 	} while(0)
 
 
-TEST assertThatLevelContainsAt(Tile expectedTile, Scalar x, Scalar y) {
-	Tile actualTile = LEVEL(x,y);
+TEST assertThatScreenContainsAt(Tile expectedTile, Scalar x, Scalar y) {
+	Tile actualTile = GetTile(x,y);
 	snprintf(assertMessage, MSGLEN,
 		 "level tile content at (%d, %d) is %d instead of %d",
 		 x, y, actualTile, expectedTile);
@@ -35,10 +35,10 @@ TEST assertThatLevelContainsAt(Tile expectedTile, Scalar x, Scalar y) {
 	PASS();
 }
 
-TEST assertThatLevelContainsFromUntil(Tile expectedTile, Scalar minX, Scalar minY, Scalar maxX, Scalar maxY) {
+TEST assertThatScreenContainsFromUntil(Tile expectedTile, Scalar minX, Scalar minY, Scalar maxX, Scalar maxY) {
 	for (Scalar y = minY; y <= maxY; y++) {
 		for (Scalar x = minX; x <= maxX; x++) {
-			BREAK_ON_FAILURE(assertThatLevelContainsAt(expectedTile, x, y));
+			BREAK_ON_FAILURE(assertThatScreenContainsAt(expectedTile, x, y));
 		}
 	}
 	PASS();

@@ -46,12 +46,12 @@ typedef u16* VRAM_PTR_TYPE;
 #include "../types.h"
 
 // reinvent Mode 5
-Tile vram[40*28];
+#define MAXX_VRAM 40
+#define MAXY_VRAM 28
+Tile vram[MAXX_VRAM*MAXY_VRAM];
 #define TILE_WIDTH 6
 #define TILE_HEIGHT 8
 
-
-#define LEVEL(x,y) *((Tile*)(vram + (x) + (40*(y)) ))
 
 const Tile TILE_FREE          = 0x00;
 const Tile TILE_MUSHROOM1     = 0x10;
@@ -77,16 +77,30 @@ enum { FX_WORMHEAD
  */
 
 void SetTile(const Scalar x, const Scalar y, const Tile tile) {
-	LEVEL(x,y) = tile;
+	if (x >= MAXX_VRAM || y >= MAXY_VRAM) {
+		fprintf(stderr, "ERROR: SetTile() out of bounds: x=%d, y=%d, tile=%d\n", x, y, tile);
+		exit(-1);
+	}
+
+	*((Tile*)(vram + (x) + (40*(y)) )) = tile;
 }
 
 void Fill(const Scalar x1, const Scalar y1, const Scalar x2, const Scalar y2, const Tile tile) {
 	Scalar x, y;
-	for (y = y1; y <= y2; y++) {
-		for (x = x1; x <= x2; x++) {
+	for (y = y1; y < y2; y++) {
+		for (x = x1; x < x2; x++) {
 			SetTile(x, y, tile);
 		}
 	}
+}
+
+Tile GetTile(Scalar x, Scalar y) {
+	if (x >= MAXX_VRAM || y >= MAXY_VRAM) {
+		fprintf(stderr, "ERROR: GetTile() out of bounds: x=%d, y=%d\n", x, y);
+		exit(-1);
+	}
+
+	return *((Tile*)(vram + (x) + (40*(y)) ));
 }
 
 /*
@@ -111,5 +125,15 @@ void addScore(const Scalar add) {
 }
 
 void gameOver() {
+}
+
+// originally this was a macro
+Tile LEVEL(Scalar x, Scalar y) {
+	if (x < MINX || x >= MAXX || y < MINY || y >= MAXY) {
+		fprintf(stderr, "ERROR: LEVEL() out of bounds: x=%d, y=%d\n", x, y);
+		exit(-1);
+	}
+
+	return GetTile(x, y);
 }
 

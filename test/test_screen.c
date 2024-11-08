@@ -12,10 +12,10 @@
 
 #include "../screen.c"
 
-TEST initially_the_level_is_empty() {
+TEST initially_the_screen_is_empty() {
 	clearScreen();
 
-        BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, MAXY));
+        BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, MAXY));
 
 	PASS();
 }
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 	GREATEST_MAIN_BEGIN();
 
 	SHUFFLE_TESTS(rand(), {
-			RUN_TEST(initially_the_level_is_empty);
+			RUN_TEST(initially_the_screen_is_empty);
 		});
 
 	GREATEST_MAIN_END();

@@ -29,19 +29,19 @@ TEST init_worm_draws_only_the_head_initially() {
 	// THEN
 
 	// rows above
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
 
 	// rows below
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, inity+1, MAXX, MAXY));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, inity+1, MAXX, MAXY));
 
 	// left of worm
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, inity, initx-1, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, inity, initx-1, inity));
 
 	// right of worm
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, initx+1, inity, MAXX, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, initx+1, inity, MAXX, inity));
 
 	// head at initial position
-	BREAK_ON_FAILURE(assertThatLevelContainsAt(TILE_WORMHEADRIGHT, initx, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsAt(TILE_WORMHEADRIGHT, initx, inity));
 
 	PASS();
 }
@@ -62,22 +62,22 @@ TEST moving_the_worm_once_moves_the_head_and_puts_a_body_part_where_the_head_was
 	// THEN
 
 	// rows above
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, MINY, MAXX, inity-1));
 
 	// rows below
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, inity+1, MAXX, MAXY));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, inity+1, MAXX, MAXY));
 
 	// left of worm
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, MINX, inity, initx-1, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, MINX, inity, initx-1, inity));
 
 	// right of worm + 1
-	BREAK_ON_FAILURE(assertThatLevelContainsFromUntil(TILE_FREE, initx+2, inity, MAXX, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsFromUntil(TILE_FREE, initx+2, inity, MAXX, inity));
 
 	// body at initial position
-	BREAK_ON_FAILURE(assertThatLevelContainsAt(TILE_WORMBODY, initx, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsAt(TILE_WORMBODY, initx, inity));
 
 	// head right of initial position
-	BREAK_ON_FAILURE(assertThatLevelContainsAt(TILE_WORMHEADRIGHT, initx+1, inity));
+	BREAK_ON_FAILURE(assertThatScreenContainsAt(TILE_WORMHEADRIGHT, initx+1, inity));
 
 	PASS();
 }
