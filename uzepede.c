@@ -33,7 +33,12 @@
 #define MAXX_SCREEN 38
 #define MAXY_SCREEN 28
 
-#define OFFSCREEN 0xAA
+#define OFFSCREEN_X        0xAA
+#define OFFSCREEN_Y_FREE   0xA0
+#define OFFSCREEN_Y_SPIDER 0xA2
+#define OFFSCREEN_Y_SHOT   0xA7
+#define OFFSCREEN_Y_BEE    0xAB
+#define OFFSCREEN_Y_WORM   0xAC
 #define MAXWORMLEN 16
 #define MAXWORMCOUNT 16
 
@@ -506,7 +511,7 @@ static Worm* findFirstFreeWorm() {
   return deadWorm;
 }
 
-static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right){
+static void initWorm(const Scalar startx, const Scalar starty, Scalar length, const Boolean direction_right) {
 
   if (wormcount >= MAXWORMCOUNT) {
     return;
@@ -534,7 +539,8 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
 static void wormToMushrooms(const Scalar startidx, const Scalar endidx_exclusive) {
   for(Scalar idx = startidx; idx < endidx_exclusive; idx++) {
     drawMushroom1( wormx[idx], wormy[idx] );
-    wormx[idx] = wormy[idx] = OFFSCREEN;
+    wormx[idx] = OFFSCREEN_X;
+    wormy[idx] = OFFSCREEN_Y_FREE;
   }
 }
 
@@ -645,7 +651,7 @@ static void shootWormBody(){
 
     Scalar startIdxNewWorm = worm->startidx + split + 1;
 
-    if (wormx[startIdxNewWorm] == OFFSCREEN || wormy[startIdxNewWorm] == OFFSCREEN) {
+    if (wormx[startIdxNewWorm] == OFFSCREEN_X) {
       // first body element of last worm part is offscreen,
       // that makes the whole last worm part offscreen.
       // don't split the worm then, we would put the head offscreen and that fails
@@ -702,7 +708,7 @@ static void moveWorm(const Scalar wormId){
   y = wormy[theWorm->tailidx];
 
   // delete old tail if onscreen
-  if (x != OFFSCREEN) {
+  if (x != OFFSCREEN_X) {
     drawEmpty(x, y);
   }
 
@@ -713,7 +719,7 @@ static void moveWorm(const Scalar wormId){
 
   // draw body where the old head was
   if (theWorm->length > 1) {
-    if (x == OFFSCREEN || y == OFFSCREEN) {
+    if (x == OFFSCREEN_X) {
       // this should not be possible any more since we rotate a worm before enlarging it
       showDebugDataAndStopExecution(headIdx, wormId, DEBUG_REASON_MOVE_WORM_OLD_HEAD_OFFSCREEN, TILE_WORMHEADRIGHT);
     } else {
@@ -804,8 +810,8 @@ static void moveWorm(const Scalar wormId){
       }
     }
     for (Scalar i = ENDIDX_PLUS_1(theWorm); i < newEnd; i++) {
-      wormx[i] = OFFSCREEN;
-      wormy[i] = OFFSCREEN;
+      wormx[i] = OFFSCREEN_X;
+      wormy[i] = OFFSCREEN_Y_WORM;
     }
     theWorm->length = newEnd - theWorm->startidx;
 
@@ -854,7 +860,8 @@ static void movePlayer(){
 
   if ((buttons & BTN_A)     && ! shooting) {
     shooting = true;
-    shot_x = shot_y = OFFSCREEN;
+    shot_x = OFFSCREEN_X; // FIXME: extract these two lines
+    shot_y = OFFSCREEN_Y_SHOT;
     triggerFx3(FX_SHOT, 0xd0, true);
   }
 
@@ -890,7 +897,8 @@ static void shootBee() {
   triggerFx3(FX_BEE_KILL, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BEE);
-  bee_x = bee_y = OFFSCREEN;
+  bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
+  bee_y = OFFSCREEN_Y_BEE;
   shooting = false;
 }
 
@@ -907,12 +915,14 @@ static void moveBee() {
   if (bee_dirx_right) {
     bee_x++;
     if (bee_x == MAXX) {
-      bee_x = bee_y = OFFSCREEN;
+      bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
+      bee_y = OFFSCREEN_Y_BEE;
       return;
     }
   } else {
     if (bee_x == MINX) {
-      bee_x = bee_y = OFFSCREEN;
+      bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
+      bee_y = OFFSCREEN_Y_BEE;
       return;
     }
     bee_x--;
@@ -949,7 +959,8 @@ static void shootSpider() {
   triggerFx3(FX_SPIDER, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_SPIDER);
-  spider_x = spider_y = OFFSCREEN;
+  spider_x = OFFSCREEN_X; // FIXME: extract these to lines
+  spider_y = OFFSCREEN_Y_SPIDER;
   shooting = false;
 }
 
@@ -968,7 +979,8 @@ static void moveSpider() {
   // draw / remove spider
   if (spider_y == MAXY) {
     drawEmpty(spider_x, spider_y - 1); // no mushrooms on base row
-    spider_x = spider_y = OFFSCREEN;
+    spider_x = OFFSCREEN_X; // FIXME: extract these to lines
+    spider_y = OFFSCREEN_Y_SPIDER;
   } else {
 
     if (IS_SHOT_AT(spider_x, spider_y)) {
@@ -1017,7 +1029,7 @@ static void moveShot(){
   }
 
   // remove old bullet / initialize
-  if (shot_x == OFFSCREEN) {
+  if (shot_x == OFFSCREEN_X) {
     shot_x = player_x;
     shot_y = player_y;
   } else {
@@ -1317,10 +1329,12 @@ int main(){
     wormkills_bee = 0;
 
     // init spider
-    spider_x = spider_y = OFFSCREEN;
+    spider_x = OFFSCREEN_X; // FIXME: extract these to lines
+    spider_y = OFFSCREEN_Y_SPIDER;
 
     // init bee
-    bee_x = bee_y = OFFSCREEN;
+    bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
+    bee_y = OFFSCREEN_Y_BEE;
 
     // init mushrooms
     for (Scalar i = 0; i < INITIAL_MUSHROOMS; i++) {
@@ -1337,7 +1351,8 @@ int main(){
 
     // init shot
     shooting = false;
-    shot_x = shot_y = OFFSCREEN;
+    shot_x = OFFSCREEN_X; // FIXME: extract these two lines
+    shot_y = OFFSCREEN_Y_SHOT;
 
     // GAME LOOP
 
@@ -1349,7 +1364,8 @@ int main(){
 	  worms[i].length = 0;
 	}
 	for (Scalar i = 0; i < MAXWORMLEN; i++) {
-	  wormx[i] = wormy[i] = OFFSCREEN;
+	  wormx[i] = OFFSCREEN_X;
+	  wormy[i] = OFFSCREEN_Y_FREE;
 	}
 	initWorm(17, 6, 5, 1);
 	initWorm(23, 4, 9, 0);
@@ -1378,7 +1394,7 @@ int main(){
       WaitVsync(WAIT);
       moveShot();
 
-      if (spider_x != OFFSCREEN) {
+      if (spider_x != OFFSCREEN_X) {
 	moveSpider();
       } else {
 	if (wormkills_spider >= SPIDER_AFTER_WORMS) {
@@ -1410,7 +1426,7 @@ int main(){
       WaitVsync(WAIT);
       moveShot();
 
-      if (bee_x != OFFSCREEN) {
+      if (bee_x != OFFSCREEN_X) {
 	moveBee();
       } else {
 	if (wormkills_bee >= BEE_AFTER_WORMS) {
