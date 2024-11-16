@@ -536,6 +536,22 @@ static void initWorm(const Scalar startx, const Scalar starty, Scalar length, co
   wormcount++;
 }
 
+static void moveBeeOffscreen() {
+  bee_x = OFFSCREEN_X;
+  bee_y = OFFSCREEN_Y_BEE;
+}
+
+static void moveShotOffscreen() {
+  shot_x = OFFSCREEN_X;
+  shot_y = OFFSCREEN_Y_SHOT;
+  shooting = false;
+}
+
+static void moveSpiderOffscreen() {
+  spider_x = OFFSCREEN_X;
+  spider_y = OFFSCREEN_Y_SPIDER;
+}
+
 static void wormToMushrooms(const Scalar startidx, const Scalar endidx_exclusive) {
   for(Scalar idx = startidx; idx < endidx_exclusive; idx++) {
     drawMushroom1( wormx[idx], wormy[idx] );
@@ -584,7 +600,7 @@ static void shootWormHead(){
 	wormkills_spider++;
 	wormkills_bee++;
 
-	shooting = false;
+	moveShotOffscreen();
 
 	break;
       }
@@ -687,7 +703,7 @@ static void shootWormBody(){
   // which happens when all worms have been killed and new ones appear
   wormToMushrooms(worm->startidx + split, worm->startidx + split + 1);
   addScore(SCORE_WORMBODY);
-  shooting = false;
+  moveShotOffscreen();
 }
 
 static void moveWorm(const Scalar wormId){
@@ -835,7 +851,7 @@ static void moveWorm(const Scalar wormId){
   }
 }
 
-static void movePlayer(){
+static void movePlayer() {
 
   Scalar x = player_x;
   Scalar y = player_y;
@@ -859,9 +875,8 @@ static void movePlayer(){
   }
 
   if ((buttons & BTN_A)     && ! shooting) {
+    moveShotOffscreen();
     shooting = true;
-    shot_x = OFFSCREEN_X; // FIXME: extract these two lines
-    shot_y = OFFSCREEN_Y_SHOT;
     triggerFx3(FX_SHOT, 0xd0, true);
   }
 
@@ -897,9 +912,8 @@ static void shootBee() {
   triggerFx3(FX_BEE_KILL, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_BEE);
-  bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
-  bee_y = OFFSCREEN_Y_BEE;
-  shooting = false;
+  moveBeeOffscreen();
+  moveShotOffscreen();
 }
 
 static void moveBee() {
@@ -915,14 +929,12 @@ static void moveBee() {
   if (bee_dirx_right) {
     bee_x++;
     if (bee_x == MAXX) {
-      bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
-      bee_y = OFFSCREEN_Y_BEE;
+      moveBeeOffscreen();
       return;
     }
   } else {
     if (bee_x == MINX) {
-      bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
-      bee_y = OFFSCREEN_Y_BEE;
+      moveBeeOffscreen();
       return;
     }
     bee_x--;
@@ -959,9 +971,8 @@ static void shootSpider() {
   triggerFx3(FX_SPIDER, 0xe0, true);
   drawMushroom1(shot_x, shot_y);
   addScore(SCORE_SPIDER);
-  spider_x = OFFSCREEN_X; // FIXME: extract these to lines
-  spider_y = OFFSCREEN_Y_SPIDER;
-  shooting = false;
+  moveSpiderOffscreen();
+  moveShotOffscreen();
 }
 
 static void moveSpider() {
@@ -1003,7 +1014,7 @@ static void shootMushroom1() {
   triggerFx3(FX_MUSHROOM, 0xc0, true);
   drawMushroom2( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = false;
+  moveShotOffscreen();
 }
 
 // damage mushroom, remove bullet
@@ -1011,7 +1022,7 @@ static void shootMushroom2() {
   triggerFx3(FX_MUSHROOM, 0xb0, true);
   drawMushroom3( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = false;
+  moveShotOffscreen();
 }
 
 // remove mushroom, remove bullet
@@ -1019,7 +1030,7 @@ static void shootMushroom3() {
   triggerFx3(FX_MUSHROOM, 0xa0, true);
   drawEmpty( shot_x, shot_y );
   addScore(SCORE_MUSHROOM);
-  shooting = false;
+  moveShotOffscreen();
 }
 
 static void moveShot(){
@@ -1038,7 +1049,7 @@ static void moveShot(){
 
   // off screen?
   if (shot_y == MINY) {
-    shooting = false;
+    moveShotOffscreen();
     return;
   }
 
@@ -1082,7 +1093,7 @@ static void moveShot(){
   } else if ( LEVEL(shot_x, shot_y) == TILE_PLAYER ) { // yeah, like he's fast enough
 
     // invincible, remove bullet
-    shooting = false;
+    moveShotOffscreen();
   }
 
 }
@@ -1329,12 +1340,10 @@ int main(){
     wormkills_bee = 0;
 
     // init spider
-    spider_x = OFFSCREEN_X; // FIXME: extract these to lines
-    spider_y = OFFSCREEN_Y_SPIDER;
+    moveSpiderOffscreen();
 
     // init bee
-    bee_x = OFFSCREEN_X; // FIXME: extract these 2 lines
-    bee_y = OFFSCREEN_Y_BEE;
+    moveBeeOffscreen();
 
     // init mushrooms
     for (Scalar i = 0; i < INITIAL_MUSHROOMS; i++) {
@@ -1350,9 +1359,7 @@ int main(){
     addScore(0); // print initial score
 
     // init shot
-    shooting = false;
-    shot_x = OFFSCREEN_X; // FIXME: extract these two lines
-    shot_y = OFFSCREEN_Y_SHOT;
+    moveShotOffscreen();
 
     // GAME LOOP
 
