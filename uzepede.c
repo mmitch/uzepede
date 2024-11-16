@@ -815,22 +815,14 @@ static void moveWorm(const Scalar wormId){
     rotateWormHeadToStartIdx(theWorm);
 
     // expand worm as much as possible
-    Scalar newEnd = MAXWORMLEN;
-    for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
-      if (worms + i != theWorm                     // not us
-	  && wormIsAlive(worms + i)                // alive
-	  && worms[i].startidx > theWorm->startidx // behind us
-	  && worms[i].startidx < newEnd            // but before new end
-	  ) {
-	newEnd = worms[i].startidx;
-      }
+    Scalar newEndPlus1 = ENDIDX_PLUS_1(theWorm);
+    while (wormy[newEndPlus1] == OFFSCREEN_Y_FREE) {
+      wormx[newEndPlus1] = OFFSCREEN_X;
+      wormy[newEndPlus1] = OFFSCREEN_Y_WORM;
+      newEndPlus1++;
     }
-    for (Scalar i = ENDIDX_PLUS_1(theWorm); i < newEnd; i++) {
-      wormx[i] = OFFSCREEN_X;
-      wormy[i] = OFFSCREEN_Y_WORM;
-    }
-    theWorm->length = newEnd - theWorm->startidx;
-
+	    
+    theWorm->length = newEndPlus1 - theWorm->startidx;
   }
 
   wormx[theWorm->tailidx] = x;
