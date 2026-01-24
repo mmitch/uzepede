@@ -9,12 +9,13 @@ UZEBOX_DIR = /home/mitch/git/uzebox
 VERSION=v1.01-GIT
 
 ## General Flags
+GIT_HEAD = $(shell git rev-parse --short HEAD)
 PROJECT = uzepede
 GAME = uzepede
 MCU = atmega644
 TARGET = $(GAME).elf
 CC = avr-gcc
-INFO=../gameinfo.properties
+INFO=gameinfo.properties
 
 COMPILEDATE=$(shell date +%Y/%m/%d)
 GITCOMMIT=$(shell git rev-parse HEAD | cut -c -20)
@@ -107,7 +108,7 @@ $(TARGET): $(OBJECTS) $(MAKEFILE)
 %.lss: $(TARGET)
 	avr-objdump -h -S $< > $@
 
-%.uze: $(TARGET) $(PACKROM_BIN)
+%.uze: $(TARGET) $(PACKROM_BIN) $(INFO)
 	-$(PACKROM_BIN) $(GAME).hex $@ $(INFO)
 
 UNAME := $(shell sh -c 'uname -s 2>/dev/null || echo not')
@@ -121,9 +122,9 @@ size: ${TARGET}
 	@avr-size ${AVRSIZEFLAGS}
 
 ## Clean target
-.PHONY: clean
+.PHONY: clean $(INFO)
 clean:
-	-rm -rf $(OBJECTS) $(GAME).* dep/* *.uze ../data/tiles.inc
+	-rm -rf $(OBJECTS) $(GAME).* dep/* *.uze ../data/tiles.inc $(INFO)
 
 
 ## Other dependencies
@@ -136,3 +137,8 @@ $(PACKROM_BIN): $(UZEBOX_DIR)
 
 $(GCONVERT_BIN): $(UZEBOX_DIR)
 	make -C $(UZEBOX_DIR) tools/gconvert
+
+##
+$(INFO): ../gameinfo.properties
+	echo git head is $(GIT_HEAD)
+	sed "s/=uzepede/=uzepede-$(GIT_HEAD)/" $< > $@
