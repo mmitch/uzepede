@@ -108,7 +108,7 @@ These instructions are based on Debian Bookworm in 2024:
 4. enter the `uzepede/` directory
 5. manually edit the `UZEBOX_DIR` setting in `default/Makefile`
    to point to your `uzebox/` directory from step 2
-6. compile _uzepede_ via `cd default; make`
+6. compile _uzepede_ via `make -C default`
 7. you should now have a `uzepede.uze` file in the `default/` subdirectory
 
 [1]: https://github.com/Uzebox/uzebox
