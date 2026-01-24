@@ -507,7 +507,7 @@ static Worm* findFirstFreeWorm() {
   while (wormIsAlive(deadWorm)) {
     deadWorm++;
   }
-  // FIXME: debug overflow here?  but currently all callers explcitely check beforehand
+  // FIXME: debug overflow here?  but currently all callers explicitely check beforehand
   return deadWorm;
 }
 
