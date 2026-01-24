@@ -142,6 +142,9 @@ static void clearScreen();
 static void printByte(const Scalar x, const Scalar y, Scalar value);
 static void printString(Scalar x, const Scalar y, const char *c);
 
+static Scalar getWormHeadIdx(Worm *worm);
+static Boolean wormIsAlive(Worm *worm);
+
 static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile tile) {
 
   Scalar LINES_PER_COLUMN = 20;
@@ -190,11 +193,115 @@ static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, 
   }
 
   while (1);
-};
+}
+
+static void showConsistencyErrorAndStopExecution(const Scalar check_id, const Scalar val, const Tile expected_tile, const Scalar x, const Scalar y) {
+  Tile actual_tile = LEVEL(x,y);
+
+  printString( 3, 0, "C");
+  printByte  ( 5, 0, check_id);
+  printByte  ( 8, 0, val);
+  SetTile    (11, 0, expected_tile);
+  printByte  (13, 0, x);
+  printString(15, 0, "/");
+  printByte  (16, 0, y);
+  SetTile    (19, 0, actual_tile);
+
+  // flash inconsistent tile while waiting for multiple tap
+  Scalar state = 0;
+  while (1) {
+    SetTile(x, y, expected_tile);
+    WaitVsync(WAIT);
+    WaitVsync(WAIT);
+    WaitVsync(WAIT);
+
+    if (state % 2 == 0 && ReadJoypad(0) != 0) {
+      state++;
+    }
+
+    SetTile(x, y, actual_tile);
+    WaitVsync(WAIT);
+    WaitVsync(WAIT);
+    WaitVsync(WAIT);
+
+    if (state % 2 == 1 && ReadJoypad(0) == 0) {
+      state++;
+
+      if (state > 8) {
+	break;
+      }
+    }
+  };
+
+  // final debug hardlock
+  showDebugDataAndStopExecution(check_id, val, 0x00, expected_tile);
+}
+
+static void ensureAtPosition(const Scalar check_id, const Scalar val, const Tile expected_tile, const Scalar x, const Scalar y) {
+  if (LEVEL(x, y) != expected_tile) {
+    showConsistencyErrorAndStopExecution(check_id, val, expected_tile, x, y);
+  }
+}
+
+static void ensureOffscreen(const Scalar check_id, const Tile checked_tile, const Scalar actual_x, const Scalar actual_y, const Scalar expected_offscreen_y) {
+  if (actual_x != OFFSCREEN_X || actual_y != expected_offscreen_y) {
+    showConsistencyErrorAndStopExecution(check_id, 0x00, checked_tile, actual_x, actual_y);
+  }
+}
+
+static void checkConsistency(Scalar check_id) {
+  if (!alive) {
+    return;
+  }
+
+  // player_x, player_y
+  ensureAtPosition(check_id, 0xAA, TILE_PLAYER, player_x, player_y);
+
+  // shot_x, shot_y, shooting
+  if (shooting) {
+    ensureAtPosition(check_id, 0xAA, TILE_SHOT, shot_x, shot_y);
+  } else {
+    ensureOffscreen(check_id, TILE_SHOT, shot_x, shot_y, OFFSCREEN_Y_SHOT);
+  }
+
+  // spider_x, spider_y
+  if (spider_x != OFFSCREEN_X && spider_y != OFFSCREEN_Y_SPIDER) {
+    ensureAtPosition(check_id, 0xAA, TILE_SPIDER, spider_x, spider_y);
+  } else {
+    ensureOffscreen(check_id, TILE_SPIDER, spider_x, spider_y, OFFSCREEN_Y_SPIDER);
+  }
+
+  // bee_x, bee_y
+  if (bee_x != OFFSCREEN_X && bee_y != OFFSCREEN_Y_BEE) {
+    ensureAtPosition(check_id, 0xAA, TILE_BEE, bee_x, bee_y);
+  } else {
+    ensureOffscreen(check_id, TILE_BEE, bee_x, bee_y, OFFSCREEN_Y_BEE);
+  }
+
+  // worms
+  Worm *worm = worms;
+  for (Scalar i = 0; i < MAXWORMCOUNT; i++, worm++) {
+    if (wormIsAlive(worm)) {
+      Scalar idx = getWormHeadIdx(worm);
+      Scalar x = wormx[idx];
+      Scalar y = wormy[idx];
+
+      if (LEVEL(x,y) == TILE_SPIDER || LEVEL(x,y) == TILE_BEE) {
+	// SPIDER or BEE may temporarily overwrite a worm head
+      } else {
+	ensureAtPosition(check_id, i, worm->direction_right ? TILE_WORMHEADRIGHT : TILE_WORMHEADLEFT, wormx[idx], wormy[idx]);
+      }
+    }
+  }
+}
 
 #else // SHOW_DEBUG_DATA_ON_ERROR
 
 static void showDebugDataAndStopExecution(const Scalar val1, const Scalar val2, const Scalar val3, const Tile *tile) {
+  // debug disabled, do nothing
+}
+
+static void checkConsistency(Scalar check_id) {
   // debug disabled, do nothing
 }
 
@@ -1359,7 +1466,6 @@ int main(){
     // GAME LOOP
 
     while(alive){
-
       if (wormcount == 0) {
 	wormmax = 0;
 	for (Scalar i = 0; i < MAXWORMCOUNT; i++) {
@@ -1377,9 +1483,11 @@ int main(){
 	      break;
       }
 
+      checkConsistency(0xF0);
       WaitVsync(WAIT);
       movePlayer();
       moveShot();
+      checkConsistency(0xF1);
 
       if (!alive) {
 	      break;
@@ -1387,6 +1495,7 @@ int main(){
 
       for (Scalar i = 0; i < MAXWORMCOUNT; i += 2) {
 	moveWorm(i);
+	checkConsistency(0x00 + i);
       }
       
       if (!alive) {
@@ -1395,6 +1504,7 @@ int main(){
 
       WaitVsync(WAIT);
       moveShot();
+      checkConsistency(0xF3);
 
       if (spider_x != OFFSCREEN_X) {
 	moveSpider();
@@ -1409,9 +1519,11 @@ int main(){
 	      break;
       }
 
+      checkConsistency(0xF4);
       WaitVsync(WAIT);
       movePlayer();
       moveShot();
+      checkConsistency(0xF5);
 
       if (!alive) {
 	      break;
@@ -1419,6 +1531,7 @@ int main(){
 
       for (Scalar i = 1; i < MAXWORMCOUNT; i += 2) {
 	moveWorm(i);
+	checkConsistency(0x20 + i);
       }
 
       if (!alive) {
@@ -1427,6 +1540,7 @@ int main(){
 
       WaitVsync(WAIT);
       moveShot();
+      checkConsistency(0xF6);
 
       if (bee_x != OFFSCREEN_X) {
 	moveBee();
@@ -1441,6 +1555,7 @@ int main(){
 	      break;
       }
 
+      checkConsistency(0xF7);
     }
 
     // GAME OVER
