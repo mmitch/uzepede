@@ -691,6 +691,9 @@ static void shootWormBody(){
       newWorm->direction_right = 1 - worm->direction_right;
       newWorm->tailidx = newWorm->startidx;
       wormcount++;
+
+      Scalar newWormHeadIdx = getWormHeadIdx(newWorm);
+      drawWormHead(wormx[newWormHeadIdx], wormy[newWormHeadIdx], newWorm->direction_right);
     }
   }
     
